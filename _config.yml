@@ -6,7 +6,7 @@ author: LinsaFTW
 timezone: America/Argentina/Buenos_Aires
 
 # API backend URL - change this to your dedicated machine URL
-api_url: ""
+api_url: "https://linsaftw.arkflame.com/"
 
 # Social links
 github_url: "https://github.com/LinsaFTW"
