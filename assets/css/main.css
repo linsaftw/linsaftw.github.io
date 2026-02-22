@@ -195,6 +195,30 @@ body {
 
 .btn img, .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
 
+/* ===== TOP BANNER ===== */
+.site-banner {
+  width: 100%;
+  max-height: 280px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  display: block;
+}
+
+.site-banner__img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.85);
+  transition: filter 0.3s ease;
+}
+
+.site-banner:hover .site-banner__img {
+  filter: brightness(1);
+}
+
 /* ===== HERO / PROFILE ===== */
 .hero {
   padding: 64px 0 48px;
@@ -944,4 +968,16 @@ body {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== HERO BADGE LINK ===== */
+a.hero-badge {
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+a.hero-badge:hover {
+  border-color: var(--text);
+  color: var(--text);
 }
