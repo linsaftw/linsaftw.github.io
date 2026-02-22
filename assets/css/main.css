@@ -33,6 +33,32 @@ body {
   overflow-x: hidden;
 }
 
+/* ===== SVG ICON COLOR FIX =====
+   <img> tags cannot inherit CSS color, so we apply a white filter globally.
+   This converts any SVG icon loaded via <img> to white on the dark background.
+   Exception: .btn uses black icons (inverted) since it has a white background.  */
+.social-link img,
+.nav-link img,
+.admin-nav-link img,
+.edit-entry img,
+.post-meta img,
+.post-card__meta img,
+.section-title img,
+.badge img,
+.terminal__prompt img {
+  filter: brightness(0) invert(1);
+}
+
+/* Buttons have white bg so icons need to be black — invert(0) keeps them dark */
+.btn img {
+  filter: brightness(0);
+}
+
+/* Ghost buttons are on dark bg so icons should be white */
+.btn--ghost img {
+  filter: brightness(0) invert(1);
+}
+
 /* ===== NEURON CANVAS ===== */
 #neuron-canvas {
   position: fixed;
