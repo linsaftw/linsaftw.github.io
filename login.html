@@ -1,0 +1,34 @@
+---
+layout: default
+title: Login — LinsaFTW
+page_id: login
+---
+
+<div class="auth-page">
+  <div class="auth-box">
+    <h1 class="auth-title">Login</h1>
+    <p class="auth-subtitle">// Access the blog admin</p>
+
+    <div class="flash-container"></div>
+
+    <form id="login-form" class="editor-form">
+      <div class="form-group">
+        <label class="form-label" for="usernameOrEmail">Username or Email</label>
+        <input class="form-input" type="text" id="usernameOrEmail" name="usernameOrEmail" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input class="form-input" type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <div class="mt-8">
+        <button type="submit" class="btn" style="width:100%;justify-content:center">
+          <img src="/assets/svgs/log-in.svg" width="14" height="14" alt=""> Login
+        </button>
+      </div>
+    </form>
+
+    <p class="text-muted mt-16" style="font-size:11px">
+      No account? <a href="/register.html" style="color:inherit">Register</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <meta name="author" content="LinsaFTW">
+  <meta property="og:title" content="{{ page.title | default: site.title }}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts & CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css">
+
+  <!-- highlight.js for code blocks -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+  <!-- Config for JS -->
+  <script>
+    window.BLOG_CONFIG = { apiUrl: '{{ site.api_url }}' };
+  </script>
+</head>
+<body data-page="{{ page.page_id | default: '' }}">
+  <!-- Neuron Background -->
+  <canvas id="neuron-canvas"></canvas>
+
+  <div class="site-wrapper">
+    {% include header.html %}
+
+    <main>
+      {{ content }}
+    </main>
+
+    {% include footer.html %}
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <script src="/assets/js/neuron-bg.js"></script>
+  <script src="/assets/js/app.js"></script>
+</body>
+</html>

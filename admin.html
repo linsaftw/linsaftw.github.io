@@ -1,0 +1,129 @@
+---
+layout: default
+title: Admin — LinsaFTW
+page_id: admin
+---
+
+<div id="admin-wrap">
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-title">// Admin</div>
+      <a href="#" class="admin-nav-link active" data-target="posts" onclick="showAdminSection('posts');return false;">
+        <img src="/assets/svgs/list.svg" width="14" height="14" alt=""> Posts
+      </a>
+      <a href="#" class="admin-nav-link" data-target="editor" onclick="newPost();return false;">
+        <img src="/assets/svgs/plus.svg" width="14" height="14" alt=""> New Post
+      </a>
+      <a href="#" class="admin-nav-link" data-target="users" onclick="showAdminSection('users');loadAdminUsers();return false;">
+        <img src="/assets/svgs/users.svg" width="14" height="14" alt=""> Users
+      </a>
+      <a href="#" class="admin-nav-link" data-target="terminal" onclick="showAdminSection('terminal');return false;">
+        <img src="/assets/svgs/terminal.svg" width="14" height="14" alt=""> Terminal
+      </a>
+      <hr style="border-color:#1e1e1e;margin:16px 0;">
+      <a href="/" class="admin-nav-link">
+        <img src="/assets/svgs/home.svg" width="14" height="14" alt=""> View Blog
+      </a>
+      <a href="#" class="admin-nav-link" data-logout>
+        <img src="/assets/svgs/log-out.svg" width="14" height="14" alt=""> Logout
+      </a>
+    </aside>
+
+    <!-- Main content -->
+    <div class="admin-main">
+      <div class="flash-container"></div>
+
+      <!-- POSTS SECTION -->
+      <div class="admin-section" data-section="posts">
+        <div class="flex-between mb-16">
+          <h2 style="font-size:14px;font-weight:600;letter-spacing:1px">// ALL POSTS</h2>
+          <button class="btn btn--sm" onclick="newPost()">
+            <img src="/assets/svgs/plus.svg" width="12" height="12" alt=""> New Post
+          </button>
+        </div>
+        <div id="admin-posts"></div>
+      </div>
+
+      <!-- EDITOR SECTION -->
+      <div class="admin-section" data-section="editor" style="display:none">
+        <h2 style="font-size:14px;font-weight:600;letter-spacing:1px;margin-bottom:24px" id="editor-section-title">// NEW POST</h2>
+
+        <form id="post-editor-form" class="editor-form">
+          <div class="form-group">
+            <label class="form-label" for="editor-title">Title *</label>
+            <input class="form-input" type="text" id="editor-title" required placeholder="Post title">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editor-caption">Caption / Subtitle</label>
+            <input class="form-input" type="text" id="editor-caption" placeholder="Short description shown under image">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editor-image">Image URL or Path</label>
+            <input class="form-input" type="text" id="editor-image" placeholder="/assets/images/my-image.jpg or https://...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Visibility</label>
+            <select class="form-select" id="editor-visibility">
+              <option value="public">🌐 Public</option>
+              <option value="private">🔒 Private</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Content (Markdown)</label>
+            <div class="editor-split">
+              <div class="editor-pane">
+                <div class="editor-pane__header">// Write (Markdown)</div>
+                <textarea
+                  class="editor-pane__content"
+                  id="editor-content"
+                  placeholder="# Hello World&#10;&#10;Write your post in **Markdown**...&#10;&#10;```js&#10;console.log('code blocks work!');&#10;```"
+                  spellcheck="true"
+                ></textarea>
+              </div>
+              <div class="editor-pane">
+                <div class="editor-pane__header">// Preview</div>
+                <div class="preview-pane post-content" id="editor-preview"></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editor-editmsg">Edit note (optional)</label>
+            <input class="form-input" type="text" id="editor-editmsg" placeholder="What did you change? (for edit history)">
+          </div>
+          <div class="flex gap-8">
+            <button type="submit" class="btn">
+              <img src="/assets/svgs/save.svg" width="14" height="14" alt=""> Save Post
+            </button>
+            <button type="button" class="btn btn--ghost" onclick="showAdminSection('posts')">
+              <img src="/assets/svgs/x.svg" width="14" height="14" alt=""> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- USERS SECTION -->
+      <div class="admin-section" data-section="users" style="display:none">
+        <h2 style="font-size:14px;font-weight:600;letter-spacing:1px;margin-bottom:24px">// REGISTERED USERS</h2>
+        <div id="admin-users"></div>
+      </div>
+
+      <!-- TERMINAL SECTION -->
+      <div class="admin-section" data-section="terminal" style="display:none">
+        <h2 style="font-size:14px;font-weight:600;letter-spacing:1px;margin-bottom:24px">// BACKEND TERMINAL</h2>
+        <p class="text-muted mb-16" style="font-size:11px">Admin-only WebSocket terminal. Commands run on the backend server.</p>
+        <div class="terminal">
+          <div class="terminal__output" id="terminal-output">
+            <div class="t-info">LinsaFTW Blog Backend Terminal</div>
+            <div class="t-info">Connecting...</div>
+          </div>
+          <div class="terminal__input-row">
+            <span class="terminal__prompt">linsaftw@blog:~$</span>
+            <input type="text" class="terminal__input" id="terminal-input" placeholder="Type a command..." autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+        <p class="text-dim mt-8" style="font-size:10px">Available commands: users, posts, help, status, clear</p>
+      </div>
+    </div>
+  </div>
+</div>

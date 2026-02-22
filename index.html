@@ -1,0 +1,66 @@
+---
+layout: default
+title: LinsaFTW — Blog
+page_id: index
+---
+
+<div class="container--wide">
+  <!-- Hero / Profile -->
+  <section class="hero">
+    <div class="hero-inner container">
+      <div class="avatar-wrap">
+        <img
+          src="/assets/images/profile-picture.jpg"
+          alt="LinsaFTW"
+          class="avatar-circle"
+          onerror="this.outerHTML='<div class=\'avatar-placeholder\'>//</div>'"
+        >
+      </div>
+      <div class="hero-text">
+        <h1 class="hero-name">LinsaFTW</h1>
+        <p class="hero-handle">@LinsaFTW &nbsp;·&nbsp; Juan Cruz Linsalata</p>
+        <p class="hero-tagline">Making sure Minecraft servers work just right</p>
+
+        <div class="hero-badge">
+          <img src="/assets/images/bbb-top.png" alt="Top BuiltByBit Creator 2025 badge"
+               onerror="this.style.display='none'">
+          Top BuiltByBit Creator 2025
+        </div>
+
+        <div class="social-links">
+          <a href="https://github.com/LinsaFTW" target="_blank" rel="noopener" class="social-link">
+            <img src="/assets/svgs/github.svg" alt="GitHub"> GitHub
+          </a>
+          <a href="https://github.com/ArkFlame" target="_blank" rel="noopener" class="social-link">
+            <img src="/assets/svgs/arkflame.svg" alt="ArkFlame"
+                 onerror="this.outerHTML='<span>//</span>'"> ArkFlame
+          </a>
+          <a href="https://x.com/LinsaFTW" target="_blank" rel="noopener" class="social-link">
+            <img src="/assets/svgs/twitter.svg" alt="X / Twitter"> X
+          </a>
+          <a href="https://www.youtube.com/@LinsaFTW" target="_blank" rel="noopener" class="social-link">
+            <img src="/assets/svgs/youtube.svg" alt="YouTube"> YouTube
+          </a>
+          <a href="https://modrinth.com/user/LinsaFTW" target="_blank" rel="noopener" class="social-link">
+            <img src="/assets/svgs/modrinth.svg" alt="Modrinth"> Modrinth
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts listing -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-title">// Posts</span>
+        <a href="/admin.html" class="btn btn--sm" data-auth-show style="display:none">
+          <img src="/assets/svgs/plus.svg" width="12" height="12" alt=""> New Post
+        </a>
+      </div>
+
+      <div class="flash-container"></div>
+      <div id="posts-list"></div>
+    </div>
+  </section>
+</div>
