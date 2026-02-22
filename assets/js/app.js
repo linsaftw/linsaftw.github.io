@@ -29,10 +29,11 @@ async function checkAuth() {
 }
 
 function updateNavAuth() {
-  const authLinks = document.querySelectorAll('[data-auth-show]');
+  const adminLinks = document.querySelectorAll('[data-auth-show]');
   const guestLinks = document.querySelectorAll('[data-guest-show]');
-  authLinks.forEach(el => {
-    el.style.display = currentUser ? '' : 'none';
+  // data-auth-show elements (Admin link, logout) only visible to admin users
+  adminLinks.forEach(el => {
+    el.style.display = (currentUser && currentUser.role === 'admin') ? '' : 'none';
   });
   guestLinks.forEach(el => {
     el.style.display = currentUser ? 'none' : '';
@@ -97,7 +98,7 @@ async function loadPostList() {
   container.innerHTML = `<div class="loading"><div class="spinner"></div> Loading posts...</div>`;
 
   const user = await checkAuth();
-  const visibility = user ? 'all' : 'public';
+  const visibility = (user && user.role === 'admin') ? 'all' : 'public';
   const { ok, data } = await apiFetch(`/api/posts?visibility=${visibility}&page=1`);
 
   if (!ok) {
@@ -110,7 +111,7 @@ async function loadPostList() {
       <div class="empty-state">
         <div class="empty-state__icon">//</div>
         <div>No posts yet.</div>
-        ${user ? `<div class="mt-16"><a href="/admin.html" class="btn">${icon('plus')} New Post</a></div>` : ''}
+        ${(user && user.role === 'admin') ? `<div class="mt-16"><a href="/admin.html" class="btn">${icon('plus')} New Post</a></div>` : ''}
       </div>`;
     return;
   }
@@ -171,7 +172,7 @@ async function loadSinglePost() {
       ${p.caption ? `<p class="post-image-caption">${escHtml(p.caption)}</p>` : ''}
     </div>` : '';
 
-  const editHtml = user && (user.id === p.author_id || user.role === 'admin') ? `
+  const editHtml = user && user.role === 'admin' ? `
     <div class="flex gap-8 mt-16">
       <a href="/admin.html#edit-${p.id}" class="btn btn--sm">${icon('edit')} Edit</a>
       <button class="btn btn--sm" onclick="toggleVisibility(${p.id}, '${p.visibility}')" id="vis-btn">
@@ -240,7 +241,7 @@ async function setupLoginForm() {
 
   // Redirect if already logged in
   const user = await checkAuth();
-  if (user) { window.location.href = '/admin.html'; return; }
+  if (user) { window.location.href = user.role === 'admin' ? '/admin.html' : '/'; return; }
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -260,7 +261,7 @@ async function setupLoginForm() {
     btn.innerHTML = `${icon('log-in')} Login`;
 
     if (ok) {
-      window.location.href = '/admin.html';
+      window.location.href = data.user && data.user.role === 'admin' ? '/admin.html' : '/';
     } else {
       showFlash(data.error || 'Login failed');
     }
@@ -305,10 +306,11 @@ async function setupAdmin() {
 
   const user = await checkAuth();
   if (!user) { window.location.href = '/login.html'; return; }
+  if (user.role !== 'admin') { window.location.href = '/'; return; }
 
   loadAdminPosts();
   setupPostEditor();
-  if (user.role === 'admin') setupTerminal();
+  setupTerminal();
 }
 
 async function loadAdminPosts() {
