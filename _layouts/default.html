@@ -6,23 +6,56 @@
   <title>{{ page.title | default: site.title }}</title>
   <meta name="description" content="{{ page.description | default: site.description }}">
   <meta name="author" content="LinsaFTW">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://linsaftw.arkflame.com{{ page.url }}">
+
+  <meta property="og:site_name" content="LinsaFTW">
   <meta property="og:title" content="{{ page.title | default: site.title }}">
   <meta property="og:description" content="{{ page.description | default: site.description }}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{{ page.og_type | default: 'website' }}">
+  <meta property="og:url" content="https://linsaftw.arkflame.com{{ page.url }}">
+  <meta property="og:image" content="https://linsaftw.arkflame.com/assets/images/profile-picture.webp">
 
-  <!-- Fonts & CSS -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title | default: site.title }}">
+  <meta name="twitter:description" content="{{ page.description | default: site.description }}">
+  <meta name="twitter:image" content="https://linsaftw.arkflame.com/assets/images/profile-picture.webp">
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/assets/images/profile-picture.webp" type="image/webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/css/main.css">
-
-  <!-- highlight.js for code blocks -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 
-  <!-- Config for JS -->
-  <script>
-    window.BLOG_CONFIG = { apiUrl: '{{ site.api_url }}' };
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Juan Cruz Linsalata",
+    "alternateName": "LinsaFTW",
+    "url": "https://linsaftw.arkflame.com",
+    "image": "https://linsaftw.arkflame.com/assets/images/profile-picture.webp",
+    "jobTitle": "Software Developer",
+    "nationality": "Argentine",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "ArkFlame Studios",
+      "url": "https://arkflame.com"
+    },
+    "sameAs": [
+      "https://github.com/LinsaFTW",
+      "https://github.com/ArkFlame",
+      "https://arkflame.com",
+      "https://x.com/LinsaFTW",
+      "https://www.youtube.com/@LinsaFTW",
+      "https://modrinth.com/user/LinsaFTW",
+      "https://builtbybit.com/creators/linsaftw.152552/"
+    ]
+  }
   </script>
 </head>
 <body data-page="{{ page.page_id | default: '' }}">
-  <!-- Neuron Background -->
   <canvas id="neuron-canvas"></canvas>
 
   <div class="site-wrapper">
@@ -35,10 +68,10 @@
     {% include footer.html %}
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <script src="/assets/js/neuron-bg.js"></script>
+  <script src="/assets/js/posts.js"></script>
   <script src="/assets/js/app.js"></script>
 </body>
 </html>

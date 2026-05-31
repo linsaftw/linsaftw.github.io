@@ -1,0 +1,31 @@
+---
+layout: default
+title: AI-assisted coding still needs standards — LinsaFTW
+description: Using AI does not remove engineering responsibility. It makes specifications, tests, and review more important.
+page_id: article
+og_type: article
+url: /posts/ai-assisted-coding-needs-standards.html
+---
+
+<div class="container">
+  <div class="section">
+    <div class="mb-16">
+      <a href="/" class="btn btn--ghost btn--sm"><img src="/assets/svgs/arrow-left.svg" width="12" height="12" alt=""> Back to articles</a>
+    </div>
+    <article class="post-page page-content">
+      <div class="post-header">
+        <div class="post-meta"><span><img src="/assets/svgs/calendar.svg" width="11" height="11" alt="" aria-hidden="true"> 2026-05-27</span></div>
+        <h1 class="post-title">AI-assisted coding still needs standards</h1>
+        <p class="post-caption">Using AI does not remove engineering responsibility. It makes specifications, tests, and review more important.</p>
+        <div class="post-tags"><span class="post-tag">#coding</span><span class="post-tag">#ai</span><span class="post-tag">#engineering</span></div>
+      </div>
+      <div class="post-content">
+        <p>I do not think using AI tools makes someone less of a developer. Developers have been using completion, generators, templates, search, documentation, and automation for years. The tool changed. The responsibility did not.</p>
+<p>The real issue is quality. If someone uses AI to generate bad code, ships it without understanding, and does not test it, the problem is not only AI. The problem is bad engineering discipline. The same person would probably ship bad manually written code too, just slower.</p>
+<p>For Minecraft plugins, this matters a lot. A small mistake can become a crash, a dupe, a memory leak, a Folia thread issue, a false positive in an anticheat, or a performance problem under load. AI can speed up implementation, but it can also speed up mistakes if the specification is vague.</p>
+<p>The workflow I prefer is strict. Define the bug. Point to files. State non-goals. Require real tests. Verify target APIs. Build. Inspect the diff. Run the server if needed. Read the logs. Then publish. The human still owns the result.</p>
+<p>I care less about whether code was typed by hand and more about whether the plugin works, performs well, is maintainable, and solves the actual problem for server owners.</p>
+      </div>
+    </article>
+  </div>
+</div>

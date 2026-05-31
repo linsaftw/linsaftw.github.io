@@ -1,21 +1,15 @@
 title: LinsaFTW
-description: "Making sure Minecraft servers work just right"
+description: "Juan Cruz Linsalata, known as LinsaFTW. Minecraft infrastructure developer from Argentina, founder of ArkFlame Studios, creator of FlameCord, ExploitFixer, VeloFlame and related server security tools."
 baseurl: ""
-url: ""
+url: "https://linsaftw.arkflame.com"
 author: LinsaFTW
 timezone: America/Argentina/Buenos_Aires
 
-# API backend URL - change this to your dedicated machine URL
-api_url: "https://linsaftw.arkflame.com"
-
-# Social links
 github_url: "https://github.com/LinsaFTW"
 twitter_url: "https://x.com/LinsaFTW"
 youtube_url: "https://www.youtube.com/@LinsaFTW"
 modrinth_url: "https://modrinth.com/user/LinsaFTW"
-arkflame_url: "https://github.com/ArkFlame"
-
-plugins:
-  - jekyll-feed
+arkflame_url: "https://arkflame.com"
+arkflame_github_url: "https://github.com/ArkFlame"
 
 markdown: kramdown
