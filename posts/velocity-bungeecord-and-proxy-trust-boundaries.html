@@ -1,0 +1,55 @@
+---
+layout: default
+title: Velocity, BungeeCord, and proxy trust boundaries — LinsaFTW
+description: "How proxy trust boundaries shape authentication, forwarding, and backend protection in Minecraft networks."
+page_id: article
+og_type: article
+url: /posts/velocity-bungeecord-and-proxy-trust-boundaries.html
+---
+
+<div class="container">
+  <div class="section">
+    <div class="mb-16">
+      <a href="/" class="btn btn--ghost btn--sm"><img src="/assets/svgs/arrow-left.svg" width="12" height="12" alt="" aria-hidden="true"> Back to articles</a>
+    </div>
+    <article class="post-page page-content">
+      <div class="post-header">
+        <div class="post-meta"><span><img src="/assets/svgs/calendar.svg" width="11" height="11" alt="" aria-hidden="true"> 2026-06-26</span><span>2 min read</span><span>Slug: velocity-bungeecord-and-proxy-trust-boundaries</span></div>
+        <h1 class="post-title">Velocity, BungeeCord, and proxy trust boundaries</h1>
+        <p class="post-caption">How proxy trust boundaries shape authentication, forwarding, and backend protection in Minecraft networks.</p>
+        <div class="post-tags"><span class="post-tag">#velocity</span><span class="post-tag">#bungeecord</span><span class="post-tag">#proxy-security</span></div>
+      </div>
+      <div class="post-content">
+        <p>Velocity and BungeeCord networks depend on trust boundaries. A backend server should know whether a connection came through the trusted proxy path, whether forwarded identity data can be accepted, and whether direct backend access is blocked.</p>
+<p>This is not just a configuration detail. It affects authentication, UUID handling, skin/profile data, premium/cracked flows, IP forwarding, floodgate-style setups, backend permissions, and exploit exposure. If the backend accepts forged forwarding data from an untrusted path, the entire security model is weaker.</p>
+<p>A clean proxy topology starts with direct access prevention. Backend servers should not be publicly reachable as normal player targets. The proxy should be the front door. Firewall rules, forwarding secrets, proxy protocol decisions, and backend plugin behavior should all align with that assumption.</p>
+<p>Velocity and BungeeCord have different ecosystems, APIs, and configuration expectations, but the infrastructure principle is the same: prove the transport path before trusting identity. A name lookup is not ownership proof. A forwarded UUID is not automatically trustworthy if the sender is not trusted.</p>
+<p>This is why proxy tooling belongs in the ArkFlame ecosystem. Products like FlameCord and VeloFlame sit near the boundary where connection security, routing, bot resistance, backend protection, and performance meet.</p>
+<p>For server owners, the practical checklist is direct: block backend direct joins, configure forwarding correctly, document proxy chain, use trusted secrets where available, keep auth plugins aligned with the topology, and test what happens when a player attempts to bypass the proxy.</p>
+      </div>
+    </article>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Velocity, BungeeCord, and proxy trust boundaries",
+  "description": "How proxy trust boundaries shape authentication, forwarding, and backend protection in Minecraft networks.",
+  "datePublished": "2026-06-26",
+  "dateModified": "2026-07-01",
+  "author": {
+    "@id": "https://linsaftw.arkflame.com/#person"
+  },
+  "publisher": {
+    "@id": "https://linsaftw.arkflame.com/#arkflame"
+  },
+  "mainEntityOfPage": "https://linsaftw.arkflame.com/posts/velocity-bungeecord-and-proxy-trust-boundaries.html",
+  "url": "https://linsaftw.arkflame.com/posts/velocity-bungeecord-and-proxy-trust-boundaries.html",
+  "identifier": "velocity-bungeecord-and-proxy-trust-boundaries",
+  "articleSection": "Proxy Infrastructure",
+  "keywords": "velocity, bungeecord, proxy-security",
+  "image": "https://linsaftw.arkflame.com/assets/images/profile-picture.webp",
+  "inLanguage": "en"
+}
+</script>
+  </div>
+</div>

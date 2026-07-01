@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://linsaftw.arkflame.com/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -16,13 +16,73 @@
   </url>
   <url>
     <loc>https://linsaftw.arkflame.com/about.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <image:image>
       <image:loc>https://linsaftw.arkflame.com/assets/images/profile-picture.webp</image:loc>
-      <image:title>Juan Cruz Linsalata, LinsaFTW</image:title>
+      <image:title>LinsaFTW profile image</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/linsaftw-persona-builder-operator-infrastructure-founder.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/minecraft-server-security-starts-at-the-edge.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/minecraft-plugin-compatibility-is-product-quality.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/folia-support-is-a-threading-discipline.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/packetevents-anticheat-proof-over-vibes.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/velocity-bungeecord-and-proxy-trust-boundaries.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/builtbybit-creators-need-support-operations.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/arkflame-product-ecosystem-for-minecraft-infrastructure.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/ai-coding-agents-for-minecraft-plugin-development.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://linsaftw.arkflame.com/posts/minecraft-performance-work-is-customer-support.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html</loc>
@@ -58,66 +118,18 @@
     <loc>https://linsaftw.arkflame.com/posts/developer-health-and-output.html</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://linsaftw.arkflame.com/llms.txt</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://linsaftw.arkflame.com/llms-full.txt</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/index.html.md</loc>
-    <lastmod>2026-06-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/about.html.md</loc>
-    <lastmod>2026-06-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html.md</loc>
-    <lastmod>2026-05-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/posts/flamecord-and-the-proxy-layer.html.md</loc>
-    <lastmod>2026-05-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/posts/exploitfixer-and-packet-security.html.md</loc>
-    <lastmod>2026-05-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html.md</loc>
-    <lastmod>2026-05-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html.md</loc>
-    <lastmod>2026-05-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://linsaftw.arkflame.com/posts/developer-health-and-output.html.md</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
   </url>
 </urlset>

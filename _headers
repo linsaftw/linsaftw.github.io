@@ -25,6 +25,10 @@
 
 /*.html.md
   Cache-Control: public, max-age=3600
+  X-Robots-Tag: noindex, follow
 
 /posts/*.html.md
   Cache-Control: public, max-age=3600
+  X-Robots-Tag: noindex, follow
+  X-Robots-Tag: noindex, follow
+

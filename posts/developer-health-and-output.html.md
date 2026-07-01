@@ -4,15 +4,17 @@
 
 - Author: LinsaFTW / Juan Cruz Linsalata
 - Published: 2026-05-26
+- Updated: 2026-05-26
+- Slug: developer-health-and-output
 - Tags: personal, health, performance
 - Canonical URL: https://linsaftw.arkflame.com/posts/developer-health-and-output.html
 
-For a long time I thought some problems were only discipline, attention, or motivation. Wake up tired, have trouble starting work, need too much force to begin, then blame yourself and try another routine. Gym, diet, meditation, productivity systems. Some of it helps, but not always enough.
+Developer output is not only discipline. It is also physical capacity.
 
-At some point I started paying more attention to basic health variables. Breathing, sleep quality, nasal obstruction, digestion, blood pressure, food tolerance, caffeine, and how I actually feel after waking up. That changed the way I look at performance.
+When energy is low, breathing feels harder, sleep is unstable, or focus collapses, it is easy to call the problem laziness. Sometimes the real issue is the system underneath: hydration, food, stress, health, routine, posture, screen time, or recovery.
 
-I am not saying every attention problem is caused by sleep or breathing. That would be too simple. But I do think health problems can create symptoms that look like laziness or weak discipline from the outside. If sleep is not restorative, or digestion is constantly off, then the brain is not starting from a clean baseline.
+I think about this the same way I think about performance engineering. If a server is slow, you do not only yell at it to be faster. You inspect metrics, isolate bottlenecks, reduce wasted work, and fix the root cause. A person needs the same seriousness.
 
-The better approach is to treat it like debugging. Define the symptom. Collect evidence. Test one variable. Talk to specialists when needed. Do not invent a diagnosis from a post, but also do not ignore obvious signals from the body.
+That does not mean waiting for perfect conditions. It means not confusing symptoms with identity. If the body is unstable, the work will be unstable. If the routine is chaotic, execution gets more expensive.
 
-The goal is still to build, ship, and grow. The difference is that I want the machine to run correctly, not just force it until it breaks.
+Better output comes from better systems: sleep, hydration, movement, boundaries, clear tasks, and honest feedback. Motivation helps, but systems keep the builder alive long enough to ship.

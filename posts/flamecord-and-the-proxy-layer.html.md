@@ -4,6 +4,8 @@
 
 - Author: LinsaFTW / Juan Cruz Linsalata
 - Published: 2026-05-30
+- Updated: 2026-05-30
+- Slug: flamecord-and-the-proxy-layer
 - Tags: flamecord, security, minecraft
 - Canonical URL: https://linsaftw.arkflame.com/posts/flamecord-and-the-proxy-layer.html
 

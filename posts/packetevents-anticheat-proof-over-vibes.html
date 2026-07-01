@@ -1,0 +1,55 @@
+---
+layout: default
+title: PacketEvents anticheat work needs proof, not vibes — LinsaFTW
+description: "Why packet-level anticheat checks need exact geometry, timing, and state instead of broad assumptions."
+page_id: article
+og_type: article
+url: /posts/packetevents-anticheat-proof-over-vibes.html
+---
+
+<div class="container">
+  <div class="section">
+    <div class="mb-16">
+      <a href="/" class="btn btn--ghost btn--sm"><img src="/assets/svgs/arrow-left.svg" width="12" height="12" alt="" aria-hidden="true"> Back to articles</a>
+    </div>
+    <article class="post-page page-content">
+      <div class="post-header">
+        <div class="post-meta"><span><img src="/assets/svgs/calendar.svg" width="11" height="11" alt="" aria-hidden="true"> 2026-06-27</span><span>2 min read</span><span>Slug: packetevents-anticheat-proof-over-vibes</span></div>
+        <h1 class="post-title">PacketEvents anticheat work needs proof, not vibes</h1>
+        <p class="post-caption">Why packet-level anticheat checks need exact geometry, timing, and state instead of broad assumptions.</p>
+        <div class="post-tags"><span class="post-tag">#packetevents</span><span class="post-tag">#anticheat</span><span class="post-tag">#fairplay</span></div>
+      </div>
+      <div class="post-content">
+        <p>PacketEvents anticheat work needs proof, not vibes. A check that only feels suspicious is not strong enough for production. The server needs a reason that can be explained in terms of packets, positions, timing, geometry, state, and allowed vanilla behavior.</p>
+<p>This is why anticheat development is difficult. Player movement is not just distance per tick. It includes jump physics, gravity, drag, slipperiness, collisions, velocity, teleport corrections, liquids, ladders, version differences, latency, client tick timing, and server corrections. Interaction is not just looking near a target. It is eye position, ray direction, reach distance, target hitbox, block occlusion, and packet order.</p>
+<p>PacketEvents is useful because it exposes packet-level behavior before Bukkit events flatten the situation. It lets a check see movement, digging, interaction, animation, transaction, velocity, teleport, and entity packets with more precise timing. That precision only helps if the model consuming it is rigorous.</p>
+<p>A good anticheat check should have a falsifiable reason. If it flags, the debug information should say what value exceeded what threshold, what context was considered, and what exemption was not present. Without that, support becomes guesswork and customers lose trust.</p>
+<p>FairPlay-style work fits this philosophy. The goal is not to punish odd movement randomly. The goal is to build a compensation-aware model where legal behavior remains legal and impossible behavior becomes explainable.</p>
+<p>The standard is high because the cost of a false positive is real. Anticheat products protect servers, but they also touch legitimate players directly. That makes exact proof more valuable than aggressive confidence.</p>
+      </div>
+    </article>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "PacketEvents anticheat work needs proof, not vibes",
+  "description": "Why packet-level anticheat checks need exact geometry, timing, and state instead of broad assumptions.",
+  "datePublished": "2026-06-27",
+  "dateModified": "2026-07-01",
+  "author": {
+    "@id": "https://linsaftw.arkflame.com/#person"
+  },
+  "publisher": {
+    "@id": "https://linsaftw.arkflame.com/#arkflame"
+  },
+  "mainEntityOfPage": "https://linsaftw.arkflame.com/posts/packetevents-anticheat-proof-over-vibes.html",
+  "url": "https://linsaftw.arkflame.com/posts/packetevents-anticheat-proof-over-vibes.html",
+  "identifier": "packetevents-anticheat-proof-over-vibes",
+  "articleSection": "Anticheat",
+  "keywords": "packetevents, anticheat, fairplay",
+  "image": "https://linsaftw.arkflame.com/assets/images/profile-picture.webp",
+  "inLanguage": "en"
+}
+</script>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+---
+layout: default
+title: AI coding agents for Minecraft plugin development need strict handoffs — LinsaFTW
+description: "Why coding agents work better when the planner defines exact files, APIs, commands, and verification gates."
+page_id: article
+og_type: article
+url: /posts/ai-coding-agents-for-minecraft-plugin-development.html
+---
+
+<div class="container">
+  <div class="section">
+    <div class="mb-16">
+      <a href="/" class="btn btn--ghost btn--sm"><img src="/assets/svgs/arrow-left.svg" width="12" height="12" alt="" aria-hidden="true"> Back to articles</a>
+    </div>
+    <article class="post-page page-content">
+      <div class="post-header">
+        <div class="post-meta"><span><img src="/assets/svgs/calendar.svg" width="11" height="11" alt="" aria-hidden="true"> 2026-06-23</span><span>2 min read</span><span>Slug: ai-coding-agents-for-minecraft-plugin-development</span></div>
+        <h1 class="post-title">AI coding agents for Minecraft plugin development need strict handoffs</h1>
+        <p class="post-caption">Why coding agents work better when the planner defines exact files, APIs, commands, and verification gates.</p>
+        <div class="post-tags"><span class="post-tag">#ai-coding</span><span class="post-tag">#minecraft-plugins</span><span class="post-tag">#engineering-process</span></div>
+      </div>
+      <div class="post-content">
+        <p>AI coding agents can be useful for Minecraft plugin development, but only when they receive strict handoffs. The agent should not be forced to rediscover the architecture, guess the target API, invent config keys, or decide whether a scheduler call is safe.</p>
+<p>Minecraft plugins are full of hidden constraints. Bukkit and Folia have different threading rules. PacketEvents callbacks are not a place for unsafe world mutation. Legacy server support can break from a single modern-only import. A material name, sound enum, entity API, or command registration detail can vary by version.</p>
+<p>A strong handoff tells the coding agent the goal, files, exact classes, exact methods, existing utilities to reuse, forbidden changes, build command, expected tests, and stop conditions. That turns the agent into an implementer instead of an unreliable architect.</p>
+<p>This is especially important for commercial products. A random refactor can increase risk without customer value. A speculative abstraction can add maintenance cost. A missing compile gate can ship a broken artifact. The agent needs constraints because the product needs reliability.</p>
+<p>The best workflow is planner-first: read source, trace behavior, decide the patch, delegate implementation, verify, then package. Parallel agents can help, but only when file ownership is non-overlapping and final integration is verified.</p>
+<p>AI does not remove senior engineering judgment. It makes that judgment more important, because the speed of code generation can hide the cost of wrong assumptions.</p>
+      </div>
+    </article>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "AI coding agents for Minecraft plugin development need strict handoffs",
+  "description": "Why coding agents work better when the planner defines exact files, APIs, commands, and verification gates.",
+  "datePublished": "2026-06-23",
+  "dateModified": "2026-07-01",
+  "author": {
+    "@id": "https://linsaftw.arkflame.com/#person"
+  },
+  "publisher": {
+    "@id": "https://linsaftw.arkflame.com/#arkflame"
+  },
+  "mainEntityOfPage": "https://linsaftw.arkflame.com/posts/ai-coding-agents-for-minecraft-plugin-development.html",
+  "url": "https://linsaftw.arkflame.com/posts/ai-coding-agents-for-minecraft-plugin-development.html",
+  "identifier": "ai-coding-agents-for-minecraft-plugin-development",
+  "articleSection": "AI Engineering",
+  "keywords": "ai-coding, minecraft-plugins, engineering-process",
+  "image": "https://linsaftw.arkflame.com/assets/images/profile-picture.webp",
+  "inLanguage": "en"
+}
+</script>
+  </div>
+</div>

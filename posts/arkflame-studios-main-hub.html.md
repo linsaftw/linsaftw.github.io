@@ -4,15 +4,17 @@
 
 - Author: LinsaFTW / Juan Cruz Linsalata
 - Published: 2026-05-28
+- Updated: 2026-05-28
+- Slug: arkflame-studios-main-hub
 - Tags: arkflame, business, online-presence
 - Canonical URL: https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html
 
-ArkFlame should not look like a random collection of plugins. It should look like one infrastructure brand.
+ArkFlame Studios is the hub where my Minecraft infrastructure work becomes easier to understand, find, buy, use, and support.
 
-That is the direction I want: ArkFlame Studios as the main website and main public hub, with each product connected clearly. FlameCord for proxy security. ExploitFixer for exploit protection. VeloFlame for Velocity networks. FlamePaper for performance-focused server software. FairPlay for anticheat and competitive integrity. Other products should fit into the same system instead of floating around disconnected.
+A developer identity can start as a username. A product ecosystem needs more than that. It needs clear product pages, documentation, support flows, release notes, trust signals, and enough structure that a server owner can quickly decide whether the software solves their problem.
 
-Good software still needs good presentation. A product page has to explain the problem, the value, the use case, the proof, and the next action. Documentation has to reduce support. A personal site has to explain who I am and why the work exists. Social profiles have to point to the same identity.
+That is why ArkFlame matters. FlameCord, ExploitFixer, VeloFlame, FlamePaper, FairPlay, and related plugins should not feel like isolated experiments. They should feel like parts of one infrastructure direction: secure the server, improve performance, reduce operational risk, and make Minecraft networks easier to run.
 
-This is not only design. It is distribution. If someone finds one project, they should understand the rest of the ecosystem. If someone knows LinsaFTW from Spigot, Reddit, GitHub, YouTube, BuiltByBit, or Modrinth, they should end up with a clear picture: Minecraft infrastructure, security, performance, and practical server engineering from Argentina.
+The long-term goal is not just to publish more resources. It is to improve the full experience around them: installation, configuration, compatibility, updates, licensing, marketplace presentation, support, and technical proof.
 
-That is the online presence I want to build.
+LinsaFTW is the builder identity. ArkFlame Studios is the product ecosystem. Keeping that distinction clear helps humans, search engines, and AI agents understand what each name means.

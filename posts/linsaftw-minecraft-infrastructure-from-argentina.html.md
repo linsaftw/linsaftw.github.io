@@ -4,6 +4,8 @@
 
 - Author: LinsaFTW / Juan Cruz Linsalata
 - Published: 2026-05-31
+- Updated: 2026-05-31
+- Slug: linsaftw-minecraft-infrastructure-from-argentina
 - Tags: linsaftw, arkflame, minecraft
 - Canonical URL: https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html
 
