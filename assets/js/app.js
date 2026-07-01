@@ -36,6 +36,44 @@ function escHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+
+function renderInlineMarkdown(value) {
+  return escHtml(value)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+
+function renderSimpleMarkdown(markdown) {
+  const lines = String(markdown || '').replace(/\r\n/g, '\n').split('\n');
+  const blocks = [];
+  let paragraph = [];
+
+  const flushParagraph = () => {
+    if (paragraph.length === 0) return;
+    blocks.push(`<p>${renderInlineMarkdown(paragraph.join(' '))}</p>`);
+    paragraph = [];
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushParagraph();
+      continue;
+    }
+    const heading = /^(#{1,3})\s+(.+)$/.exec(trimmed);
+    if (heading) {
+      flushParagraph();
+      const level = heading[1].length + 1;
+      blocks.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+      continue;
+    }
+    paragraph.push(trimmed);
+  }
+  flushParagraph();
+  return blocks.join('');
+}
+
 function sortedPosts() {
   return [...POSTS].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 }
@@ -53,7 +91,7 @@ function tagList(post) {
 
 function postCard(post) {
   const image = post.image_path
-    ? `<img class="post-card__image" src="${escHtml(post.image_path)}" alt="${escHtml(post.title)}" loading="lazy">`
+    ? `<img class="post-card__image" src="${escHtml(post.image_path)}" alt="${escHtml(post.title)}" width="200" height="140" loading="lazy" decoding="async">`
     : `<div class="post-card__image-placeholder">//</div>`;
 
   return `
@@ -121,7 +159,7 @@ function loadSinglePost() {
 
   const image = post.image_path ? `
     <div class="post-image-wrap">
-      <img class="post-image" src="${escHtml(post.image_path)}" alt="${escHtml(post.title)}">
+      <img class="post-image" src="${escHtml(post.image_path)}" alt="${escHtml(post.title)}" width="860" height="400" loading="eager" decoding="async">
       ${post.caption ? `<p class="post-image-caption">${escHtml(post.caption)}</p>` : ''}
     </div>` : '';
 
@@ -143,14 +181,7 @@ function loadSinglePost() {
   const content = document.getElementById('post-content-render');
   if (!content) return;
 
-  if (window.marked) {
-    content.innerHTML = marked.parse(post.content_markdown || '');
-    if (window.hljs) {
-      content.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
-    }
-  } else {
-    content.textContent = post.content_markdown || '';
-  }
+  content.innerHTML = renderSimpleMarkdown(post.content_markdown || '');
 }
 
 function initTimeline() {

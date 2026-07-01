@@ -1,16 +1,20 @@
 {
-  "name": "LinsaFTW",
+  "id": "https://linsaftw.arkflame.com/",
+  "name": "LinsaFTW — Minecraft Infrastructure Developer",
   "short_name": "LinsaFTW",
-  "description": "Juan Cruz Linsalata, founder of ArkFlame Studios and Minecraft infrastructure developer.",
+  "description": "Juan Cruz Linsalata, known as LinsaFTW. Founder of ArkFlame Studios and Minecraft infrastructure developer.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "categories": ["developer", "technology", "business"],
   "icons": [
     {
       "src": "/assets/images/profile-picture.webp",
       "sizes": "512x512",
-      "type": "image/webp"
+      "type": "image/webp",
+      "purpose": "any maskable"
     }
   ]
 }

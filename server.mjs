@@ -29,8 +29,32 @@ const mime = {
   '.webp': 'image/webp'
 };
 
+const securityHeaders = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Permissions-Policy': 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+};
+
+function cacheControlFor(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (['.css', '.js', '.webp', '.svg', '.ico', '.png', '.jpg', '.jpeg', '.webmanifest'].includes(ext)) {
+    return 'public, max-age=31536000, immutable';
+  }
+  if (['.xml', '.txt'].includes(ext)) {
+    return 'public, max-age=3600';
+  }
+  return 'no-cache';
+}
+
+function writeHead(res, status, headers = {}) {
+  res.writeHead(status, { ...securityHeaders, ...headers });
+}
+
 function notFound(res) {
-  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  writeHead(res, 404, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' });
   res.end('Not found');
 }
 
@@ -63,6 +87,7 @@ async function renderPage(filePath) {
   const pageUrl = meta.url || '/' + path.relative(__dirname, filePath).replaceAll(path.sep, '/');
   const pageId = meta.page_id || '';
   const ogType = meta.og_type || 'website';
+  const robots = meta.robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
   const year = String(new Date().getFullYear());
 
   return layoutRaw
@@ -71,6 +96,7 @@ async function renderPage(filePath) {
     .replaceAll('{{ content }}', content)
     .replaceAll('{{ page.title | default: site.title }}', pageTitle)
     .replaceAll('{{ page.description | default: site.description }}', description)
+    .replaceAll("{{ page.robots | default: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' }}", robots)
     .replaceAll("{{ page.og_type | default: 'website' }}", ogType)
     .replaceAll("{{ page.page_id | default: '' }}", pageId)
     .replaceAll('{{ page.url }}', pageUrl)
@@ -83,7 +109,7 @@ async function renderPage(filePath) {
 async function serveFile(res, filePath) {
   const data = await readFile(filePath);
   const ext = path.extname(filePath).toLowerCase();
-  res.writeHead(200, { 'Content-Type': mime[ext] || 'application/octet-stream' });
+  writeHead(res, 200, { 'Content-Type': mime[ext] || 'application/octet-stream', 'Cache-Control': cacheControlFor(filePath) });
   res.end(data);
 }
 
@@ -100,14 +126,14 @@ createServer(async (req, res) => {
 
     if (safePath.endsWith('.html')) {
       const html = await renderPage(safePath);
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      writeHead(res, 200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
       res.end(html);
       return;
     }
 
     await serveFile(res, safePath);
   } catch (error) {
-    res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+    writeHead(res, 500, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' });
     res.end(error instanceof Error ? error.stack : String(error));
   }
 }).listen(PORT, HOST, () => {

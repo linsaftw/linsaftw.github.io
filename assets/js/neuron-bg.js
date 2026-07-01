@@ -1,103 +1,135 @@
-// neuron-bg.js — Interactive neural network background
+// Lightweight decorative neural background. No required content depends on this canvas.
 (function () {
   const canvas = document.getElementById('neuron-canvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
 
-  let W, H, nodes = [], mouse = { x: -9999, y: -9999 };
-  const NODE_COUNT = 80;
-  const MAX_DIST = 160;
-  const MOUSE_RADIUS = 220;
-  const SPEED = 0.3;
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    canvas.style.display = 'none';
+    return;
+  }
+
+  const ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) return;
+
+  let width = 0;
+  let height = 0;
+  let nodes = [];
+  let animationFrame = 0;
+  const mouse = { x: -9999, y: -9999 };
+  const nodeCount = Math.min(56, Math.max(28, Math.floor((window.innerWidth || 1024) / 28)));
+  const maxDist = 150;
+  const maxDistSq = maxDist * maxDist;
+  const mouseRadius = 190;
+  const mouseRadiusSq = mouseRadius * mouseRadius;
+  const speed = 0.26;
 
   function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+    width = window.innerWidth || document.documentElement.clientWidth || 1024;
+    height = window.innerHeight || document.documentElement.clientHeight || 768;
+    canvas.width = Math.floor(width * ratio);
+    canvas.height = Math.floor(height * ratio);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   }
 
   function createNodes() {
-    nodes = [];
-    for (let i = 0; i < NODE_COUNT; i++) {
-      nodes.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * SPEED,
-        vy: (Math.random() - 0.5) * SPEED,
-        r: Math.random() * 1.5 + 0.5,
-      });
-    }
+    nodes = Array.from({ length: nodeCount }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * speed,
+      vy: (Math.random() - 0.5) * speed,
+      r: Math.random() * 1.2 + 0.5,
+    }));
   }
 
-  function dist(a, b) {
-    const dx = a.x - b.x, dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy);
+  function distSq(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx * dx + dy * dy;
+  }
+
+  function drawLine(a, b, alpha, lineWidth) {
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+    ctx.lineWidth = lineWidth;
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
   }
 
   function draw() {
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, width, height);
 
-    // Update positions
-    for (const n of nodes) {
-      n.x += n.vx;
-      n.y += n.vy;
-      if (n.x < 0 || n.x > W) n.vx *= -1;
-      if (n.y < 0 || n.y > H) n.vy *= -1;
+    for (const node of nodes) {
+      node.x += node.vx;
+      node.y += node.vy;
+      if (node.x < 0 || node.x > width) node.vx *= -1;
+      if (node.y < 0 || node.y > height) node.vy *= -1;
     }
 
-    // Draw edges between nearby nodes
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const d = dist(nodes[i], nodes[j]);
-        if (d < MAX_DIST) {
-          const alpha = (1 - d / MAX_DIST) * 0.25;
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(nodes[i].x, nodes[i].y);
-          ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.stroke();
+    for (let i = 0; i < nodes.length; i += 1) {
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j += 1) {
+        const b = nodes[j];
+        const dSq = distSq(a, b);
+        if (dSq < maxDistSq) {
+          drawLine(a, b, (1 - dSq / maxDistSq) * 0.22, 0.5);
         }
       }
     }
 
-    // Draw edges from nodes to mouse
-    const mouseNode = { x: mouse.x, y: mouse.y };
-    for (const n of nodes) {
-      const d = dist(n, mouseNode);
-      if (d < MOUSE_RADIUS) {
-        const alpha = (1 - d / MOUSE_RADIUS) * 0.7;
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-        ctx.lineWidth = 0.8;
-        ctx.moveTo(n.x, n.y);
-        ctx.lineTo(mouse.x, mouse.y);
-        ctx.stroke();
+    for (const node of nodes) {
+      const dSq = distSq(node, mouse);
+      if (dSq < mouseRadiusSq) {
+        drawLine(node, mouse, (1 - dSq / mouseRadiusSq) * 0.6, 0.75);
       }
-    }
-
-    // Draw nodes
-    for (const n of nodes) {
-      const d = dist(n, mouseNode);
-      const glow = d < MOUSE_RADIUS ? (1 - d / MOUSE_RADIUS) * 0.8 + 0.2 : 0.25;
+      const glow = dSq < mouseRadiusSq ? (1 - dSq / mouseRadiusSq) * 0.65 + 0.2 : 0.24;
       ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${glow})`;
       ctx.fill();
     }
 
-    requestAnimationFrame(draw);
+    animationFrame = requestAnimationFrame(draw);
   }
 
-  window.addEventListener('resize', () => { resize(); createNodes(); });
-  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
-  window.addEventListener('touchmove', e => {
-    const t = e.touches[0];
-    mouse.x = t.clientX;
-    mouse.y = t.clientY;
+  function start() {
+    if (animationFrame) return;
+    animationFrame = requestAnimationFrame(draw);
+  }
+
+  function stop() {
+    if (!animationFrame) return;
+    cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+  }
+
+  window.addEventListener('resize', () => {
+    resize();
+    createNodes();
   }, { passive: true });
+  window.addEventListener('mousemove', (event) => {
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+  }, { passive: true });
+  window.addEventListener('mouseleave', () => {
+    mouse.x = -9999;
+    mouse.y = -9999;
+  }, { passive: true });
+  window.addEventListener('touchmove', (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    mouse.x = touch.clientX;
+    mouse.y = touch.clientY;
+  }, { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop(); else start();
+  });
 
   resize();
   createNodes();
-  draw();
+  start();
 })();

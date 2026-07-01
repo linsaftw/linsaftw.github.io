@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Admin — LinsaFTW
+robots: noindex, nofollow
 page_id: admin
 ---
 
@@ -10,23 +11,23 @@ page_id: admin
     <aside class="admin-sidebar">
       <div class="admin-sidebar-title">// Admin</div>
       <a href="#" class="admin-nav-link active" data-target="posts" onclick="showAdminSection('posts');return false;">
-        <img src="/assets/svgs/list.svg" width="14" height="14" alt=""> Posts
+        <img src="/assets/svgs/list.svg" width="14" height="14" alt="" aria-hidden="true"> Posts
       </a>
       <a href="#" class="admin-nav-link" data-target="editor" onclick="newPost();return false;">
-        <img src="/assets/svgs/plus.svg" width="14" height="14" alt=""> New Post
+        <img src="/assets/svgs/plus.svg" width="14" height="14" alt="" aria-hidden="true"> New Post
       </a>
       <a href="#" class="admin-nav-link" data-target="users" onclick="showAdminSection('users');loadAdminUsers();return false;">
-        <img src="/assets/svgs/users.svg" width="14" height="14" alt=""> Users
+        <img src="/assets/svgs/users.svg" width="14" height="14" alt="" aria-hidden="true"> Users
       </a>
       <a href="#" class="admin-nav-link" data-target="terminal" onclick="showAdminSection('terminal');return false;">
-        <img src="/assets/svgs/terminal.svg" width="14" height="14" alt=""> Terminal
+        <img src="/assets/svgs/terminal.svg" width="14" height="14" alt="" aria-hidden="true"> Terminal
       </a>
       <hr style="border-color:#1e1e1e;margin:16px 0;">
       <a href="/" class="admin-nav-link">
-        <img src="/assets/svgs/home.svg" width="14" height="14" alt=""> View Blog
+        <img src="/assets/svgs/home.svg" width="14" height="14" alt="" aria-hidden="true"> View Blog
       </a>
       <a href="#" class="admin-nav-link" data-logout>
-        <img src="/assets/svgs/log-out.svg" width="14" height="14" alt=""> Logout
+        <img src="/assets/svgs/log-out.svg" width="14" height="14" alt="" aria-hidden="true"> Logout
       </a>
     </aside>
 
@@ -39,7 +40,7 @@ page_id: admin
         <div class="flex-between mb-16">
           <h2 style="font-size:14px;font-weight:600;letter-spacing:1px">// ALL POSTS</h2>
           <button class="btn btn--sm" onclick="newPost()">
-            <img src="/assets/svgs/plus.svg" width="12" height="12" alt=""> New Post
+            <img src="/assets/svgs/plus.svg" width="12" height="12" alt="" aria-hidden="true"> New Post
           </button>
         </div>
         <div id="admin-posts"></div>
@@ -93,10 +94,10 @@ page_id: admin
           </div>
           <div class="flex gap-8">
             <button type="submit" class="btn">
-              <img src="/assets/svgs/save.svg" width="14" height="14" alt=""> Save Post
+              <img src="/assets/svgs/save.svg" width="14" height="14" alt="" aria-hidden="true"> Save Post
             </button>
             <button type="button" class="btn btn--ghost" onclick="showAdminSection('posts')">
-              <img src="/assets/svgs/x.svg" width="14" height="14" alt=""> Cancel
+              <img src="/assets/svgs/x.svg" width="14" height="14" alt="" aria-hidden="true"> Cancel
             </button>
           </div>
         </form>

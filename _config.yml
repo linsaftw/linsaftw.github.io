@@ -13,3 +13,7 @@ arkflame_url: "https://arkflame.com"
 arkflame_github_url: "https://github.com/ArkFlame"
 
 markdown: kramdown
+include:
+  - _headers
+  - llms.txt
+  - llms-full.txt

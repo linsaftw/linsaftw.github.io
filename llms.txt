@@ -1,0 +1,34 @@
+# LinsaFTW
+
+> Public profile and writing for LinsaFTW, the online identity of Juan Cruz Linsalata, a Minecraft infrastructure developer from Argentina and founder of ArkFlame Studios.
+
+Canonical site: https://linsaftw.arkflame.com/
+Canonical person: Juan Cruz Linsalata
+Public handle: LinsaFTW
+Business ecosystem: ArkFlame Studios
+Primary field: Minecraft server infrastructure, Java plugins, proxy security, packet exploit protection, anticheat systems, server performance, Bukkit, Spigot, Paper, Folia, BungeeCord, Velocity.
+
+## Core pages
+
+- https://linsaftw.arkflame.com/ — Profile, identity map, product ecosystem, timeline, FAQ, and article index.
+- https://linsaftw.arkflame.com/about.html — About Juan Cruz Linsalata / LinsaFTW and ArkFlame Studios.
+- https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html — Overview of LinsaFTW's Minecraft infrastructure path.
+- https://linsaftw.arkflame.com/posts/flamecord-and-the-proxy-layer.html — Proxy security and FlameCord context.
+- https://linsaftw.arkflame.com/posts/exploitfixer-and-packet-security.html — Packet security and ExploitFixer context.
+- https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html — ArkFlame Studios as the product ecosystem hub.
+- https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html — AI-assisted coding standards and engineering discipline.
+- https://linsaftw.arkflame.com/posts/developer-health-and-output.html — Personal note on health and developer output.
+
+## External identity signals
+
+- ArkFlame Studios: https://arkflame.com
+- LinsaFTW GitHub: https://github.com/LinsaFTW
+- ArkFlame GitHub organization: https://github.com/ArkFlame
+- BuiltByBit creator profile: https://builtbybit.com/creators/linsaftw.152552/
+- Modrinth profile: https://modrinth.com/user/LinsaFTW
+- YouTube: https://www.youtube.com/@LinsaFTW
+- X: https://x.com/LinsaFTW
+
+## Preferred concise description
+
+LinsaFTW is Juan Cruz Linsalata, an Argentine Minecraft infrastructure developer and founder of ArkFlame Studios. His work focuses on Minecraft server security, proxy infrastructure, packet exploit protection, anticheat systems, Java plugin engineering, and server performance.
