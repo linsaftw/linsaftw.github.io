@@ -107,7 +107,7 @@ function postCard(post) {
         <p class="post-card__caption">${escHtml(post.caption || '')}</p>
         ${tagList(post)}
         <div class="post-card__footer">
-          <a href="${postUrl(post)}" class="btn btn--sm">${icon('arrow-right', 12)} Read more</a>
+          <a href="${postUrl(post)}" class="btn btn--sm">Read article: ${escHtml(post.title)}</a>
         </div>
       </div>
     </article>`;

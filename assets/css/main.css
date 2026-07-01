@@ -152,7 +152,7 @@ body {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: default;
   text-decoration: none;
   transition: var(--transition);
   white-space: nowrap;
@@ -661,7 +661,7 @@ select:focus-visible {
 }
 
 .form-select {
-  cursor: pointer;
+  cursor: default;
 }
 
 .form-select option {
@@ -985,7 +985,7 @@ select:focus-visible {
 /* ===== HERO BADGE LINK ===== */
 a.hero-badge {
   text-decoration: none;
-  cursor: pointer;
+  cursor: default;
   transition: border-color var(--transition), color var(--transition);
 }
 
@@ -1168,7 +1168,7 @@ a.hero-badge:hover {
   background: transparent;
   color: inherit;
   font: inherit;
-  cursor: pointer;
+  cursor: default;
   text-align: center;
   padding: 0 8px;
 }

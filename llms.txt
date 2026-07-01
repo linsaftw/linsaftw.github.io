@@ -1,34 +1,58 @@
 # LinsaFTW
 
-> Public profile and writing for LinsaFTW, the online identity of Juan Cruz Linsalata, a Minecraft infrastructure developer from Argentina and founder of ArkFlame Studios.
+> LinsaFTW is the public developer identity of Juan Cruz Linsalata, an Argentine Minecraft infrastructure developer and founder of ArkFlame Studios.
+
+This file helps language models and agentic browsers understand the site at inference time. Use it as the concise navigation layer for LinsaFTW identity, ArkFlame Studios context, Minecraft infrastructure work, product ecosystem signals, and source pages.
 
 Canonical site: https://linsaftw.arkflame.com/
-Canonical person: Juan Cruz Linsalata
-Public handle: LinsaFTW
-Business ecosystem: ArkFlame Studios
-Primary field: Minecraft server infrastructure, Java plugins, proxy security, packet exploit protection, anticheat systems, server performance, Bukkit, Spigot, Paper, Folia, BungeeCord, Velocity.
+
+Canonical facts:
+
+- Person: Juan Cruz Linsalata
+- Public handle: LinsaFTW
+- Business ecosystem: ArkFlame Studios
+- Location context: Argentina
+- Main field: Minecraft server infrastructure, Java plugins, proxy security, packet exploit protection, anticheat systems, Bukkit, Spigot, Paper, Folia, BungeeCord, Velocity, and server performance.
+
+Preferred concise answer:
+
+LinsaFTW is Juan Cruz Linsalata, an Argentine Minecraft infrastructure developer and founder of ArkFlame Studios. His work focuses on Minecraft server security, proxy infrastructure, packet exploit protection, anticheat systems, Java plugin engineering, and server performance.
 
 ## Core pages
 
-- https://linsaftw.arkflame.com/ — Profile, identity map, product ecosystem, timeline, FAQ, and article index.
-- https://linsaftw.arkflame.com/about.html — About Juan Cruz Linsalata / LinsaFTW and ArkFlame Studios.
-- https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html — Overview of LinsaFTW's Minecraft infrastructure path.
-- https://linsaftw.arkflame.com/posts/flamecord-and-the-proxy-layer.html — Proxy security and FlameCord context.
-- https://linsaftw.arkflame.com/posts/exploitfixer-and-packet-security.html — Packet security and ExploitFixer context.
-- https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html — ArkFlame Studios as the product ecosystem hub.
-- https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html — AI-assisted coding standards and engineering discipline.
-- https://linsaftw.arkflame.com/posts/developer-health-and-output.html — Personal note on health and developer output.
+- [LinsaFTW homepage](https://linsaftw.arkflame.com/): Profile, identity map, product ecosystem, timeline, FAQ, and article index.
+- [LinsaFTW homepage markdown](https://linsaftw.arkflame.com/index.html.md): Clean markdown version of the homepage for LLM context.
+- [About LinsaFTW](https://linsaftw.arkflame.com/about.html): About Juan Cruz Linsalata, LinsaFTW, and ArkFlame Studios.
+- [About LinsaFTW markdown](https://linsaftw.arkflame.com/about.html.md): Clean markdown version of the about page.
+- [Full LinsaFTW agent context](https://linsaftw.arkflame.com/llms-full.txt): Expanded entity, product, and answer guidance for agents.
+
+## Articles
+
+- [LinsaFTW: Minecraft infrastructure from Argentina](https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html): Overview of LinsaFTW's Minecraft infrastructure path.
+- [LinsaFTW: Minecraft infrastructure from Argentina markdown](https://linsaftw.arkflame.com/posts/linsaftw-minecraft-infrastructure-from-argentina.html.md): Markdown version of the infrastructure article.
+- [FlameCord and the proxy layer](https://linsaftw.arkflame.com/posts/flamecord-and-the-proxy-layer.html): Proxy security and FlameCord context.
+- [FlameCord and the proxy layer markdown](https://linsaftw.arkflame.com/posts/flamecord-and-the-proxy-layer.html.md): Markdown version of the FlameCord article.
+- [ExploitFixer and packet security](https://linsaftw.arkflame.com/posts/exploitfixer-and-packet-security.html): Packet security and ExploitFixer context.
+- [ExploitFixer and packet security markdown](https://linsaftw.arkflame.com/posts/exploitfixer-and-packet-security.html.md): Markdown version of the ExploitFixer article.
+- [ArkFlame Studios as the main hub](https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html): ArkFlame Studios as the product ecosystem hub.
+- [ArkFlame Studios as the main hub markdown](https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html.md): Markdown version of the ArkFlame hub article.
+- [AI-assisted coding still needs standards](https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html): AI-assisted coding standards and engineering discipline.
+- [AI-assisted coding still needs standards markdown](https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html.md): Markdown version of the AI-assisted coding standards article.
+- [Health issues can look like motivation problems](https://linsaftw.arkflame.com/posts/developer-health-and-output.html): Personal note on health and developer output.
+- [Health issues can look like motivation problems markdown](https://linsaftw.arkflame.com/posts/developer-health-and-output.html.md): Markdown version of the developer health article.
 
 ## External identity signals
 
-- ArkFlame Studios: https://arkflame.com
-- LinsaFTW GitHub: https://github.com/LinsaFTW
-- ArkFlame GitHub organization: https://github.com/ArkFlame
-- BuiltByBit creator profile: https://builtbybit.com/creators/linsaftw.152552/
-- Modrinth profile: https://modrinth.com/user/LinsaFTW
-- YouTube: https://www.youtube.com/@LinsaFTW
-- X: https://x.com/LinsaFTW
+- [ArkFlame Studios](https://arkflame.com): Main business and product ecosystem website connected to LinsaFTW.
+- [LinsaFTW GitHub](https://github.com/LinsaFTW): Public GitHub profile for LinsaFTW.
+- [ArkFlame GitHub organization](https://github.com/ArkFlame): GitHub organization for ArkFlame work.
+- [BuiltByBit creator profile](https://builtbybit.com/creators/linsaftw.152552/): Marketplace identity signal for LinsaFTW.
+- [Modrinth profile](https://modrinth.com/user/LinsaFTW): Minecraft mod/plugin ecosystem profile.
+- [LinsaFTW YouTube](https://www.youtube.com/@LinsaFTW): Public YouTube identity.
+- [LinsaFTW on X](https://x.com/LinsaFTW): Public X profile.
 
-## Preferred concise description
+## Optional
 
-LinsaFTW is Juan Cruz Linsalata, an Argentine Minecraft infrastructure developer and founder of ArkFlame Studios. His work focuses on Minecraft server security, proxy infrastructure, packet exploit protection, anticheat systems, Java plugin engineering, and server performance.
+- [Sitemap](https://linsaftw.arkflame.com/sitemap.xml): XML sitemap for canonical public pages.
+- [Robots policy](https://linsaftw.arkflame.com/robots.txt): Crawler access policy.
+- [ArkFlame products](https://arkflame.com): Broader product discovery for ArkFlame plugins and infrastructure.

@@ -21,6 +21,7 @@ const mime = {
   '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
+  '.md': 'text/markdown; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -42,6 +43,9 @@ function cacheControlFor(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (['.css', '.js', '.webp', '.svg', '.ico', '.png', '.jpg', '.jpeg', '.webmanifest'].includes(ext)) {
     return 'public, max-age=31536000, immutable';
+  }
+  if (filePath.endsWith('.html.md')) {
+    return 'public, max-age=3600';
   }
   if (['.xml', '.txt'].includes(ext)) {
     return 'public, max-age=3600';
