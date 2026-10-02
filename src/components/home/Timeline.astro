@@ -1,0 +1,39 @@
+---
+import { timeline } from "../../data/timeline";
+
+/** C4 — the homepage timeline is EXACTLY the six verified entries. */
+---
+
+<div class="tl">
+  {
+    timeline.map((entry, index) => (
+      <div class={index === 0 ? "n" : undefined}>
+        <b>{entry.year}</b>
+        {entry.text}
+      </div>
+    ))
+  }
+</div>
+
+<div class="big">
+  <b>{timeline[0]?.year}</b>
+  <span>
+    Started learning programming through Minecraft servers, Java, Bukkit experiments and real
+    server problems.
+  </span>
+</div>
+
+<style>
+  /* C16 — six milestones lay out as two even rows of three. */
+  .tl {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* C17 — the shared mobile rule drops to two columns; restate it here so the
+     scoped override above does not out-specify it. */
+  @media (max-width: 760px) {
+    .tl {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

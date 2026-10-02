@@ -1,0 +1,20 @@
+---
+import { stackItems, workSteps } from "../../data/identity";
+
+/** C16 — six process steps on the dashed rail, then the stack chips. */
+---
+
+<div class="rail">
+  {
+    workSteps.map((step) => (
+      <div class="st">
+        <b>{step.label}</b>
+        <span>{step.text}</span>
+      </div>
+    ))
+  }
+</div>
+
+<div class="stack">
+  {stackItems.map((item) => <span>{item}</span>)}
+</div>

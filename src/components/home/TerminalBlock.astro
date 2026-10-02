@@ -1,0 +1,26 @@
+---
+import { terminalLines } from "../../data/identity";
+
+/**
+ * C16 terminal panel. Static markup only: no script, no typing effect, no
+ * animation. `$` glyphs are green-bold via `.term b`, commands are
+ * de-underlined bright text via `.term u`.
+ */
+const escapeHtml = (value: string): string =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const body = terminalLines
+  .map(([command, output]) => {
+    const verb = command.replace(/^\$\s*/, "");
+    return `<b>$</b> <u>${escapeHtml(verb)}</u>\n${escapeHtml(output)}`;
+  })
+  .join("\n");
+---
+
+<div class="term">
+  <div class="tb">
+    <i></i><i></i><i></i>
+    <span>linsaftw@arkflame ~</span>
+  </div>
+  <pre set:html={body} />
+</div>

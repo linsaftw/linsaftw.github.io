@@ -1,0 +1,130 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { links, routes, SITE_URL } from "../data/links";
+import { extendedTimeline } from "../data/timeline";
+import { aiProjects, gameProjects, minecraftProjects } from "../data/projects";
+
+const canonicalPath = routes.about;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "Juan Cruz Linsalata, known as LinsaFTW: an Argentine software developer and founder of ArkFlame Studios working across Minecraft infrastructure, security, performance, AI systems and game development.";
+
+// C4 — the about page may use the extended chronology, in ascending year order.
+const milestones = [...extendedTimeline].sort((a, b) => a.year - b.year);
+const latestYear = milestones[milestones.length - 1]?.year;
+
+const elsewhere: ReadonlyArray<{ label: string; href: string }> = [
+  { label: "GitHub", href: links.github },
+  { label: "BuiltByBit", href: links.bbbCreator },
+  { label: "YouTube", href: links.youtube },
+  { label: "X", href: links.x },
+  { label: "Modrinth", href: links.modrinth },
+  { label: "LinkedIn", href: links.linkedin },
+  { label: "ArkFlame Studios", href: links.arkflame },
+];
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "About LinsaFTW",
+    description,
+    path: canonicalPath,
+    type: "AboutPage",
+  }),
+];
+---
+
+<BaseLayout
+  title="About LinsaFTW — Juan Cruz Linsalata"
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <h1>About.</h1>
+
+    <div class="prose">
+      <p>
+        I'm Juan Cruz Linsalata, known online as LinsaFTW. I'm a software developer from Argentina
+        and the founder of ArkFlame Studios.
+      </p>
+      <p>
+        I started coding in 2010 and was publicly building around Minecraft by 2013. My work grew
+        out of running servers and building tools for real operational problems, eventually
+        leading to products such as AntiBot, FlameCord, ExploitFixer, VeloFlame and FairPlay.
+      </p>
+      <p>
+        Today I work across Minecraft infrastructure, security, performance, AI systems and game
+        development.
+      </p>
+    </div>
+
+    <SectionHeader eyebrow="What I do" id="work" label="Minecraft · Games · AI" />
+
+    <div class="prose">
+      <p><strong>Minecraft</strong></p>
+      <ul>
+        {
+          minecraftProjects.map((project) => (
+            <li>
+              <strong>{project.name}</strong> — {project.kind}. {project.description}
+            </li>
+          ))
+        }
+      </ul>
+
+      <p><strong>Games</strong></p>
+      <ul>
+        {
+          gameProjects.map((project) => (
+            <li>
+              <strong>{project.name}</strong> — {project.kind}. {project.description}
+            </li>
+          ))
+        }
+      </ul>
+
+      <p><strong>AI</strong></p>
+      <ul>
+        {
+          aiProjects.map((project) => (
+            <li>
+              <strong>{project.name}</strong> — {project.kind}. {project.description}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <SectionHeader eyebrow="Timeline" id="timeline" label="Journey milestones" />
+
+    <div class="tl">
+      {
+        milestones.map((milestone) => (
+          <div class={milestone.year === latestYear ? "n" : undefined}>
+            <b>{milestone.year}</b>
+            {milestone.text}
+          </div>
+        ))
+      }
+    </div>
+    <p class="meta" style="margin-top:14px">
+      The 2014 entry is personal history from my own LinkedIn profile, not a public release.
+    </p>
+
+    <SectionHeader eyebrow="Elsewhere" id="elsewhere" label="Profiles" />
+
+    <div class="chips">
+      {
+        elsewhere.map((profile) => (
+          <a class="chip" href={profile.href} target="_blank" rel="noopener noreferrer">
+            {profile.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

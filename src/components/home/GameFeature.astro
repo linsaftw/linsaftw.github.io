@@ -1,0 +1,61 @@
+---
+import { gameProjects } from "../../data/projects";
+
+const game = gameProjects[0];
+const host = game ? new URL(game.url).host.replace(/^www\./, "") : "";
+const artwork = { width: 1000, height: 1000, alt: "FFAA Zombies gameplay screenshot" };
+---
+
+<div class="hero2">
+  <div>
+    <small class="eyebrow">I MAKE VIDEO GAMES</small>
+    <h3>{game?.name}</h3>
+    <p class="desc">{game?.description}</p>
+    <p class="tags">
+      {game?.platforms?.map((platform) => <span class="tag">{platform}</span>)}
+    </p>
+    {
+      game && (
+        <a class="chip hot" href={game.url} target="_blank" rel="noopener noreferrer">
+          {host} →
+        </a>
+      )
+    }
+  </div>
+  <div class="ffs">
+    {
+      game?.image && (
+        <img
+          src={game.image}
+          alt={artwork.alt}
+          width={artwork.width}
+          height={artwork.height}
+          loading="lazy"
+          decoding="async"
+        />
+      )
+    }
+  </div>
+</div>
+
+<style>
+  /* C16 — no HUD overlay: the POC's in-game telemetry was fabricated. */
+  .eyebrow {
+    display: block;
+    color: var(--mu);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+  }
+
+  .hero2 h3 {
+    margin-top: 12px;
+  }
+
+  .desc {
+    color: var(--mu);
+  }
+
+  .tags {
+    margin-bottom: 4px;
+  }
+</style>

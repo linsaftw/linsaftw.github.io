@@ -1,0 +1,151 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+
+type Article = CollectionEntry<"articles">;
+
+interface Neighbour {
+  title: string;
+  slug: string;
+}
+
+interface Props {
+  entry: Article;
+  neighbours: { prev?: Neighbour; next?: Neighbour };
+  readingMinutes: number;
+}
+
+export async function getStaticPaths() {
+  /*
+   * Astro compiles `getStaticPaths` into its own isolated module scope: top-level
+   * component-frontmatter constants are NOT emitted into that module. So every
+   * helper this function needs must be declared INSIDE it (or imported from a
+   * shared module). Declaring them at module scope here compiled to
+   * `ReferenceError: slugOf is not defined` at prerender time.
+   */
+
+  /**
+   * C14 — the frozen slug set. `getStaticPaths` asserts its derived set equals this
+   * exactly: a missing or extra slug is a hard error, not a silent subset.
+   */
+  const EXPECTED_SLUGS = [
+    "ai-assisted-coding-needs-standards",
+    "ai-coding-agents-for-minecraft-plugin-development",
+    "arkflame-product-ecosystem-for-minecraft-infrastructure",
+    "arkflame-studios-main-hub",
+    "builtbybit-creators-need-support-operations",
+    "developer-health-and-output",
+    "exploitfixer-and-packet-security",
+    "flamecord-and-the-proxy-layer",
+    "folia-support-is-a-threading-discipline",
+    "linsaftw-minecraft-infrastructure-from-argentina",
+    "linsaftw-persona-builder-operator-infrastructure-founder",
+    "minecraft-performance-work-is-customer-support",
+    "minecraft-plugin-compatibility-is-product-quality",
+    "minecraft-server-security-starts-at-the-edge",
+    "packetevents-anticheat-proof-over-vibes",
+    "velocity-bungeecord-and-proxy-trust-boundaries",
+  ] as const satisfies readonly string[];
+
+  /**
+   * C11/C14 — the slug comes from the `canonicalPath` front-matter field, never from
+   * `entry.id`. The id shape depends on the collection API generation, the canonical
+   * path does not, so the live URLs `/posts/<slug>.html` are stable either way.
+   */
+  const slugOf = (canonicalPath: string): string => {
+    const match = /^\/posts\/(.+)\.html$/.exec(canonicalPath);
+    if (!match) {
+      throw new Error(
+        `[C11] canonicalPath "${canonicalPath}" is not of the form /posts/<slug>.html`,
+      );
+    }
+    return match[1];
+  };
+
+  const articles = await getCollection("articles", ({ data }) => data.draft !== true);
+
+  // Chronological order is the publication order (C14), so prev/next always point
+  // at a neighbouring article that actually exists in the generated set.
+  const ordered = [...articles].sort(
+    (a, b) => a.data.publishedAt.getTime() - b.data.publishedAt.getTime(),
+  );
+
+  const withSlugs = ordered.map((entry) => ({
+    entry,
+    slug: slugOf(entry.data.canonicalPath),
+  }));
+
+  const actual = withSlugs.map(({ slug }) => slug);
+  const duplicates = actual.filter((slug, i) => actual.indexOf(slug) !== i);
+  if (duplicates.length > 0) {
+    throw new Error(`[C11] duplicate article slugs: ${[...new Set(duplicates)].join(", ")}`);
+  }
+
+  const expected: readonly string[] = EXPECTED_SLUGS;
+  const missing = expected.filter((slug) => !actual.includes(slug));
+  const extra = actual.filter((slug) => !expected.includes(slug));
+  if (missing.length > 0 || extra.length > 0) {
+    throw new Error(
+      `[C14] slug set mismatch — missing: [${missing.join(", ")}] extra: [${extra.join(", ")}]`,
+    );
+  }
+
+  return withSlugs.map(({ entry, slug }, index) => {
+    const at = (offset: number): Neighbour | undefined => {
+      const other = withSlugs[index + offset];
+      return other
+        ? { title: other.entry.data.title, slug: other.slug }
+        : undefined;
+    };
+    const prev = at(-1);
+    const next = at(1);
+
+    return {
+      params: { slug },
+      props: {
+        entry,
+        neighbours: {
+          ...(prev ? { prev } : {}),
+          ...(next ? { next } : {}),
+        },
+        // C14/C7 — reading time comes from the real body text, never invented.
+        readingMinutes: Math.max(
+          1,
+          Math.round((entry.body ?? "").trim().split(/\s+/).filter(Boolean).length / 200),
+        ),
+      },
+    };
+  });
+}
+
+const { entry, neighbours, readingMinutes } = Astro.props;
+
+// Astro 5+ content layer: the body lives in the data store, and `render(entry)`
+// is the documented way to obtain the component for it. `entry.render()` does not
+// exist on data entries (astro/dist/content/runtime.js:157 warns on access).
+const { Content } = await render(entry);
+
+const { prev, next } = neighbours;
+
+/*
+ * Document structure note (C13 gate 5 / C18): this page deliberately emits NO
+ * <h1> of its own. ArticleLayout renders the single <h1> from the `title` prop,
+ * so the generated document has exactly one top-level heading (C18) instead of
+ * one per contributing file. Everything below is a slot or a prop.
+ */
+---
+
+<ArticleLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  canonicalPath={entry.data.canonicalPath}
+  publishedAt={entry.data.publishedAt}
+  updatedAt={entry.data.updatedAt}
+  tags={entry.data.tags}
+  author={entry.data.author}
+  readingMinutes={readingMinutes}
+  prev={prev && { title: prev.title, canonicalPath: `/posts/${prev.slug}.html` }}
+  next={next && { title: next.title, canonicalPath: `/posts/${next.slug}.html` }}
+>
+  <Content />
+</ArticleLayout>

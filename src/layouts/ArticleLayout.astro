@@ -1,0 +1,316 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { routes, SITE_URL, links } from "../data/links";
+import { identity, personSchemaName } from "../data/identity";
+import { personNode, breadcrumbNode } from "../components/seo/JsonLd.astro";
+
+export interface NavLink {
+  title: string;
+  /** Canonical path from the neighbour's own front matter (never re-derived). */
+  canonicalPath: string;
+}
+
+export interface Props {
+  title: string;
+  description: string;
+  /** `/posts/<slug>.html` — taken verbatim from the `canonicalPath` front matter. */
+  canonicalPath: string;
+  publishedAt: Date;
+  updatedAt: Date;
+  tags: readonly string[];
+  author: string;
+  /** Computed from the real article body, never invented. */
+  readingMinutes?: number;
+  prev?: NavLink;
+  next?: NavLink;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  publishedAt,
+  updatedAt,
+  tags,
+  author,
+  readingMinutes,
+  prev,
+  next,
+  ogImage = "/images/profile/linsaftw.webp",
+} = Astro.props;
+
+// C1/C7 — the canonical URL is always derived from astro.config's `site`.
+const site = Astro.site ?? new URL(SITE_URL);
+const home = new URL("/", site).href;
+const url = new URL(canonicalPath, site).href;
+const documentTitle = `${title} — LinsaFTW`;
+
+// ISO-8601 date-only, straight from the front matter (no invented dates).
+const isoDate = (d: Date): string => d.toISOString().slice(0, 10);
+const longDate = (d: Date): string =>
+  d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+
+const publishedIso = isoDate(publishedAt);
+const updatedIso = isoDate(updatedAt);
+const wasUpdated = updatedIso !== publishedIso;
+
+/*
+ * C9 — Article + Person author + BreadcrumbList. No Product schema, and no
+ * `alternateName` on the Article at all: the legacy site put an organization in
+ * it, which is the exact bug this migration has to drop. Only the Person carries
+ * `alternateName` (the handle, via personSchemaName).
+ */
+const organization = {
+  "@type": "Organization",
+  "@id": `${home}#organization`,
+  name: identity.founderOf,
+  url: links.arkflame,
+};
+
+const article = {
+  "@type": "Article",
+  "@id": `${url}#article`,
+  headline: title,
+  description,
+  inLanguage: "en",
+  datePublished: publishedIso,
+  dateModified: updatedIso,
+  mainEntityOfPage: url,
+  url,
+  keywords: [...tags],
+  author: [{ "@id": `${home}#person` }],
+  publisher: { "@id": `${home}#organization` },
+};
+
+const jsonLd = [
+  article,
+  organization,
+  personNode(site),
+  breadcrumbNode(site, [
+    { name: "Home", path: routes.home },
+    { name: "Articles", path: routes.articles },
+    { name: documentTitle, path: canonicalPath },
+  ]),
+];
+---
+
+<BaseLayout
+  title={documentTitle}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogType="article"
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+  articleMeta={{ publishedAt, updatedAt, tags }}
+>
+  <article class="w article">
+    <p class="back meta">
+      <a href={routes.articles}>&#8592; All articles</a>
+    </p>
+
+    <h1>{title}</h1>
+    {/* The front-matter description is a caption/dek, not a quote (legacy metadata). */}
+    <p class="dek">{description}</p>
+
+    <p class="meta byline">
+      <span>{author}</span>
+      <span aria-hidden="true">·</span>
+      <time datetime={publishedIso}>{longDate(publishedAt)}</time>
+      {
+        readingMinutes !== undefined && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>{readingMinutes} min read</span>
+          </>
+        )
+      }
+    </p>
+
+    {
+      wasUpdated && (
+        <p class="meta upd">
+          Updated <time datetime={updatedIso}>{longDate(updatedAt)}</time>
+        </p>
+      )
+    }
+
+    {
+      tags.length > 0 && (
+        <p class="tags">
+          {tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </p>
+      )
+    }
+
+    <div class="prose article-body">
+      <slot />
+    </div>
+
+    {
+      (prev || next) && (
+        <nav class="art-nav" aria-label="Article navigation">
+          {prev ? (
+            <a href={prev.canonicalPath} rel="prev">
+              <small>Previous</small>
+              {prev.title}
+            </a>
+          ) : (
+            <span />
+          )}
+          {next && (
+            <a class="nx" href={next.canonicalPath} rel="next">
+              <small>Next</small>
+              {next.title}
+            </a>
+          )}
+        </nav>
+      )
+    }
+
+    <p class="meta colophon">
+      Written by <a href={routes.home}>{personSchemaName}</a> ({identity.name}) · <a
+        href={routes.articles}
+        >All articles</a>
+    </p>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  /* Article page only. Tokens come from app.css — nothing is redefined here. */
+  .article {
+    padding-top: 46px;
+    padding-bottom: 64px;
+  }
+
+  .article .back {
+    margin: 0 0 30px;
+  }
+
+  .article .back a:hover {
+    color: var(--ac);
+  }
+
+  .article h1 {
+    margin-bottom: 18px;
+  }
+
+  .article .dek {
+    color: var(--mu);
+    font-size: 15px;
+    max-width: 60ch;
+    margin: 0 0 22px;
+  }
+
+  .article .byline,
+  .article .upd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin: 0 0 8px;
+  }
+
+  .article .upd {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .article .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 0;
+  }
+
+  .article .tag {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+
+  /* Comfortable measure for the prose; app.css caps paragraphs at 70ch. */
+  .article-body {
+    max-width: 68ch;
+    margin-top: 38px;
+  }
+
+  .article-body h2 {
+    font-size: 22px;
+    margin: 40px 0 12px;
+  }
+
+  .article-body h3 {
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tx);
+    margin: 30px 0 10px;
+  }
+
+  .article-body p {
+    margin: 0 0 20px;
+  }
+
+  .article hr {
+    border: 0;
+    border-top: 1px solid var(--bd);
+    margin: 44px 0 20px;
+  }
+
+  .art-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 46px;
+  }
+
+  .art-nav a {
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 14px 16px;
+  }
+
+  .art-nav a:hover {
+    border-color: var(--ac);
+  }
+
+  .art-nav small {
+    display: block;
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .art-nav .nx {
+    text-align: right;
+  }
+
+  .article .colophon {
+    margin-top: 30px;
+  }
+
+  .article .colophon a {
+    color: var(--tx);
+    border-bottom: 1px solid var(--bd);
+  }
+
+  @media (max-width: 760px) {
+    .art-nav {
+      grid-template-columns: 1fr;
+    }
+
+    .art-nav .nx {
+      text-align: left;
+    }
+  }
+</style>

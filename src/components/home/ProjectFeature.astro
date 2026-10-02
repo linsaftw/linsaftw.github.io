@@ -1,0 +1,55 @@
+---
+import type { Project } from "../../data/projects";
+
+export interface Props {
+  project: Project;
+  /** Explicit CTA text. Defaults to the real host of `project.url`. */
+  cta?: string;
+  /** Extra honest line rendered under the description (e.g. a disclaimer). */
+  note?: string;
+  /** Set false for products the POC shipped without artwork. */
+  showImage?: boolean;
+}
+
+const { project, cta, note, showImage = true } = Astro.props;
+
+/**
+ * C10 — exact pixel dimensions and alt text per `public/images/README.md`.
+ * Nothing here invents an aspect ratio.
+ */
+const artwork: Record<string, { width: number; height: number; alt: string }> = {
+  "exploitfixer": { width: 720, height: 360, alt: "ExploitFixer plugin artwork" },
+  "flamecord": { width: 720, height: 405, alt: "FlameCord plugin artwork" },
+  "veloflame": { width: 720, height: 405, alt: "VeloFlame plugin artwork" },
+  "fairplay": { width: 720, height: 360, alt: "FairPlay plugin artwork" },
+  "ark-ai": { width: 720, height: 378, alt: "ARK AI artwork" },
+  "ffaa-zombies": { width: 1000, height: 1000, alt: "FFAA Zombies gameplay screenshot" },
+};
+
+// C3 — the CTA is always a real, resolvable host, never a guessed domain.
+const host = new URL(project.url).host.replace(/^www\./, "");
+const ctaText = cta ?? `${host} →`;
+const image = artwork[project.id];
+---
+
+<a class="pc" href={project.url} target="_blank" rel="noopener noreferrer">
+  {
+    showImage && project.image && image && (
+      <img
+        src={project.image}
+        alt={image.alt}
+        width={image.width}
+        height={image.height}
+        loading="lazy"
+        decoding="async"
+      />
+    )
+  }
+  <div class="t">
+    <small>{project.kind}</small>
+    <h3>{project.name}</h3>
+    <p>{project.description}</p>
+    {note && <p>{note}</p>}
+    <span class="l">{ctaText}</span>
+  </div>
+</a>

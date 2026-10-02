@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { routes, SITE_URL } from "../data/links";
+import { projects } from "../data/projects";
+
+const canonicalPath = routes.games;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "FFAA Zombies: multiplayer zombie survival for browser, Windows, Linux and Android.";
+
+const game = projects.find((p) => p.id === "ffaa-zombies");
+if (!game) throw new Error('projects.ts is missing "ffaa-zombies"');
+const gameImage = game.image;
+if (!gameImage) throw new Error('projects.ts is missing an image for "ffaa-zombies"');
+
+const host = (url: string): string => new URL(url).host;
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "Games",
+    description,
+    path: canonicalPath,
+    type: "CollectionPage",
+  }),
+];
+---
+
+<BaseLayout
+  title="Games — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <h1>I make <em>video games.</em></h1>
+
+    <SectionHeader
+      eyebrow="Video games"
+      id="games"
+      label="Multiplayer · Co-op · Survival"
+    />
+
+    <div class="hero2">
+      <div>
+        <h3>{game.name}</h3>
+        <p class="lead">{game.description}</p>
+        <p>
+          {game.platforms?.map((platform) => <span class="tag">{platform}</span>)}
+        </p>
+        <p class="meta">Release year {game.publicLaunch}.</p>
+        <div class="chips">
+          <a class="chip hot" href={game.url} target="_blank" rel="noopener noreferrer">
+            {host(game.url)} →
+          </a>
+        </div>
+      </div>
+      <div class="ffs">
+        <img
+          src={gameImage}
+          alt="FFAA Zombies gameplay screenshot"
+          width="1000"
+          height="1000"
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="hud">FFAA · ZOMBIE SURVIVAL</span>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

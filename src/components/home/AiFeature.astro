@@ -1,0 +1,16 @@
+---
+import { aiProjects } from "../../data/projects";
+import ProjectFeature from "./ProjectFeature.astro";
+
+/**
+ * C16 `#ai` — ARK AI (with artwork) and FAUS Legal (the POC shipped it imageless;
+ * that stays). C5: FAUS carries its own disclaimer that it does not replace a
+ * licensed lawyer, and C3 fixes its CTA to the real faus.arkflame.com host.
+ */
+const [arkAi, faus] = aiProjects;
+---
+
+<div class="pl">
+  {arkAi && <ProjectFeature project={arkAi} />}
+  {faus && <ProjectFeature project={faus} note={faus.disclaimer} showImage={false} />}
+</div>

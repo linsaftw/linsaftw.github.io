@@ -1,0 +1,109 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { routes, SITE_URL } from "../data/links";
+import { projects } from "../data/projects";
+
+const canonicalPath = routes.ai;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "ARK AI, an AI provider and experimentation platform, and FAUS Legal, AI-assisted legal research and case organization for Argentine legal work.";
+
+const byId = (id: string) => {
+  const found = projects.find((p) => p.id === id);
+  if (!found) throw new Error(`projects.ts is missing "${id}"`);
+  return found;
+};
+
+const arkAi = byId("ark-ai");
+const arkAiImage = arkAi.image;
+if (!arkAiImage) throw new Error('projects.ts is missing an image for "ark-ai"');
+
+const faus = byId("faus-legal");
+if (!faus.disclaimer) throw new Error('projects.ts is missing the disclaimer for "faus-legal"');
+
+const fairplay = byId("fairplay");
+
+const host = (url: string): string => new URL(url).host;
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "AI",
+    description,
+    path: canonicalPath,
+    type: "CollectionPage",
+  }),
+];
+---
+
+<BaseLayout
+  title="AI — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <h1>I make <em>AI systems.</em></h1>
+    <p class="lead">
+      Two AI products, plus the machine-learning workflows inside FairPlay.
+    </p>
+
+    <SectionHeader eyebrow="AI systems" id="ai" label="Providers · Legal research · Detection" />
+
+    <div class="pl">
+      <a class="pc" href={arkAi.url} target="_blank" rel="noopener noreferrer">
+        <img
+          src={arkAiImage}
+          alt="ARK AI artwork"
+          width="720"
+          height="378"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="t">
+          <small>{arkAi.kind}</small>
+          <h3>{arkAi.name}</h3>
+          <p>{arkAi.description}</p>
+          <span class="l">{host(arkAi.url)} →</span>
+        </div>
+      </a>
+
+      <a class="pc" href={faus.url} target="_blank" rel="noopener noreferrer">
+        <div class="t">
+          <small>{faus.kind}</small>
+          <h3>{faus.name}</h3>
+          <p>{faus.description}</p>
+          <span class="l">{host(faus.url)} →</span>
+        </div>
+      </a>
+    </div>
+
+    <p class="note">{faus.disclaimer}</p>
+
+    <SectionHeader
+      eyebrow="Inside FairPlay"
+      id="fairplay"
+      label="Not a separate AI product"
+    />
+
+    <div class="g">
+      <div class="c">
+        <small>{fairplay.kind}</small>
+        <h3>{fairplay.name}</h3>
+        <p>{fairplay.description}</p>
+        <p class="meta" style="margin-top:12px">
+          Machine-learning workflows are a supporting part of FairPlay, my Minecraft anticheat, not
+          a separate AI product.
+        </p>
+        <div class="chips" style="margin-top:14px">
+          <a class="chip" href={fairplay.url} target="_blank" rel="noopener noreferrer">
+            FairPlay on BuiltByBit ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

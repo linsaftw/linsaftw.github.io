@@ -1,0 +1,121 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { links, routes, SITE_URL } from "../data/links";
+import { projects } from "../data/projects";
+
+const canonicalPath = routes.work;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "Selected professional work: ExploitFixer, FlameCord, VeloFlame and FairPlay, built through ArkFlame Studios.";
+
+const byId = (id: string) => {
+  const found = projects.find((p) => p.id === id);
+  if (!found) throw new Error(`projects.ts is missing "${id}"`);
+  return found;
+};
+
+const org = byId("arkflame-studios");
+
+// C3 — BuiltByBit twin for each product that also has an own domain.
+// FairPlay is published on BuiltByBit only, so it has no twin entry.
+const builtByBit: Record<string, string> = {
+  exploitfixer: links.exploitfixBb,
+  flamecord: links.flamecordBb,
+  veloflame: links.veloflameBb,
+};
+
+const products = ["exploitfixer", "flamecord", "veloflame", "fairplay"].map((id) => {
+  const project = byId(id);
+  const marketplace = builtByBit[id];
+  const label = marketplace ? "own domain and BuiltByBit" : "BuiltByBit";
+  return { project, marketplace, label };
+});
+
+const technicalFocus: readonly string[] = [
+  "Java",
+  "Paper / Folia",
+  "BungeeCord / Velocity",
+  "Packets",
+  "Concurrency",
+  "Performance",
+  "Security",
+];
+
+const host = (url: string): string => new URL(url).host;
+
+// C9 — Person + WebPage only. No Product schema anywhere on this site.
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "Work",
+    description,
+    path: canonicalPath,
+    type: "CollectionPage",
+  }),
+];
+---
+
+<BaseLayout
+  title="Work — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <h1>Selected <em>work.</em></h1>
+
+    {/* C13.5 — the ArkFlame Studios block below is an <h3>, so it needs a real
+        <h2> section heading above it: h1 -> h2 (section) -> h3 (item). */}
+    <SectionHeader eyebrow="Studio" id="studio" label="ArkFlame Studios" />
+
+    <a class="ceo" href={org.url} target="_blank" rel="noopener noreferrer">
+      <div>
+        <small style="color:var(--ac);letter-spacing:.22em;font-size:10px">FOUNDER</small>
+        <h3>{org.name}</h3>
+        <p>{org.description}</p>
+      </div>
+      <b>{host(org.url)} →</b>
+    </a>
+
+    <SectionHeader eyebrow="Minecraft plugins" id="build" label="Top LinsaFTW plugins" />
+
+    <div class="g g2">
+      {
+        products.map(({ project, marketplace, label }) => (
+          <div class="c">
+            <small>{project.kind}</small>
+            <h3>{project.name}</h3>
+            <p>{project.description}</p>
+            <div class="chips" style="margin-top:14px">
+              <a class="chip hot" href={project.url} target="_blank" rel="noopener noreferrer">
+                {host(project.url)} →
+              </a>
+              {marketplace && (
+                <a class="chip" href={marketplace} target="_blank" rel="noopener noreferrer">
+                  BuiltByBit
+                </a>
+              )}
+            </div>
+            <p class="meta" style="margin-top:10px">Published on {label}.</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="note">
+      This is a short list, not the full catalog. The complete ArkFlame Studios catalog lives on
+      <a href={org.url} target="_blank" rel="noopener noreferrer" style="color:var(--ac)">
+        {host(org.url)}</a
+      >.
+    </p>
+
+    <SectionHeader eyebrow="Technical focus" id="stack" label="Day to day" />
+
+    <div class="stack">
+      {technicalFocus.map((item) => <span>{item}</span>)}
+    </div>
+  </div>
+</BaseLayout>

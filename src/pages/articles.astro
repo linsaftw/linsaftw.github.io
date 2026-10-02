@@ -1,0 +1,80 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { breadcrumbNode, personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { postPath, routes, SITE_URL } from "../data/links";
+
+const canonicalPath = routes.articles;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const intro =
+  "Notes on Minecraft infrastructure, security, performance, AI-assisted engineering and software development.";
+
+const description = intro;
+
+// Static list. The slug is derived from the `canonicalPath` front-matter field, never
+// from `entry.id`, so the link stays correct under either content collection API.
+const entries = (await getCollection("articles"))
+  .filter((entry) => !entry.data.draft)
+  .map((entry) => {
+    const match = /^\/posts\/(.+)\.html$/.exec(entry.data.canonicalPath);
+    const slug = match?.[1];
+    if (!slug) {
+      throw new Error(`Unexpected canonicalPath: ${entry.data.canonicalPath}`);
+    }
+    return { ...entry.data, href: postPath(slug) };
+  })
+  .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+
+const iso = (date: Date): string => date.toISOString().slice(0, 10);
+
+const jsonLd = [
+  webPageNode(site, {
+    name: "Articles",
+    description,
+    path: canonicalPath,
+    type: "CollectionPage",
+  }),
+  personNode(site),
+  breadcrumbNode(site, [
+    { name: "Home", path: routes.home },
+    { name: "Articles", path: routes.articles },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Articles — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <h1>Writing.</h1>
+    <p class="lead">{intro}</p>
+
+    {/* C13.5 — the cards below are <h3>, so the list needs a real <h2>
+        section heading above it or the page skips h1 -> h3. */}
+    <SectionHeader eyebrow="All articles" id="articles" label="Newest first" />
+
+    <div class="g">
+      {
+        entries.map((entry) => (
+          <a class="c" href={entry.href}>
+            <small>
+              <time datetime={iso(entry.publishedAt)}>{iso(entry.publishedAt)}</time>
+            </small>
+            <h3>{entry.title}</h3>
+            <p>{entry.description}</p>
+            <p style="margin-top:12px">
+              {entry.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </p>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

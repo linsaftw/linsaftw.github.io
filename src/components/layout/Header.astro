@@ -1,0 +1,136 @@
+---
+import { links, routes } from "../../data/links";
+
+export interface Props {
+  /** Canonical path of the current page, e.g. "/work.html" or "/". */
+  activePath?: string;
+}
+
+const { activePath = routes.home } = Astro.props;
+
+const onHome = activePath === routes.home;
+
+// C8 — Work · Games · AI · Experiments · About + GitHub ↗.
+// On `/` the four section links point at the matching homepage anchor (C8);
+// from any other page they point at the real page.
+const nav = [
+  { label: "Work", href: onHome ? "/#build" : routes.work, anchor: "build" },
+  { label: "Games", href: onHome ? "/#games" : routes.games, anchor: "games" },
+  { label: "AI", href: onHome ? "/#ai" : routes.ai, anchor: "ai" },
+  { label: "Experiments", href: onHome ? "/#lab" : routes.experiments, anchor: "lab" },
+  { label: "About", href: routes.about, anchor: "about" },
+] as const;
+
+const isCurrent = (href: string): boolean => {
+  if (href === activePath) return true;
+  // On the homepage, an anchor link to the current page is not "current" itself,
+  // but About is the only real page match.
+  return href === routes.about && activePath === routes.about;
+};
+---
+
+<header>
+  <div class="w">
+    <a class="logo" href={routes.home} aria-label="LinsaFTW home">LinsaFTW</a>
+
+    {/*
+      C18 — compact nav with ZERO client JavaScript. A native <details>
+      disclosure owns the open/closed state, so it toggles and is keyboard
+      operable (Enter/Space) with no script at all. Every link stays in the DOM
+      either way, so the nav is fully reachable without JS.
+    */}
+    <details class="nav-drawer" id="nav-drawer">
+      <summary class="nav-toggle">Menu</summary>
+      <nav class="nav-drawer-links" aria-label="Primary (compact)">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+        <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+      </nav>
+    </details>
+
+    <nav class="nav-links" aria-label="Primary">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a class="keep" href={links.github} target="_blank" rel="noopener noreferrer">
+        GitHub &#8599;
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /*
+   * C18 — compact nav with ZERO client JavaScript.
+   *
+   * app.css already hides `.nav-drawer` and shows `.nav-toggle` at the ≤760px
+   * breakpoint. These rules replace the script-driven `[data-open="true"]`
+   * state with the native `[open]` state of <details>, and strip the default
+   * disclosure marker so the <summary> reads exactly like the old <button>.
+   *
+   * <details> is a real HTML element: the browser owns the open/closed state,
+   * it toggles on click, it is focusable and activates on Enter/Space, and it
+   * is announced as a disclosure by screen readers. No script is involved, so
+   * every nav link stays in the DOM and reachable with JS disabled.
+   */
+  summary.nav-toggle {
+    list-style: none;
+  }
+
+  summary.nav-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  summary.nav-toggle::marker {
+    content: "";
+  }
+
+  @media (max-width: 760px) {
+    /* Same split the old button had: `margin-left:auto` pushed Menu right,
+       `.nav-links { margin-left:auto }` pushed the kept GitHub link right. */
+    .nav-drawer {
+      display: block;
+      margin-left: auto;
+    }
+
+    /* `header` is `position: sticky`, so it is the containing block: the open
+       drawer sits full-bleed under the 52px bar exactly like the old
+       sibling `<nav class="nav-drawer">` did, without growing `.w`. */
+    .nav-drawer[open] .nav-drawer-links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 20px 14px;
+      background: var(--header-bg);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .nav-drawer[open] .nav-drawer-links a {
+      color: var(--mu);
+      font-size: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .nav-drawer[open] .nav-drawer-links a[aria-current="page"] {
+      color: var(--ac);
+    }
+  }
+</style>

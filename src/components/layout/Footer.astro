@@ -1,0 +1,16 @@
+---
+import { links, routes } from "../../data/links";
+import { identity } from "../../data/identity";
+---
+
+<footer>
+  <div class="w">
+    <span>&copy; 2026 {identity.handle}</span>
+    <nav class="f-links" aria-label="Footer">
+      <a href={links.arkflame} target="_blank" rel="noopener noreferrer">ArkFlame Studios</a>
+      <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+      <a href={routes.articles}>Articles</a>
+      <a href="/llms.txt">llms.txt</a>
+    </nav>
+  </div>
+</footer>

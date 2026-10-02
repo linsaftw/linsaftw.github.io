@@ -1,0 +1,20 @@
+{
+  "id": "https://linsaftw.arkflame.com/",
+  "name": "LinsaFTW",
+  "short_name": "LinsaFTW",
+  "description": "Juan Cruz Linsalata, an Argentine software developer and founder of ArkFlame Studios, building Minecraft infrastructure, security systems, games and AI projects.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070707",
+  "theme_color": "#070707",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/images/profile/linsaftw.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ]
+}

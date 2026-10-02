@@ -1,0 +1,22 @@
+---
+import type { Experiment } from "../../data/experiments";
+
+export interface Props {
+  experiment: Experiment;
+}
+
+const { experiment } = Astro.props;
+
+/**
+ * C6 — both experiments are real but local and never published, so `url` is
+ * undefined and this row deliberately renders no link and no status beyond
+ * EXPERIMENT.
+ */
+---
+
+<div class="ex">
+  <b>{experiment.name}</b>
+  <span>{experiment.description}</span>
+  <em>{experiment.category}</em>
+  <i class="p">{experiment.status}</i>
+</div>

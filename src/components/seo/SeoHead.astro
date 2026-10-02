@@ -1,0 +1,88 @@
+---
+import { SITE_URL } from "../../data/links";
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Root-relative canonical path, e.g. "/work.html" or "/posts/<slug>.html". */
+  canonicalPath: string;
+  ogType?: "website" | "article";
+  noindex?: boolean;
+  ogImage?: string;
+  articleMeta?: {
+    publishedAt?: Date;
+    updatedAt?: Date;
+    tags?: readonly string[];
+  };
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  ogType = "website",
+  noindex = false,
+  ogImage = "/images/hero/early-computer.webp",
+  articleMeta,
+} = Astro.props;
+
+// C7 — canonical is derived from config, never hardcoded per page. Exactly one.
+const site = Astro.site ?? new URL(SITE_URL);
+const canonical = new URL(canonicalPath, site).href;
+const ogImageUrl = new URL(ogImage, site).href;
+
+// C11 — the markdown twin is a preserved URL on article pages only.
+const isArticle = ogType === "article";
+const markdownHref = isArticle ? `${canonicalPath}.md` : undefined;
+const fmt = (d?: Date): string | undefined =>
+  d ? d.toISOString().slice(0, 10) : undefined;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
+<meta name="theme-color" content="#070707" />
+<meta name="color-scheme" content="dark" />
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content="LinsaFTW" />
+<meta property="og:type" content={ogType} />
+<meta property="og:locale" content="en_US" />
+{
+  articleMeta?.publishedAt && (
+    <meta property="article:published_time" content={fmt(articleMeta.publishedAt)} />
+  )
+}
+{
+  articleMeta?.updatedAt && (
+    <meta property="article:modified_time" content={fmt(articleMeta.updatedAt)} />
+  )
+}
+{articleMeta?.tags?.map((tag) => <meta property="article:tag" content={tag} />)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/webp" href="/images/profile/linsaftw.webp" />
+<link rel="apple-touch-icon" href="/images/profile/linsaftw.webp" />
+<link rel="manifest" href="/manifest.webmanifest" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap"
+/>
+
+{markdownHref && <link rel="alternate" type="text/markdown" href={markdownHref} />}
+<link rel="alternate" type="text/plain" href="/llms.txt" />

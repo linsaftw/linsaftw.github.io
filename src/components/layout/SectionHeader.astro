@@ -1,0 +1,69 @@
+---
+import { sections } from "../../data/identity";
+
+export interface Props {
+  /** Left-hand eyebrow, e.g. "Minecraft plugins". */
+  eyebrow: string;
+  /**
+   * Anchor id. C16 fixes the homepage ids as #build #how #games #ai #lab,
+   * so pass the id explicitly rather than deriving it from the eyebrow.
+   */
+  id: string;
+  /** Right-hand uppercase label, e.g. "Top LinsaFTW plugins". */
+  label?: string;
+  /** When set, renders a "View all →" link to this real page or anchor. */
+  viewAllHref?: string;
+  viewAllText?: string;
+  /**
+   * Heading element for the eyebrow. C13 gate 5 requires logical heading order,
+   * so the default is a real <h2> and pages that nest inside an existing H2
+   * section may pass 3.
+   */
+  headingLevel?: 2 | 3;
+}
+
+const {
+  eyebrow,
+  id,
+  label,
+  viewAllHref,
+  viewAllText = "View all →",
+  headingLevel = 2,
+} = Astro.props;
+
+const Heading = `h${headingLevel}` as const;
+
+const knownIds: readonly string[] = Object.values(sections).map((s) => s.id);
+---
+
+<div class="sh" id={id} data-section={knownIds.includes(id) ? id : undefined}>
+  <Heading>{eyebrow}</Heading>
+  <span class="sh-right">
+    {label && <span>{label}</span>}
+    {
+      viewAllHref && (
+        <a class="sh-all" href={viewAllHref}>
+          {viewAllText}
+        </a>
+      )
+    }
+  </span>
+</div>
+
+<style>
+  /*
+   * The eyebrow was a bare <b> inheriting everything from .sh. Now that it is a
+   * real heading, app.css's `h1,h2,h3 { margin:0; font-weight:800; line-height:1.1 }`
+   * would change how it looks, so restore the <b> rendering exactly: no margin,
+   * the inherited 11px size and 1.7 leading, weight 700, --tx colour.
+   * `:global` keeps the reset anchored to this component's own .sh container.
+   */
+  .sh :global(h2),
+  .sh :global(h3) {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 700;
+    line-height: inherit;
+    color: var(--tx);
+  }
+</style>

@@ -1,0 +1,21 @@
+---
+import { bannerCaption } from "../../data/identity";
+
+/**
+ * C16 banner. The POC used a CSS background rather than a real `<img>` for the
+ * hero photograph, so the asset is referenced through the `--ban` custom property
+ * consumed by `.ban` in `src/assets/app.css`. Keeping the technique means there is
+ * no `<img width/height/loading>` to carry and no base64 payload (C10).
+ */
+---
+
+<div class="ban" role="img" aria-label="LinsaFTW as a toddler typing at a CRT computer">
+  <div class="cap">{bannerCaption}<i></i></div>
+</div>
+
+<style>
+  /* C10 — /images/hero/early-computer.webp is 1200x864. */
+  .ban {
+    --ban: url("/images/hero/early-computer.webp");
+  }
+</style>

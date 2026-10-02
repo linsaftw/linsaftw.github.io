@@ -1,0 +1,147 @@
+---
+import { SITE_URL, links, personProfileLinks } from "../../data/links";
+import { identity, personSchemaName, jobTitle } from "../../data/identity";
+
+export interface Props {
+  nodes: Record<string, unknown>[];
+}
+
+const { nodes } = Astro.props;
+
+const site = Astro.site ?? new URL(SITE_URL);
+const abs = (path: string): string => new URL(path, site).href;
+
+type Crumb = { name: string; path: string };
+
+/**
+ * C9 — Person. `alternateName` carries the handle ONLY. An organization or brand in
+ * `alternateName` is an explicit bug per the frozen spec, so this takes no override.
+ * `site` is passed in by the caller so the value always derives from astro.config.
+ */
+export function personNode(siteUrl: URL = new URL(SITE_URL)): Record<string, unknown> {
+  return {
+    "@type": "Person",
+    "@id": `${new URL("/", siteUrl).href}#person`,
+    name: identity.name,
+    alternateName: personSchemaName,
+    jobTitle,
+    description: `Minecraft infrastructure developer and founder of ${identity.founderOf}.`,
+    nationality: identity.location,
+    url: new URL("/", siteUrl).href,
+    worksFor: {
+      "@type": "Organization",
+      name: identity.founderOf,
+      url: links.arkflame,
+    },
+    knowsAbout: [
+      "Minecraft server infrastructure",
+      "Java plugin engineering",
+      "Proxy security",
+      "Packet-level exploit protection",
+      "Anticheat systems",
+      "Server performance",
+    ],
+    sameAs: [...personProfileLinks],
+  };
+}
+
+/** C9 — WebSite. */
+export function websiteNode(siteUrl: URL = new URL(SITE_URL)): Record<string, unknown> {
+  return {
+    "@type": "WebSite",
+    "@id": `${new URL("/", siteUrl).href}#website`,
+    url: new URL("/", siteUrl).href,
+    name: "LinsaFTW",
+    inLanguage: "en",
+    description:
+      "Minecraft infrastructure, security systems, games and AI projects by Juan Cruz Linsalata.",
+    publisher: { "@id": `${new URL("/", siteUrl).href}#person` },
+  };
+}
+
+/** C9 — WebPage. */
+export function webPageNode(
+  siteUrl: URL,
+  opts: {
+    name: string;
+    description: string;
+    path: string;
+    type?: "WebPage" | "CollectionPage" | "AboutPage";
+  },
+): Record<string, unknown> {
+  const url = new URL(opts.path, siteUrl).href;
+  return {
+    "@type": opts.type ?? "WebPage",
+    "@id": `${url}#webpage`,
+    url,
+    name: opts.name,
+    description: opts.description,
+    inLanguage: "en",
+    isPartOf: { "@id": `${new URL("/", siteUrl).href}#website` },
+    about: { "@id": `${new URL("/", siteUrl).href}#person` },
+  };
+}
+
+/** C9 — Article. NO Product schema anywhere. */
+export function articleNode(
+  siteUrl: URL,
+  opts: {
+    title: string;
+    description: string;
+    canonicalPath: string;
+    publishedAt: Date;
+    updatedAt: Date;
+    tags: readonly string[];
+    author: string;
+  },
+): Record<string, unknown> {
+  const url = new URL(opts.canonicalPath, siteUrl).href;
+  return {
+    "@type": "Article",
+    "@id": `${url}#article`,
+    mainEntityOfPage: { "@id": `${url}#webpage` },
+    headline: opts.title,
+    description: opts.description,
+    inLanguage: "en",
+    datePublished: opts.publishedAt.toISOString().slice(0, 10),
+    dateModified: opts.updatedAt.toISOString().slice(0, 10),
+    keywords: [...opts.tags],
+    author: [{ "@type": "Person", name: opts.author, "@id": `${new URL("/", siteUrl).href}#person` }],
+    publisher: { "@id": `${new URL("/", siteUrl).href}#person` },
+  };
+}
+
+/** C9 — BreadcrumbList. */
+export function breadcrumbNode(
+  siteUrl: URL,
+  crumbs: readonly Crumb[],
+): Record<string, unknown> {
+  const last = crumbs[crumbs.length - 1]?.path ?? "/";
+  return {
+    "@type": "BreadcrumbList",
+    "@id": `${new URL(last, siteUrl).href}#breadcrumb`,
+    itemListElement: crumbs.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      item: new URL(crumb.path, siteUrl).href,
+    })),
+  };
+}
+
+/** C16 — the homepage @graph: Person, WebSite, WebPage. */
+export function homeGraph(
+  siteUrl: URL,
+  opts: { name: string; description: string },
+): Record<string, unknown>[] {
+  return [
+    personNode(siteUrl),
+    websiteNode(siteUrl),
+    webPageNode(siteUrl, { ...opts, path: "/" }),
+  ];
+}
+
+const graph = { "@context": "https://schema.org", "@graph": nodes };
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />

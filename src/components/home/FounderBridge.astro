@@ -1,0 +1,31 @@
+---
+import { identity } from "../../data/identity";
+import { links } from "../../data/links";
+import { projectById } from "../../data/projects";
+
+/**
+ * C16 founder bridge. C4 bans the executive-title claim entirely, so the eyebrow
+ * is FOUNDER only.
+ */
+const org = projectById("arkflame-studios");
+const host = new URL(links.arkflame).host.replace(/^www\./, "");
+---
+
+<a class="ceo" href={links.arkflame} target="_blank" rel="noopener noreferrer">
+  <div>
+    <small>FOUNDER</small>
+    <h3>{identity.founderOf}</h3>
+    <p>{org?.description}</p>
+  </div>
+  <b>{host} →</b>
+</a>
+
+<style>
+  .ceo small {
+    display: block;
+    color: var(--ac);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    margin-bottom: 8px;
+  }
+</style>

@@ -1,0 +1,105 @@
+name: Deploy to GitHub Pages
+
+# Official Astro static GitHub Pages pattern.
+#   https://docs.astro.build/en/guides/deploy/github/
+# Action majors verified against that page on 2026-10-01:
+#   actions/checkout@v7  withastro/action@v6  actions/deploy-pages@v5  node-version: 24
+# withastro/action@v6 is the official composite, but its LAST internal step is
+# `actions/upload-pages-artifact` (withastro/action@main:action.yml). Using it verbatim
+# would force `npm run typecheck` / `npm run validate` to run AFTER the artifact is
+# already uploaded, which violates the C13 gate ordering ("the build MUST run the
+# acceptance gates before uploading, so a broken site never deploys"). The build job is
+# therefore decomposed explicitly, using the exact same actions and majors that
+# withastro/action@v6 pins internally:
+#   actions/setup-node@v7 (node-version 24, cache: npm)  +  actions/upload-pages-artifact@v5
+# Everything else — triggers, permissions, concurrency, both job shapes, the
+# `environment` block and the deploy step — is the official pattern verbatim.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Two pushes must never race for the same Pages artifact; cancel the older run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v7
+
+      # C1 pins Node 24.16.0. `cache: npm` needs the committed package-lock.json (C1:
+      # "Commit package-lock.json"); it is what makes this step a cache key source.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # ---- C13 acceptance gates, in order, BEFORE anything is uploaded ----
+      - name: Install dependencies (C13 step 1)
+        run: npm ci
+
+      - name: Typecheck (C13 step 2)
+        run: npm run typecheck
+
+      - name: Build (C13 step 3)
+        run: npm run build
+
+      - name: Validate dist/ (C13 step 4)
+        run: npm run validate
+
+      # Second workflow-quality guard: a missing or wrong dist/CNAME silently breaks
+      # the custom domain (GitHub Pages falls back to <user>.github.io and serves 404s
+      # for linsaftw.arkflame.com with no error anywhere). C11 requires the file and
+      # C13.9 requires the exact content, so assert it here too and fail loudly.
+      - name: Guard custom domain (dist/CNAME)
+        run: |
+          set -uo pipefail
+          fail=0
+          if [ ! -f dist/CNAME ]; then
+            echo "::error title=Missing CNAME::dist/CNAME was not emitted; the custom domain linsaftw.arkflame.com would break."
+            fail=1
+          else
+            actual="$(tr -d '\r\n' < dist/CNAME)"
+            if [ "$actual" != "linsaftw.arkflame.com" ]; then
+              echo "::error title=Wrong CNAME::dist/CNAME is '$actual', expected 'linsaftw.arkflame.com'."
+              fail=1
+            else
+              echo "CNAME ok: $actual"
+            fi
+          fi
+          # dist/ must be non-empty or deploy-pages would publish an empty site.
+          if [ ! -f dist/index.html ]; then
+            echo "::error title=Missing dist/index.html::dist/ is empty or the build output is not where it should be."
+            fail=1
+          fi
+          exit "$fail"
+
+      # ---- Only now is anything uploaded. ----
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist/
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
