@@ -10,6 +10,17 @@ export interface NavLink {
   canonicalPath: string;
 }
 
+export interface RelatedLink {
+  title: string;
+  href: string;
+}
+
+export interface TocHeading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
 export interface Props {
   title: string;
   description: string;
@@ -21,8 +32,11 @@ export interface Props {
   author: string;
   /** Computed from the real article body, never invented. */
   readingMinutes?: number;
+  headings?: readonly TocHeading[];
   prev?: NavLink;
   next?: NavLink;
+  relatedProjects?: readonly RelatedLink[];
+  relatedDocs?: readonly RelatedLink[];
   ogImage?: string;
 }
 
@@ -35,10 +49,16 @@ const {
   tags,
   author,
   readingMinutes,
+  headings = [],
   prev,
   next,
-  ogImage = "/images/profile/linsaftw.webp",
+  relatedProjects = [],
+  relatedDocs = [],
+  ogImage = "/images/og/article.webp",
 } = Astro.props;
+
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const hasRelated = relatedProjects.length > 0 || relatedDocs.length > 0;
 
 // C1/C7 — the canonical URL is always derived from astro.config's `site`.
 const site = Astro.site ?? new URL(SITE_URL);
@@ -106,6 +126,7 @@ const jsonLd = [
   canonicalPath={canonicalPath}
   ogType="article"
   ogImage={ogImage}
+  markdownTwin
   jsonLd={jsonLd}
   articleMeta={{ publishedAt, updatedAt, tags }}
 >
@@ -150,9 +171,46 @@ const jsonLd = [
       )
     }
 
+    {
+      toc.length >= 4 && (
+        <details class="toc" open>
+          <summary>On this page</summary>
+          <nav aria-label="Table of contents">
+            {toc.map((heading) => (
+              <a class:list={["toc-link", heading.depth === 3 && "toc-sub"]} href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
+            ))}
+          </nav>
+        </details>
+      )
+    }
+
     <div class="prose article-body">
       <slot />
     </div>
+
+    {
+      hasRelated && (
+        <aside class="related" aria-labelledby="related-heading">
+          <h2 id="related-heading">Related work</h2>
+          <div class="related-grid">
+            {relatedProjects.map((project) => (
+              <a class="related-card" href={project.href}>
+                <small>Case study</small>
+                <b>{project.title}</b>
+              </a>
+            ))}
+            {relatedDocs.map((doc) => (
+              <a class="related-card" href={doc.href}>
+                <small>Documentation</small>
+                <b>{doc.title}</b>
+              </a>
+            ))}
+          </div>
+        </aside>
+      )
+    }
 
     {
       (prev || next) && (
@@ -265,6 +323,93 @@ const jsonLd = [
     margin: 44px 0 20px;
   }
 
+  .toc {
+    margin: 26px 0 0;
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 14px 18px;
+  }
+
+  .toc summary {
+    cursor: pointer;
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    min-height: 24px;
+  }
+
+  .toc nav {
+    display: grid;
+    gap: 2px;
+    margin-top: 10px;
+  }
+
+  .toc-link {
+    color: var(--mu);
+    font-size: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .toc-link:hover {
+    color: var(--ac);
+  }
+
+  .toc-sub {
+    padding-left: 16px;
+    color: var(--mu-dim);
+  }
+
+  .related {
+    margin-top: 52px;
+    border-top: 1px solid var(--bd);
+    padding-top: 20px;
+  }
+
+  .related h2 {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mu);
+    margin: 0 0 14px;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--p);
+    padding: 16px 18px;
+    min-height: 74px;
+    justify-content: center;
+  }
+
+  .related-card:hover {
+    background: var(--p2);
+    color: var(--ac);
+  }
+
+  .related-card small {
+    color: var(--mu);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .related-card b {
+    font-size: 14px;
+    color: var(--tx);
+  }
+
   .art-nav {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -305,7 +450,8 @@ const jsonLd = [
   }
 
   @media (max-width: 760px) {
-    .art-nav {
+    .art-nav,
+    .related-grid {
       grid-template-columns: 1fr;
     }
 

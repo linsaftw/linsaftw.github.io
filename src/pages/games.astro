@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/layout/SectionHeader.astro";
 import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
-import { routes, SITE_URL } from "../data/links";
+import { routes, SITE_URL, workPath } from "../data/links";
 import { projects } from "../data/projects";
 
 const canonicalPath = routes.games;
@@ -33,6 +33,7 @@ const jsonLd = [
   title="Games — LinsaFTW"
   description={description}
   canonicalPath={canonicalPath}
+  ogImage="/images/og/work-ffaa-zombies.webp"
   jsonLd={jsonLd}
 >
   <div class="w">
@@ -53,8 +54,9 @@ const jsonLd = [
         </p>
         <p class="meta">Release year {game.publicLaunch}.</p>
         <div class="chips">
-          <a class="chip hot" href={game.url} target="_blank" rel="noopener noreferrer">
-            {host(game.url)} →
+          <a class="chip hot" href={workPath(game.id)}>Read the case study &#8594;</a>
+          <a class="chip" href={game.url} target="_blank" rel="noopener noreferrer">
+            Play at {host(game.url)} &#8599;
           </a>
         </div>
       </div>

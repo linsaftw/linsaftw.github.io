@@ -46,6 +46,42 @@ LinsaFTW is Juan Cruz Linsalata, an Argentine software developer and founder of 
 - [Minecraft plugin compatibility is product quality](https://linsaftw.arkflame.com/posts/minecraft-plugin-compatibility-is-product-quality.html): Compatibility across Bukkit, Spigot, Paper, Folia, and Minecraft versions is not a bonus feature. It is part of the product. Published 2026-06-29. Slug: `minecraft-plugin-compatibility-is-product-quality`.
 - [Minecraft server security starts at the edge](https://linsaftw.arkflame.com/posts/minecraft-server-security-starts-at-the-edge.html): Why serious Minecraft networks should reject abusive traffic before it reaches expensive backend logic. Published 2026-06-30. Slug: `minecraft-server-security-starts-at-the-edge`.
 - [The LinsaFTW persona: builder, operator, and infrastructure founder](https://linsaftw.arkflame.com/posts/linsaftw-persona-builder-operator-infrastructure-founder.html): A direct analysis of the public LinsaFTW identity and why it fits Minecraft infrastructure work. Published 2026-07-01. Slug: `linsaftw-persona-builder-operator-infrastructure-founder`.
+- [What a packet library abstraction still costs](https://linsaftw.arkflame.com/posts/packet-library-abstraction-costs.html): PacketEvents can be a hard dependency or an optional adapter. Neither choice removes version drift, cancellation ownership, or multi-path maintenance. Published 2026-10-30. Slug: `packet-library-abstraction-costs`.
+- [FlameCord's connection lifecycle is the antibot](https://linsaftw.arkflame.com/posts/flamecord-connection-lifecycle-antibot.html): FlameCord orders antibot work by connection state: status pings, login checks, limbo, per-address accounting, and a host firewall that is not free. Published 2026-10-30. Slug: `flamecord-connection-lifecycle-antibot`.
+- [Owning the root window: X11 window management in FlameWM](https://linsaftw.arkflame.com/posts/flamewm-x11-window-management-without-a-browser.html): What it takes to be the X11 window manager rather than wrap one: reparenting, EWMH, workspace ownership, and the Wayland boundary. Published 2026-10-30. Slug: `flamewm-x11-window-management-without-a-browser`.
+- [ExploitFixer: packet validation order before semantics](https://linsaftw.arkflame.com/posts/exploitfixer-packet-validation-order.html): How ExploitFixer checks raw frames before decoded packets, and what its watchdog budgets, violation buckets, and dependency gates do and do not cover. Published 2026-10-30. Slug: `exploitfixer-packet-validation-order`.
+- [FairPlay: compensation only after the checks agree](https://linsaftw.arkflame.com/posts/fairplay-combat-compensation-pipeline.html): How FairPlay deduplicates PacketEvents input, aggregates combat results, resolves transaction providers, and keeps compensation inside a combat-only scope. Published 2026-10-30. Slug: `fairplay-combat-compensation-pipeline`.
+- [Folia scheduler bridges without hard dependencies](https://linsaftw.arkflame.com/posts/folia-scheduler-bridges-without-hard-dependencies.html): How three plugins keep Folia scheduler types out of loaded signatures, what reflective bridges buy at class-load time, and what they still do not prove. Published 2026-10-30. Slug: `folia-scheduler-bridges-without-hard-dependencies`.
+- [Entity caps as a budget, not a single number](https://linsaftw.arkflame.com/posts/entitylimiter-chunk-budgeting.html): How EntityLimiter combines per-type and group caps, RADIUS and GRID counting, bounded reconciliation, tombstones and claim hooks. Published 2026-10-30. Slug: `entitylimiter-chunk-budgeting`.
+- [VeloFlame's limbo takeover is an event-loop contract](https://linsaftw.arkflame.com/posts/velocity-limbo-takeover-design.html): How VeloFlame admits a login into limbo with a ticket and a bounded queue, and why frame limits and the transfer host belong to the same design. Published 2026-10-30. Slug: `velocity-limbo-takeover-design`.
+- [Compiling HTML and CSS into native render commands](https://linsaftw.arkflame.com/posts/flamewm-render-compiler-html-css-native.html): How FlameWM turns shell markup into a build-time render artifact, what the compiler accepts, and what disappears when the browser does. Published 2026-10-30. Slug: `flamewm-render-compiler-html-css-native`.
+- [Premium sessions and the trust boundary between proxy and backend](https://linsaftw.arkflame.com/posts/authme-premium-session-trust.html): AuthMePremium's two session bridges, fail-closed validation, proxy UUID trust files, and the identity checks that remain outside the plugin. Published 2026-10-30. Slug: `authme-premium-session-trust`.
+- [A spawner production loop with a ceiling](https://linsaftw.arkflame.com/posts/flamespawners-bounded-production-loop.html): FlameSpawners dispatches production in bounded passes, caps logical rolls, and treats output as backpressure instead of an unbounded queue. Published 2026-10-30. Slug: `flamespawners-bounded-production-loop`.
+- [Sliding windows for redstone, not a global off switch](https://linsaftw.arkflame.com/posts/redstone-limiter-sliding-windows.html): How RedstoneLimiter counts at four spatial scopes, why TPS scaling loosens caps on healthy servers, and why quarantine stays manual. Published 2026-10-30. Slug: `redstone-limiter-sliding-windows`.
+- [A canonical contract for an OpenAI-compatible API](https://linsaftw.arkflame.com/posts/ark-ai-canonical-api-contract.html): ARK AI parses once, rejects unknown fields, streams from the provider, bounds the agent loop, and makes usage accounting idempotent. Published 2026-10-30. Slug: `ark-ai-canonical-api-contract`.
+
+## Documentation
+
+- [Documentation index](https://linsaftw.arkflame.com/docs.html): 8 source-checked plugin documentation sets, 21 pages.
+- [ExploitFixer documentation](https://linsaftw.arkflame.com/docs/exploitfixer/overview.html): Overview, installation, configuration, commands and permissions.
+- [FlameCord documentation](https://linsaftw.arkflame.com/docs/flamecord/overview.html): Overview, installation, configuration.
+- [VeloFlame documentation](https://linsaftw.arkflame.com/docs/veloflame/overview.html): Overview, installation, configuration.
+- [FairPlay documentation](https://linsaftw.arkflame.com/docs/fairplay/overview.html): Overview, installation, commands and permissions.
+- [EntityLimiter documentation](https://linsaftw.arkflame.com/docs/entitylimiter/overview.html): Overview and configuration.
+- [RedstoneLimiter documentation](https://linsaftw.arkflame.com/docs/redstonelimiter/overview.html): Overview and configuration.
+- [FlameSpawners documentation](https://linsaftw.arkflame.com/docs/flamespawners/overview.html): Overview, commands and permissions.
+- [AuthMePremium documentation](https://linsaftw.arkflame.com/docs/authmepremium/overview.html): Overview and configuration.
+
+## Work case studies
+
+- [ExploitFixer](https://linsaftw.arkflame.com/work/exploitfixer.html): Packet-first anti-exploit engineering.
+- [FlameCord](https://linsaftw.arkflame.com/work/flamecord.html): Proxy admission control and anti-bot checks.
+- [VeloFlame](https://linsaftw.arkflame.com/work/veloflame.html): Velocity limbo and early packet limits.
+- [FairPlay](https://linsaftw.arkflame.com/work/fairplay.html): Combat compensation from observable packets.
+- [FlameWM](https://linsaftw.arkflame.com/work/flamewm.html): Rust X11 window manager and compiled desktop shell.
+- [FFAA Zombies](https://linsaftw.arkflame.com/work/ffaa-zombies.html): Browser-first multiplayer zombie survival.
+- [ARK AI](https://linsaftw.arkflame.com/work/ark-ai.html): Canonical OpenAI-compatible AI platform.
+- [FAUS Legal](https://linsaftw.arkflame.com/work/faus-legal.html): Argentine legal research workspace.
 
 ## Products
 
@@ -54,6 +90,11 @@ LinsaFTW is Juan Cruz Linsalata, an Argentine software developer and founder of 
 - **VeloFlame** (Proxy / Velocity): Velocity and Velocity-CTD fork focused on performance, anti-bot and native Limbo verification.
 - **FairPlay** (Anticheat): Combat-focused Minecraft anticheat combining deterministic checks, packet-level analysis, integrations, mitigation systems and machine-learning workflows.
 - **ArkFlame Studios** (Organization): Minecraft infrastructure, security, performance, networking and gameplay products.
+- **FlameWM** (Desktop / Window manager): A Rust X11 window manager and desktop shell for Linux with an experimental Wayland session.
+- **EntityLimiter** (Performance / Entity limits): Per-type and per-group entity caps with radius or grid counting.
+- **RedstoneLimiter** (Performance / Redstone limits): Sliding-window redstone caps at block, subchunk, chunk and region scope.
+- **FlameSpawners** (Gameplay / Spawners): Stacked-loot spawners with bounded production and storage backends.
+- **AuthMePremium** (Authentication / Proxy bridge): AuthMe ecosystem authentication bridge with explicit proxy trust.
 - **FFAA Zombies** (Game): Multiplayer zombie survival built around large enemy counts, weapons, classes, custom maps, local co-op and online play.
 - **ARK AI** (AI platform): AI provider and experimentation platform for model access and developer workflows.
 - **FAUS Legal** (Legal AI): AI-assisted legal research and case organization for Argentine legal work.
@@ -73,7 +114,7 @@ FAUS Legal is a research and organization aid. It does not replace a licensed la
 - 2018: Released early public Minecraft plugins and security tools.
 - 2020: Launched FlameCord.
 - 2025: Launched VeloFlame.
-- 2026: FairPlay, ARK AI, FAUS Legal, and FFAA Zombies.
+- 2026: FairPlay, ARK AI, FAUS Legal, FFAA Zombies, and FlameWM 0.1.3.
 
 ## External identity
 
@@ -92,9 +133,12 @@ FAUS Legal is a research and organization aid. It does not replace a licensed la
 - [FFAA Zombies](https://ffaa.arkflame.com/)
 - [ARK AI](https://ai.arkflame.com/)
 - [FAUS Legal](https://faus.arkflame.com/)
+- [FlameWM](https://wm.arkflame.com/)
+- [FlameWM source](https://github.com/ArkFlame/FlameWM)
 
 ## Machine-readable companions
 
+- [RSS feed](https://linsaftw.arkflame.com/rss.xml): newest articles.
 - [Sitemap](https://linsaftw.arkflame.com/sitemap.xml): canonical public HTML pages and article slugs.
 - [Robots policy](https://linsaftw.arkflame.com/robots.txt): crawler access policy.
 - [llms-full.txt](https://linsaftw.arkflame.com/llms-full.txt): full article text plus the complete page inventory.

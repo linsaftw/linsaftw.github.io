@@ -4,6 +4,18 @@
 }
 
 /*
+ * Self-hosted variable JetBrains Mono (latin subset). The previous Google
+ * Fonts stylesheet was render-blocking and added two third-party origins.
+ */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono.woff2") format("woff2");
+}
+
+/*
  * C2 — verbatim POC tokens. Do not "tidy" these values.
  */
 :root {
@@ -21,6 +33,8 @@
    * Measured: #7f7e77 on --bg = 4.94:1, on --p = 4.77:1, on --p2 = 4.56:1.
    */
   --mu-dim: #7f7e77;
+  /* AA-safe long-form copy. --mu stays for metadata and secondary labels. */
+  --copy: #c8c6bc;
   --ac: #ff6b35;
   --gr: #d7ff72;
 
@@ -43,9 +57,9 @@
   --radius: 0;
 
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
-  --body-size: 14px;
-  --body-leading: 1.7;
-  --shell-max: 960px;
+  --body-size: 15px;
+  --body-leading: 1.75;
+  --shell-max: 1060px;
   color-scheme: dark;
 }
 
@@ -126,7 +140,7 @@ h3 {
 }
 
 /* --- header ------------------------------------------------------------ */
-header {
+body > header {
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 9;
@@ -135,26 +149,36 @@ header {
   border-bottom: 1px solid var(--bd);
 }
 
-header .w {
+body > header .w {
   display: flex;
   align-items: center;
-  height: 52px;
+  height: 56px;
   gap: 22px;
-  max-width: 1100px;
+  max-width: 1120px;
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 800;
   font-size: 17px;
   margin-right: auto;
 }
 
-header a:not(.logo) {
+body > header a:not(.logo) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--mu);
   font-size: 12px;
 }
 
-header a:not(.logo):hover {
+body > header a:not(.logo)[aria-current="page"] {
+  color: var(--ac);
+}
+
+body > header a:not(.logo):hover {
   color: var(--ac);
 }
 
@@ -169,11 +193,12 @@ header a:not(.logo):hover {
 .nav-toggle {
   display: none;
   margin-left: auto;
+  min-height: 44px;
   color: var(--mu);
   font-size: 12px;
   background: none;
   border: 1px solid var(--bd);
-  padding: 5px 10px;
+  padding: 5px 12px;
   cursor: pointer;
 }
 
@@ -190,7 +215,7 @@ header a:not(.logo):hover {
     margin-right: 0;
   }
 
-  header .w {
+  body > header .w {
     gap: 12px;
   }
 
@@ -299,11 +324,12 @@ header a:not(.logo):hover {
 }
 
 h1 {
-  font-size: clamp(34px, 6.4vw, 66px);
+  font-size: clamp(36px, 6.1vw, 68px);
   letter-spacing: -0.03em;
   margin: 30px 0 16px;
   /* C17 — H1 must not single-letter-wrap. */
   overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 h1 em {
@@ -326,16 +352,18 @@ h1 em {
 .chip {
   border: 1px solid var(--bd);
   background: var(--p);
-  padding: 7px 13px;
+  padding: 9px 14px;
+  min-height: 44px;
   font-size: 12px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .chip:hover {
   border-color: var(--ac);
+  background: var(--p2);
 }
 
 .chip.hot {
@@ -363,11 +391,11 @@ h1 em {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin: 92px 0 18px;
+  margin: 76px 0 18px;
   padding-top: 18px;
   border-top: 1px solid var(--bd);
   font-size: 11px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--mu);
 }
@@ -384,6 +412,10 @@ h1 em {
  * `.sh-right`, so `opacity: .7` was applied twice (0.49 effective).
  */
 .sh .sh-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   letter-spacing: 0.14em;
   color: var(--mu-dim);
 }
@@ -416,8 +448,8 @@ h1 em {
 }
 
 .c small {
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   color: var(--mu);
   text-transform: uppercase;
   display: block;
@@ -432,7 +464,7 @@ h1 em {
 .c p {
   margin: 0;
   color: var(--mu);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 a.c:hover {
@@ -635,7 +667,7 @@ a.c:hover {
 
 .ex i {
   font-style: normal;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   border: 1px solid var(--bd);
   padding: 1px 8px;
@@ -739,8 +771,14 @@ footer a:hover {
 
 footer .f-links {
   display: flex;
-  gap: 16px;
+  gap: 8px 16px;
   flex-wrap: wrap;
+}
+
+footer .f-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
 }
 
 /* --- game feature frame ------------------------------------------------ */
@@ -822,7 +860,7 @@ footer .f-links {
 .pc p {
   margin: 0 0 12px;
   color: var(--mu);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .pc .l {
@@ -831,8 +869,8 @@ footer .f-links {
 }
 
 .pc small {
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   color: var(--mu);
   text-transform: uppercase;
   display: block;
@@ -868,9 +906,9 @@ footer .f-links {
 
 /* --- prose (article / about pages) ------------------------------------ */
 .prose {
-  color: var(--tx);
-  font-size: 14px;
-  line-height: 1.7;
+  color: var(--copy);
+  font-size: 15px;
+  line-height: 1.75;
 }
 
 .prose h2 {
@@ -881,12 +919,12 @@ footer .f-links {
 .prose p {
   margin: 0 0 18px;
   max-width: 70ch;
-  color: var(--mu);
+  color: var(--copy);
 }
 
 .prose ul,
 .prose ol {
-  color: var(--mu);
+  color: var(--copy);
   max-width: 70ch;
   padding-left: 20px;
 }
@@ -910,8 +948,127 @@ footer .f-links {
   background: var(--p);
   color: var(--mu);
   padding: 14px 18px;
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 14px;
+}
+
+.note a {
+  color: var(--ac);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+/* --- shared filter controls ------------------------------------------- */
+.filter-bar {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--bd);
+  background: var(--p);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.filter-search {
+  display: grid;
+  gap: 6px;
+}
+
+.filter-search label {
+  color: var(--mu);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.filter-search input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--bd);
+  background: var(--shell2);
+  color: var(--tx);
+  font: inherit;
+  font-size: 13px;
+  padding: 0 12px;
+}
+
+.filter-search input::placeholder {
+  color: var(--mu-dim);
+}
+
+.filter-search input:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip,
+.filter-reset {
+  min-height: 44px;
+  border: 1px solid var(--bd);
+  background: var(--p2);
+  color: var(--mu);
+  font: inherit;
+  font-size: 11px;
+  padding: 7px 11px;
+  cursor: pointer;
+}
+
+.filter-chip:hover,
+.filter-reset:hover {
+  color: var(--tx);
+  border-color: var(--ac);
+}
+
+.filter-chip[aria-pressed="true"] {
+  color: var(--ac);
+  border-color: var(--ac);
+  background: var(--ceo-grad);
+}
+
+.filter-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--mu);
+  font-size: 11px;
+}
+
+.filter-reset {
+  min-height: 44px;
+}
+
+@media (max-width: 760px) {
+  .filter-chip,
+  .filter-reset {
+    min-height: 44px;
+  }
+}
+
+/* --- reveal (progressive; content is visible without JS) --------------- */
+.has-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.42s ease, transform 0.42s ease;
+}
+
+.has-reveal [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .has-reveal [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* --- C17 responsive --------------------------------------------------- */
@@ -987,4 +1144,52 @@ footer .f-links {
   .ceo:hover {
     transform: none;
   }
+}
+
+/* Long URLs and config paths must not create horizontal page overflow. */
+.prose p,
+.prose li,
+.prose a {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 360px) {
+  h1 {
+    font-size: 30px;
+  }
+}
+
+/* Article/guide tables must fit the text column, not force page overflow. */
+.prose table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 18px 0 24px;
+  font-size: 12px;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid var(--bd);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  color: var(--copy);
+  overflow-wrap: anywhere;
+}
+
+.prose th {
+  color: var(--tx);
+  background: var(--p);
+  font-weight: 700;
+}
+
+.prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.prose code {
+  overflow-wrap: anywhere;
 }

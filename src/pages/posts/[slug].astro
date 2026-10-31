@@ -1,6 +1,8 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import { projectById } from "../../data/projects";
+import { docsPath, workPath } from "../../data/links";
 
 type Article = CollectionEntry<"articles">;
 
@@ -9,10 +11,18 @@ interface Neighbour {
   slug: string;
 }
 
+interface RelatedLink {
+  title: string;
+  href: string;
+}
+
 interface Props {
   entry: Article;
   neighbours: { prev?: Neighbour; next?: Neighbour };
   readingMinutes: number;
+  relatedProjects: readonly RelatedLink[];
+  relatedDocs: readonly RelatedLink[];
+  ogImage?: string;
 }
 
 export async function getStaticPaths() {
@@ -25,10 +35,11 @@ export async function getStaticPaths() {
    */
 
   /**
-   * C14 — the frozen slug set. `getStaticPaths` asserts its derived set equals this
-   * exactly: a missing or extra slug is a hard error, not a silent subset.
+   * The original migrated set is a preservation contract, not a ceiling. New
+   * articles are discovered from the collection; every legacy slug must still be
+   * present, and duplicates remain fatal.
    */
-  const EXPECTED_SLUGS = [
+  const LEGACY_SLUGS = [
     "ai-assisted-coding-needs-standards",
     "ai-coding-agents-for-minecraft-plugin-development",
     "arkflame-product-ecosystem-for-minecraft-infrastructure",
@@ -63,6 +74,13 @@ export async function getStaticPaths() {
   };
 
   const articles = await getCollection("articles", ({ data }) => data.draft !== true);
+  const docs = await getCollection("docs", ({ data }) => data.draft !== true);
+  const docsByPath = new Map(
+    docs.map((entry) => {
+      const [plugin, topic] = entry.id.split("/");
+      return [docsPath(plugin, topic), entry.data.title] as const;
+    }),
+  );
 
   // Chronological order is the publication order (C14), so prev/next always point
   // at a neighbouring article that actually exists in the generated set.
@@ -81,13 +99,9 @@ export async function getStaticPaths() {
     throw new Error(`[C11] duplicate article slugs: ${[...new Set(duplicates)].join(", ")}`);
   }
 
-  const expected: readonly string[] = EXPECTED_SLUGS;
-  const missing = expected.filter((slug) => !actual.includes(slug));
-  const extra = actual.filter((slug) => !expected.includes(slug));
-  if (missing.length > 0 || extra.length > 0) {
-    throw new Error(
-      `[C14] slug set mismatch — missing: [${missing.join(", ")}] extra: [${extra.join(", ")}]`,
-    );
+  const missing = LEGACY_SLUGS.filter((slug) => !actual.includes(slug));
+  if (missing.length > 0) {
+    throw new Error(`[C14] legacy article slugs missing: [${missing.join(", ")}]`);
   }
 
   return withSlugs.map(({ entry, slug }, index) => {
@@ -113,19 +127,37 @@ export async function getStaticPaths() {
           1,
           Math.round((entry.body ?? "").trim().split(/\s+/).filter(Boolean).length / 200),
         ),
+        relatedProjects: entry.data.relatedProjects.map((id) => {
+          const project = projectById(id);
+          if (!project?.caseStudy) {
+            throw new Error(`[related] ${entry.id} references unknown work project "${id}"`);
+          }
+          return { title: project.name, href: workPath(id) };
+        }),
+        relatedDocs: entry.data.relatedDocs.map((href) => {
+          const title = docsByPath.get(href);
+          if (!title) {
+            throw new Error(`[related] ${entry.id} references missing documentation "${href}"`);
+          }
+          return { title, href };
+        }),
+        ...(entry.data.ogImage ? { ogImage: entry.data.ogImage } : {}),
       },
     };
   });
 }
 
-const { entry, neighbours, readingMinutes } = Astro.props;
+const { entry, neighbours, readingMinutes, relatedProjects, relatedDocs, ogImage } = Astro.props;
 
 // Astro 5+ content layer: the body lives in the data store, and `render(entry)`
 // is the documented way to obtain the component for it. `entry.render()` does not
 // exist on data entries (astro/dist/content/runtime.js:157 warns on access).
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 
 const { prev, next } = neighbours;
+const toc = headings
+  .filter((heading) => heading.depth === 2 || heading.depth === 3)
+  .map(({ depth, slug, text }) => ({ depth, slug, text }));
 
 /*
  * Document structure note (C13 gate 5 / C18): this page deliberately emits NO
@@ -144,6 +176,10 @@ const { prev, next } = neighbours;
   tags={entry.data.tags}
   author={entry.data.author}
   readingMinutes={readingMinutes}
+  headings={toc}
+  relatedProjects={relatedProjects}
+  relatedDocs={relatedDocs}
+  ogImage={ogImage}
   prev={prev && { title: prev.title, canonicalPath: `/posts/${prev.slug}.html` }}
   next={next && { title: next.title, canonicalPath: `/posts/${next.slug}.html` }}
 >

@@ -7,6 +7,8 @@ tags: ["packetevents", "anticheat", "fairplay"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/packetevents-anticheat-proof-over-vibes.html"
 draft: false
+relatedProjects: ["fairplay", "exploitfixer"]
+relatedDocs: ["/docs/fairplay/overview.html", "/docs/exploitfixer/overview.html"]
 ---
 
 PacketEvents anticheat work needs proof, not vibes. A check that only feels suspicious is not strong enough for production. The server needs a reason that can be explained in terms of packets, positions, timing, geometry, state, and allowed vanilla behavior.

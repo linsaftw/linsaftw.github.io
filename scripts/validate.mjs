@@ -22,7 +22,10 @@ const SITE = "https://linsaftw.arkflame.com";
 const CNAME_VALUE = "linsaftw.arkflame.com";
 const SITEMAP_URL = `${SITE}/sitemap.xml`;
 
-/** C14 — the exact 16 migrated article slugs. */
+/**
+ * C14 — the original 16 article URLs are a preservation floor. New articles are
+ * allowed; every generated post is separately checked against the sitemap below.
+ */
 const SLUGS = [
   "ai-assisted-coding-needs-standards",
   "ai-coding-agents-for-minecraft-plugin-development",
@@ -47,6 +50,40 @@ const STATIC_FILES = [
   "/index.html",
   "/about.html",
   "/work.html",
+  "/work/exploitfixer.html",
+  "/work/flamecord.html",
+  "/work/veloflame.html",
+  "/work/fairplay.html",
+  "/work/flamewm.html",
+  "/work/ffaa-zombies.html",
+  "/work/ark-ai.html",
+  "/work/faus-legal.html",
+  "/work/entitylimiter.html",
+  "/work/redstonelimiter.html",
+  "/work/flamespawners.html",
+  "/work/authmepremium.html",
+  "/docs.html",
+  "/docs/exploitfixer/overview.html",
+  "/docs/exploitfixer/installation.html",
+  "/docs/exploitfixer/configuration.html",
+  "/docs/exploitfixer/commands-permissions.html",
+  "/docs/flamecord/overview.html",
+  "/docs/flamecord/installation.html",
+  "/docs/flamecord/configuration.html",
+  "/docs/veloflame/overview.html",
+  "/docs/veloflame/installation.html",
+  "/docs/veloflame/configuration.html",
+  "/docs/fairplay/overview.html",
+  "/docs/fairplay/installation.html",
+  "/docs/fairplay/commands-permissions.html",
+  "/docs/entitylimiter/overview.html",
+  "/docs/entitylimiter/configuration.html",
+  "/docs/redstonelimiter/overview.html",
+  "/docs/redstonelimiter/configuration.html",
+  "/docs/flamespawners/overview.html",
+  "/docs/flamespawners/commands-permissions.html",
+  "/docs/authmepremium/overview.html",
+  "/docs/authmepremium/configuration.html",
   "/games.html",
   "/ai.html",
   "/experiments.html",
@@ -54,8 +91,10 @@ const STATIC_FILES = [
   "/404.html",
   "/robots.txt",
   "/sitemap.xml",
+  "/rss.xml",
   "/CNAME",
   "/favicon.ico",
+  "/fonts/jetbrains-mono.woff2",
   "/manifest.webmanifest",
   "/llms.txt",
   "/llms-full.txt",
@@ -75,13 +114,42 @@ const STATIC_FILES = [
   "/images/projects/fairplay.webp",
   "/images/projects/ffaa-zombies.webp",
   "/images/projects/ark-ai.webp",
+  "/images/projects/flamewm.webp",
+  "/images/projects/flamewm-desktop.webp",
+  "/images/projects/entitylimiter.webp",
+  "/images/projects/redstonelimiter.webp",
+  "/images/projects/flamespawners.webp",
+  "/images/projects/authmepremium.webp",
+  "/images/projects/faus.webp",
+  "/images/og/home.webp",
+  "/images/og/work.webp",
+  "/images/og/articles.webp",
+  "/images/og/docs.webp",
+  "/images/og/about.webp",
+  "/images/og/article.webp",
+  "/images/og/work-exploitfixer.webp",
+  "/images/og/work-flamecord.webp",
+  "/images/og/work-veloflame.webp",
+  "/images/og/work-fairplay.webp",
+  "/images/og/work-flamewm.webp",
+  "/images/og/work-ffaa-zombies.webp",
+  "/images/og/work-ark-ai.webp",
+  "/images/og/work-faus-legal.webp",
+  "/images/og/work-entitylimiter.webp",
+  "/images/og/work-redstonelimiter.webp",
+  "/images/og/work-flamespawners.webp",
+  "/images/og/work-authmepremium.webp",
 ];
 
-/** C11 line 1 — the 7 non-article pages that must be sitemap entries. */
+/** C11 line 1 — representative non-article pages that must be sitemap entries. */
 const SITEMAP_REQUIRED = [
   "/",
   "/about.html",
   "/work.html",
+  "/work/exploitfixer.html",
+  "/work/flamewm.html",
+  "/docs.html",
+  "/docs/exploitfixer/overview.html",
   "/games.html",
   "/ai.html",
   "/experiments.html",
@@ -348,19 +416,29 @@ check("1. C11 output existence", (rec) => {
     const value = raw.replace(/^\uFEFF/, "").replace(/\r?\n$/, "");
     if (value !== CNAME_VALUE) fail(rec, `CNAME content is ${JSON.stringify(value)}, expected ${JSON.stringify(CNAME_VALUE)}`);
   }
-  // C14: exactly the 16 slugs — no missing, no extra.
+  /*
+   * The original 16 posts are a preservation floor. New articles are discovered
+   * from the build; every generated post must also have its `.html.md` twin.
+   */
   const postDir = join(DIST, "posts");
   if (!exists(postDir)) {
     fail(rec, "missing directory /posts/");
   } else {
-    for (const suffix of [".html", ".html.md"]) {
-      const found = readdirSync(postDir)
-        .filter((n) => n.endsWith(suffix))
-        .map((n) => n.slice(0, -suffix.length))
-        .sort();
-      const want = [...SLUGS].sort();
-      for (const s of want) if (!found.includes(s)) fail(rec, `slug missing from /posts/*${suffix}: ${s}`);
-      for (const s of found) if (!want.includes(s)) fail(rec, `unexpected slug in /posts/*${suffix}: ${s}`);
+    const htmlSlugs = readdirSync(postDir)
+      .filter((n) => n.endsWith(".html"))
+      .map((n) => n.slice(0, -".html".length))
+      .sort();
+    const mdSlugs = new Set(
+      readdirSync(postDir)
+        .filter((n) => n.endsWith(".html.md"))
+        .map((n) => n.slice(0, -".html.md".length)),
+    );
+    for (const s of SLUGS) {
+      if (!htmlSlugs.includes(s)) fail(rec, `legacy post missing from /posts/*.html: ${s}`);
+      if (!mdSlugs.has(s)) fail(rec, `legacy markdown twin missing from /posts/*.html.md: ${s}`);
+    }
+    for (const slug of htmlSlugs) {
+      if (!mdSlugs.has(slug)) fail(rec, `markdown twin missing for /posts/${slug}.html`);
     }
   }
   for (const f of UNREADABLE) fail(rec, `unreadable path: ${sitePath(DIST, f)}`);
@@ -561,9 +639,58 @@ check("6. canonical + head tags", (rec) => {
   }
 });
 
+/* ------------------------------------------------------- 6b. unique SEO + OG */
+
+check("6b. unique titles, descriptions and OG images", (rec) => {
+  const titles = new Map();
+  const descriptions = new Map();
+  for (const p of pagePaths) {
+    const { html } = PAGES.get(p);
+    if (html === null) continue;
+    const title = /<title>([\s\S]*?)<\/title>/i.exec(html)?.[1]?.trim() ?? "";
+    if (!title) fail(rec, `${p}: empty <title>`);
+    if (titles.has(title)) fail(rec, `${p}: duplicate title also used by ${titles.get(title)}`);
+    else titles.set(title, p);
+
+    const description = allTags(html, "meta")
+      .filter((tag) => (attr(tag.raw, "name") ?? "").toLowerCase() === "description")
+      .map((tag) => attr(tag.raw, "content") ?? "")[0]
+      ?.trim() ?? "";
+    if (description) {
+      if (descriptions.has(description)) {
+        fail(rec, `${p}: duplicate meta description also used by ${descriptions.get(description)}`);
+      } else descriptions.set(description, p);
+    }
+
+    const ogImage = allTags(html, "meta")
+      .filter((tag) => (attr(tag.raw, "property") ?? "").toLowerCase() === "og:image")
+      .map((tag) => attr(tag.raw, "content") ?? "")[0];
+    const ogW = allTags(html, "meta")
+      .filter((tag) => (attr(tag.raw, "property") ?? "").toLowerCase() === "og:image:width")
+      .map((tag) => attr(tag.raw, "content") ?? "")[0];
+    const ogH = allTags(html, "meta")
+      .filter((tag) => (attr(tag.raw, "property") ?? "").toLowerCase() === "og:image:height")
+      .map((tag) => attr(tag.raw, "content") ?? "")[0];
+    if (ogW !== "1200" || ogH !== "630") {
+      fail(rec, `${p}: og:image dimensions are ${JSON.stringify([ogW, ogH])}, expected [1200,630]`);
+    }
+    if (!ogImage) {
+      fail(rec, `${p}: missing og:image`);
+    } else {
+      try {
+        const pathname = new URL(ogImage).pathname;
+        if (!isFile(join(DIST, pathname.slice(1)))) {
+          fail(rec, `${p}: og:image ${pathname} does not resolve in dist/`);
+        }
+      } catch {
+        fail(rec, `${p}: og:image is not an absolute URL`);
+      }
+    }
+  }
+});
+
 /* ------------------------------------------------------------------ 7. images */
 
-let heroCount = 0;
 const imageCount = { total: 0, noLoading: 0 };
 
 check("7. img alt/width/height", (rec) => {
@@ -573,6 +700,7 @@ check("7. img alt/width/height", (rec) => {
       parseFail(rec, p);
       continue;
     }
+    let pageHero = 0;
     const imgs = allTags(html, "img");
     const headers = headerSpans(html);
     imgs.forEach((t, i) => {
@@ -589,8 +717,8 @@ check("7. img alt/width/height", (rec) => {
       if (w === null || !/^\d+$/.test(w.trim())) fail(rec, `${where}: missing/invalid width (${JSON.stringify(w)})`);
       if (h === null || !/^\d+$/.test(h.trim())) fail(rec, `${where}: missing/invalid height (${JSON.stringify(h)})`);
       if (hasAttr(t.raw, "fetchpriority") && (attr(t.raw, "fetchpriority") ?? "").toLowerCase() === "high") {
-        heroCount++;
-        if (heroCount > 1) fail(rec, `${where}: fetchpriority="high" — only the hero may have it (${heroCount} so far)`);
+        pageHero++;
+        if (pageHero > 1) fail(rec, `${where}: more than one fetchpriority="high" image on this page`);
       }
       // WARNING only: approximate below-the-fold as "not in <header>, not the first <img>".
       const inHeader = headers.some(([a, b]) => t.index >= a && t.index < b);
@@ -637,6 +765,16 @@ check("8. sitemap.xml", (rec) => {
   for (const slug of SLUGS) {
     const want = `/posts/${slug}.html`;
     if (!normalized.includes(want)) fail(rec, `sitemap.xml has no <loc> for ${want}`);
+  }
+
+  /*
+   * New pages are discovered from the build, not a second hardcoded list. Every
+   * generated article, case study and documentation page needs a crawlable entry.
+   */
+  for (const page of pagePaths) {
+    if (page === "/404.html") continue;
+    if (!/^\/(posts|work|docs)\//.test(page)) continue;
+    if (!normalized.includes(page)) fail(rec, `sitemap.xml has no <loc> for ${page}`);
   }
 
   for (const loc of locs) {
@@ -715,7 +853,12 @@ check("9. banned content scan", (rec) => {
     // non-article HTML page. Article pages (C14: bodies are verbatim) are reported
     // informationally instead of failing the gate.
     const isArticlePage = p.startsWith("/posts/") && !p.endsWith(".html.md");
-    const chronoScoped = NON_ARTICLE_PAGES.has(p) || (!p.startsWith("/posts/") && p.toLowerCase().endsWith(".html"));
+    /*
+     * Chronology bans protect the marketing copy from retired claims. Docs and
+     * case studies legitimately contain version dates and release history, so
+     * they are checked for banned phrases but not for bare year tokens.
+     */
+    const chronoScoped = NON_ARTICLE_PAGES.has(p);
     if (chronoScoped) {
       for (const needle of BANNED_CHRONOLOGY) {
         if (noAlt.includes(needle)) {
@@ -737,7 +880,7 @@ check("9. banned content scan", (rec) => {
 
 let jsonLdBytes = 0;
 
-check("10. zero client JS", (rec) => {
+check("10. client JS budget", (rec) => {
   let jsBytes = 0;
   for (const p of pagePaths) {
     const { html } = PAGES.get(p);
@@ -749,17 +892,40 @@ check("10. zero client JS", (rec) => {
     for (const s of scripts) {
       const type = (attr(s.raw, "type") ?? "").toLowerCase();
       if (type === "application/ld+json") {
+        const close = html.indexOf("</script>", s.index);
+        const body = close === -1 ? "" : html.slice(html.indexOf(">", s.index) + 1, close);
+        try {
+          const parsed = JSON.parse(body);
+          if (!parsed || parsed["@context"] !== "https://schema.org") {
+            fail(rec, `${p}: JSON-LD missing schema.org @context`);
+          }
+        } catch (err) {
+          fail(rec, `${p}: JSON-LD is not valid JSON (${err?.message ?? err})`);
+        }
         jsonLdBytes += Buffer.byteLength(s.raw, "utf8");
         continue;
       }
       if (hasAttr(s.raw, "src")) {
         jsBytes += Buffer.byteLength(attr(s.raw, "src") ?? "", "utf8");
         fail(rec, `${p}: executable <script src="${attr(s.raw, "src")}"> (type=${JSON.stringify(type || null)})`);
+      } else if (hasAttr(s.raw, "data-enhance")) {
+        /*
+         * One small, inline, dependency-free enhancement script is allowed:
+         * search/filter is optional and every list remains server-rendered.
+         * External scripts and unbounded inline JS are still failures.
+         */
+        const close = html.indexOf("</script>", s.index);
+        const body = close === -1 ? "" : html.slice(s.index, close);
+        const bytes = Buffer.byteLength(body, "utf8");
+        jsBytes += bytes;
+        if (bytes > 6000) {
+          fail(rec, `${p}: inline enhancement script is ${bytes} bytes (limit 6000)`);
+        }
       } else {
         const close = html.indexOf("</script>", s.index);
         const body = close === -1 ? "" : html.slice(s.index, close);
         jsBytes += Buffer.byteLength(body, "utf8");
-        fail(rec, `${p}: inline <script> without type="application/ld+json" — ${snippetAround(body, body.slice(0, 1) || "<", 40)}`);
+        fail(rec, `${p}: inline <script> without type="application/ld+json" or data-enhance — ${snippetAround(body, body.slice(0, 1) || "<", 40)}`);
       }
     }
   }

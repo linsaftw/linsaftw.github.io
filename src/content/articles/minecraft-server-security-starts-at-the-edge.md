@@ -7,6 +7,8 @@ tags: ["minecraft-security", "proxy", "exploit-protection"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/minecraft-server-security-starts-at-the-edge.html"
 draft: false
+relatedProjects: ["exploitfixer", "flamecord"]
+relatedDocs: ["/docs/exploitfixer/overview.html", "/docs/flamecord/overview.html"]
 ---
 
 Minecraft server security starts at the edge because the edge is where hostile traffic first becomes server cost. The proxy, firewall, connection handler, packet decoder, and early validation layer decide how much work the rest of the network must absorb.

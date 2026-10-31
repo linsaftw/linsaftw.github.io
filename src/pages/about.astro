@@ -2,9 +2,9 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/layout/SectionHeader.astro";
 import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
-import { links, routes, SITE_URL } from "../data/links";
+import { links, routes, SITE_URL, workPath } from "../data/links";
 import { extendedTimeline } from "../data/timeline";
-import { aiProjects, gameProjects, minecraftProjects } from "../data/projects";
+import { projectById } from "../data/projects";
 
 const canonicalPath = routes.about;
 const site = Astro.site ?? new URL(SITE_URL);
@@ -12,9 +12,12 @@ const site = Astro.site ?? new URL(SITE_URL);
 const description =
   "Juan Cruz Linsalata, known as LinsaFTW: an Argentine software developer and founder of ArkFlame Studios working across Minecraft infrastructure, security, performance, AI systems and game development.";
 
-// C4 — the about page may use the extended chronology, in ascending year order.
 const milestones = [...extendedTimeline].sort((a, b) => a.year - b.year);
 const latestYear = milestones[milestones.length - 1]?.year;
+
+const selected = ["exploitfixer", "flamewm", "flamecord", "veloflame", "fairplay", "ffaa-zombies"]
+  .map((id) => projectById(id))
+  .filter((project): project is NonNullable<typeof project> => Boolean(project));
 
 const elsewhere: ReadonlyArray<{ label: string; href: string }> = [
   { label: "GitHub", href: links.github },
@@ -41,79 +44,111 @@ const jsonLd = [
   title="About LinsaFTW — Juan Cruz Linsalata"
   description={description}
   canonicalPath={canonicalPath}
+  ogImage="/images/og/about.webp"
   jsonLd={jsonLd}
 >
   <div class="w">
-    <h1>About.</h1>
+    <header class="about-head">
+      <div>
+        <p class="eyebrow">About / Juan Cruz Linsalata</p>
+        <h1>I build the parts users never see.</h1>
+        <p class="lead">
+          I'm LinsaFTW, a software developer from Argentina and the founder of ArkFlame Studios.
+          Most of my work sits between a player and a server: proxies, packet validation, schedulers,
+          storage, anticheat and the support work that keeps production systems alive.
+        </p>
+      </div>
+      <img
+        class="portrait"
+        src="/images/profile/linsaftw.webp"
+        alt="Portrait of Juan Cruz Linsalata, known as LinsaFTW"
+        width="512"
+        height="512"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </header>
 
-    <div class="prose">
+    <div class="prose about-story">
       <p>
-        I'm Juan Cruz Linsalata, known online as LinsaFTW. I'm a software developer from Argentina
-        and the founder of ArkFlame Studios.
+        I started coding in 2010. By 2013 I was publicly building around Minecraft, and the work grew
+        out of running servers rather than writing demos. A crash, a dupe, a bot flood or a plugin
+        that quietly eats a tick is not an abstract bug when you are the person who has to answer
+        the support ticket.
       </p>
       <p>
-        I started coding in 2010 and was publicly building around Minecraft by 2013. My work grew
-        out of running servers and building tools for real operational problems, eventually
-        leading to products such as AntiBot, FlameCord, ExploitFixer, VeloFlame and FairPlay.
+        That operational bias shaped the products. FlameCord started in 2020 as a proxy layer that
+        could reject traffic before a backend saw it. ExploitFixer treats malformed packets and
+        crash attempts as a packet-path problem, not a chat-filter problem. VeloFlame continues that
+        work on Velocity. FairPlay concentrates on combat compensation because anticheat decisions
+        need to be explainable when a player disputes them.
       </p>
       <p>
-        Today I work across Minecraft infrastructure, security, performance, AI systems and game
-        development.
+        In 2026 the surface widened. FlameWM is a Rust window manager and desktop shell for Linux;
+        FFAA Zombies is a browser-first co-op game; ARK AI and FAUS Legal are focused AI products.
+        The common thread is still systems work: keep state coherent, make failure modes visible,
+        and do not claim more than the code and the evidence support.
       </p>
     </div>
 
-    <SectionHeader eyebrow="What I do" id="work" label="Minecraft · Games · AI" />
+    <SectionHeader eyebrow="What I work on" id="focus" label="Four surfaces" />
 
-    <div class="prose">
-      <p><strong>Minecraft</strong></p>
-      <ul>
-        {
-          minecraftProjects.map((project) => (
-            <li>
-              <strong>{project.name}</strong> — {project.kind}. {project.description}
-            </li>
-          ))
-        }
-      </ul>
-
-      <p><strong>Games</strong></p>
-      <ul>
-        {
-          gameProjects.map((project) => (
-            <li>
-              <strong>{project.name}</strong> — {project.kind}. {project.description}
-            </li>
-          ))
-        }
-      </ul>
-
-      <p><strong>AI</strong></p>
-      <ul>
-        {
-          aiProjects.map((project) => (
-            <li>
-              <strong>{project.name}</strong> — {project.kind}. {project.description}
-            </li>
-          ))
-        }
-      </ul>
+    <div class="focus-grid">
+      <a href={routes.work}>
+        <small>01 / Minecraft</small>
+        <h3>Infrastructure and security</h3>
+        <p>Proxies, packet filters, anticheat, entity and redstone limits, spawners and auth bridges.</p>
+        <span>Browse case studies &#8594;</span>
+      </a>
+      <a href={workPath("flamewm")}>
+        <small>02 / Desktop</small>
+        <h3>Linux systems</h3>
+        <p>FlameWM: X11 window management, a compiled shell and an experimental Wayland session.</p>
+        <span>Read the FlameWM case study &#8594;</span>
+      </a>
+      <a href={workPath("ark-ai")}>
+        <small>03 / AI</small>
+        <h3>Products with a contract</h3>
+        <p>ARK AI's canonical API and FAUS Legal's research workspace, both built around explicit limits.</p>
+        <span>See the AI work &#8594;</span>
+      </a>
+      <a href={workPath("ffaa-zombies")}>
+        <small>04 / Games</small>
+        <h3>Multiplayer systems</h3>
+        <p>FFAA Zombies: browser-first co-op survival with classes, weapons and custom maps.</p>
+        <span>Open the game brief &#8594;</span>
+      </a>
     </div>
 
     <SectionHeader eyebrow="Timeline" id="timeline" label="Journey milestones" />
 
-    <div class="tl">
+    <ol class="about-timeline">
       {
         milestones.map((milestone) => (
-          <div class={milestone.year === latestYear ? "n" : undefined}>
+          <li class={milestone.year === latestYear ? "now" : undefined}>
             <b>{milestone.year}</b>
-            {milestone.text}
-          </div>
+            <span>{milestone.text}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="meta timeline-note">
+      The 2014 entry is personal history from my own LinkedIn profile, not a public release.
+    </p>
+
+    <SectionHeader eyebrow="Selected work" id="work" label="Read the engineering" />
+
+    <div class="about-work">
+      {
+        selected.map((project) => (
+          <a href={workPath(project.id)}>
+            <small>{project.kind}</small>
+            <b>{project.name}</b>
+            <span>{project.caseStudy?.tagline}</span>
+          </a>
         ))
       }
     </div>
-    <p class="meta" style="margin-top:14px">
-      The 2014 entry is personal history from my own LinkedIn profile, not a public release.
-    </p>
 
     <SectionHeader eyebrow="Elsewhere" id="elsewhere" label="Profiles" />
 
@@ -121,10 +156,209 @@ const jsonLd = [
       {
         elsewhere.map((profile) => (
           <a class="chip" href={profile.href} target="_blank" rel="noopener noreferrer">
-            {profile.label}
+            {profile.label} &#8599;
           </a>
         ))
       }
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  .about-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 156px;
+    gap: 36px;
+    align-items: center;
+    padding-top: 54px;
+  }
+
+  .eyebrow {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  .about-head h1 {
+    max-width: 18ch;
+  }
+
+  .portrait {
+    display: block;
+    width: 156px;
+    height: 156px;
+    object-fit: cover;
+    border-radius: 50%;
+    outline: 1px solid var(--ac);
+    border: 3px solid var(--bg);
+  }
+
+  .about-story {
+    max-width: 72ch;
+    margin-top: 36px;
+  }
+
+  .about-story p {
+    font-size: 14px;
+  }
+
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .focus-grid a {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: var(--p);
+    padding: 20px 22px;
+    min-height: 190px;
+  }
+
+  .focus-grid a:hover {
+    background: var(--p2);
+  }
+
+  .focus-grid small {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .focus-grid h3 {
+    font-size: 21px;
+    margin: 0;
+  }
+
+  .focus-grid p,
+  .focus-grid span {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .focus-grid span {
+    color: var(--tx);
+    margin-top: auto;
+  }
+
+  .about-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--bd);
+    background: var(--p);
+  }
+
+  .about-timeline li {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 18px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--bd);
+    align-items: baseline;
+  }
+
+  .about-timeline li:last-child {
+    border-bottom: 0;
+  }
+
+  .about-timeline b {
+    color: var(--mu);
+    font-size: 13px;
+  }
+
+  .about-timeline span {
+    color: var(--mu);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .about-timeline .now b,
+  .about-timeline .now span {
+    color: var(--tx);
+  }
+
+  .about-timeline .now b {
+    color: var(--ac);
+  }
+
+  .timeline-note {
+    margin-top: 10px;
+  }
+
+  .about-work {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .about-work a {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: var(--p);
+    padding: 16px;
+    min-height: 126px;
+  }
+
+  .about-work a:hover {
+    background: var(--p2);
+  }
+
+  .about-work small {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .about-work b {
+    font-size: 16px;
+  }
+
+  .about-work span {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 900px) {
+    .about-work {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .about-head {
+      grid-template-columns: 1fr;
+      padding-top: 38px;
+    }
+
+    .portrait {
+      width: 112px;
+      height: 112px;
+      order: -1;
+    }
+
+    .focus-grid,
+    .about-work {
+      grid-template-columns: 1fr;
+    }
+
+    .about-timeline li {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>

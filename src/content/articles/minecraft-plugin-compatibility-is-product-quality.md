@@ -7,6 +7,8 @@ tags: ["bukkit", "paper", "folia"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/minecraft-plugin-compatibility-is-product-quality.html"
 draft: false
+relatedProjects: ["exploitfixer"]
+relatedDocs: ["/docs/exploitfixer/overview.html"]
 ---
 
 Minecraft plugin compatibility is product quality because server owners do not buy code in isolation. They buy a working result inside their existing network. That network may include old Minecraft versions, modern Paper builds, Folia, proxy forks, custom jars, other plugins, legacy configs, and unusual gameplay requirements.

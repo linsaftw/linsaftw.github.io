@@ -28,7 +28,34 @@ const articles = defineCollection({
     author: z.string(),
     canonicalPath: z.string(),
     draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+    relatedProjects: z.array(z.string()).default([]),
+    relatedDocs: z.array(z.string()).default([]),
+    ogImage: z.string().optional(),
   }),
 });
 
-export const collections = { articles };
+/*
+ * Documentation is written per plugin, per topic. The route derives both path
+ * segments from the content id (e.g. exploitfixer/configuration), so a file
+ * cannot claim a canonical path that the router will not generate.
+ */
+const docs = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/docs" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    plugin: z.string(),
+    pluginName: z.string(),
+    topic: z.string(),
+    order: z.number().int().nonnegative(),
+    updatedAt: z.coerce.date(),
+    version: z.string().optional(),
+    platforms: z.array(z.string()).default([]),
+    officialUrl: z.string().url().optional(),
+    sourceStatus: z.enum(["public", "private", "shipped-config"]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { articles, docs };

@@ -1,0 +1,97 @@
+<script is:inline data-enhance="site">
+  (() => {
+    try {
+      const roots = document.querySelectorAll("[data-filter-root]");
+      roots.forEach((root) => {
+        const input = root.querySelector("[data-filter-search]");
+        const chips = Array.from(root.querySelectorAll("[data-filter]"));
+        const items = Array.from(root.querySelectorAll("[data-item]"));
+        const count = root.querySelector("[data-filter-count]");
+        const empty = root.querySelector("[data-filter-empty]");
+        let active = "all";
+
+        const label = (n) =>
+          root.dataset.filterKind === "articles"
+            ? `${n} article${n === 1 ? "" : "s"}`
+            : `${n} project${n === 1 ? "" : "s"}`;
+
+        const apply = () => {
+          const query = (input && input.value ? input.value : "").trim().toLowerCase();
+          let visible = 0;
+          items.forEach((item) => {
+            const tags = (item.dataset.tags || "").toLowerCase().split(/\s+/);
+            const haystack = (item.dataset.search || item.textContent || "").toLowerCase();
+            const category = active === "all" || tags.includes(active);
+            const matches = !query || haystack.includes(query);
+            const show = category && matches;
+            item.hidden = !show;
+            if (show) visible += 1;
+          });
+          if (count) count.textContent = label(visible);
+          if (empty) empty.hidden = visible !== 0;
+        };
+
+        chips.forEach((chip) => {
+          chip.addEventListener("click", () => {
+            active = chip.dataset.filter || "all";
+            chips.forEach((other) =>
+              other.setAttribute("aria-pressed", String(other === chip)),
+            );
+            apply();
+          });
+        });
+
+        if (input) input.addEventListener("input", apply);
+
+        const reset = root.querySelector("[data-filter-reset]");
+        if (reset) {
+          reset.addEventListener("click", () => {
+            active = "all";
+            if (input) input.value = "";
+            chips.forEach((chip) =>
+              chip.setAttribute("aria-pressed", String(chip.dataset.filter === "all")),
+            );
+            apply();
+          });
+        }
+
+        apply();
+      });
+
+      const closeDisclosures = (except) => {
+        document.querySelectorAll("body > header details[open]").forEach((details) => {
+          if (details !== except) details.open = false;
+        });
+      };
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const openDetails = target.closest("body > header details");
+        closeDisclosures(openDetails);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeDisclosures();
+      });
+
+      const targets = Array.from(document.querySelectorAll("[data-reveal]"));
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (targets.length && !reduced && "IntersectionObserver" in window) {
+        document.documentElement.classList.add("has-reveal");
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.02 },
+        );
+        targets.forEach((target) => observer.observe(target));
+      }
+    } catch {
+      document.documentElement.classList.remove("has-reveal");
+    }
+  })();
+</script>

@@ -7,6 +7,8 @@ tags: ["folia", "threading", "minecraft-plugins"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/folia-support-is-a-threading-discipline.html"
 draft: false
+relatedProjects: ["entitylimiter", "flamespawners"]
+relatedDocs: ["/docs/entitylimiter/overview.html", "/docs/flamespawners/overview.html"]
 ---
 
 Folia support is a threading discipline. It is not only a line in plugin metadata. A plugin becomes Folia-compatible when its world, entity, region, global, and async work follows the ownership model consistently.

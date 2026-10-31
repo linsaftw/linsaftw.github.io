@@ -9,29 +9,68 @@ const canonicalPath = routes.articles;
 const site = Astro.site ?? new URL(SITE_URL);
 
 const intro =
-  "Notes on Minecraft infrastructure, security, performance, AI-assisted engineering and software development.";
+  "Source-backed notes on Minecraft infrastructure, proxy security, packet systems, Linux desktop engineering, AI products and the operational work behind them.";
 
-const description = intro;
-
-// Static list. The slug is derived from the `canonicalPath` front-matter field, never
-// from `entry.id`, so the link stays correct under either content collection API.
 const entries = (await getCollection("articles"))
   .filter((entry) => !entry.data.draft)
   .map((entry) => {
     const match = /^\/posts\/(.+)\.html$/.exec(entry.data.canonicalPath);
     const slug = match?.[1];
-    if (!slug) {
-      throw new Error(`Unexpected canonicalPath: ${entry.data.canonicalPath}`);
-    }
-    return { ...entry.data, href: postPath(slug) };
+    if (!slug) throw new Error(`Unexpected canonicalPath: ${entry.data.canonicalPath}`);
+    return {
+      ...entry.data,
+      slug,
+      href: postPath(slug),
+      iso: entry.data.publishedAt.toISOString().slice(0, 10),
+      year: entry.data.publishedAt.getUTCFullYear(),
+    };
   })
-  .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+  .sort(
+    (a, b) =>
+      b.publishedAt.getTime() - a.publishedAt.getTime() ||
+      a.title.localeCompare(b.title),
+  );
 
-const iso = (date: Date): string => date.toISOString().slice(0, 10);
+const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));
+const startHere = [
+  "exploitfixer-packet-validation-order",
+  "flamewm-x11-window-management-without-a-browser",
+  "ark-ai-canonical-api-contract",
+]
+  .map((slug) => bySlug.get(slug))
+  .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
+const categories = [
+  { id: "all", label: "All articles" },
+  { id: "minecraft", label: "Minecraft" },
+  { id: "security", label: "Security" },
+  { id: "performance", label: "Performance" },
+  { id: "systems", label: "Systems" },
+  { id: "ai", label: "AI" },
+  { id: "engineering", label: "Engineering" },
+  { id: "personal", label: "Personal" },
+] as const;
+
+const bucketTags = (tags: readonly string[]): string[] => {
+  const set = new Set(tags.map((tag) => tag.toLowerCase()));
+  const add = (...values: string[]) => values.forEach((value) => set.add(value));
+  if (tags.some((tag) => /minecraft|paper|folia|bukkit|proxy|velocity|bungeecord|packet/.test(tag))) {
+    add("minecraft", "engineering");
+  }
+  if (tags.some((tag) => /security|anticheat|exploit|auth|trust/.test(tag))) add("security");
+  if (tags.some((tag) => /performance|profiling|concurrency/.test(tag))) add("performance");
+  if (tags.some((tag) => /ai|llm|agent|model/.test(tag))) add("ai");
+  if (tags.some((tag) => /rust|linux|x11|wayland|systems|architecture/.test(tag))) add("systems");
+  if (tags.some((tag) => /personal|health|career/.test(tag))) add("personal");
+  add("engineering");
+  return [...set];
+};
+
+const description = intro;
 
 const jsonLd = [
   webPageNode(site, {
-    name: "Articles",
+    name: "Articles — LinsaFTW",
     description,
     path: canonicalPath,
     type: "CollectionPage",
@@ -39,7 +78,7 @@ const jsonLd = [
   personNode(site),
   breadcrumbNode(site, [
     { name: "Home", path: routes.home },
-    { name: "Articles", path: routes.articles },
+    { name: "Articles", path: canonicalPath },
   ]),
 ];
 ---
@@ -48,33 +87,310 @@ const jsonLd = [
   title="Articles — LinsaFTW"
   description={description}
   canonicalPath={canonicalPath}
+  ogImage="/images/og/articles.webp"
   jsonLd={jsonLd}
 >
   <div class="w">
-    <h1>Writing.</h1>
-    <p class="lead">{intro}</p>
+    <header class="articles-head">
+      <p class="eyebrow">Writing / {entries.length} articles</p>
+      <h1>Notes from the source.</h1>
+      <p class="lead">{intro}</p>
+      <div class="head-links">
+        <a class="chip hot" href={routes.work}>Work case studies</a>
+        <a class="chip" href={routes.docs}>Documentation</a>
+      </div>
+    </header>
 
-    {/* C13.5 — the cards below are <h3>, so the list needs a real <h2>
-        section heading above it or the page skips h1 -> h3. */}
-    <SectionHeader eyebrow="All articles" id="articles" label="Newest first" />
+    {
+      startHere.length > 0 && (
+        <section class="start" aria-labelledby="start-heading">
+          <div class="start-head">
+            <h2 id="start-heading">Start here</h2>
+            <span>Three different engineering surfaces</span>
+          </div>
+          <div class="start-grid">
+            {startHere.map((entry, index) => (
+              <a class="start-card" href={entry.href}>
+                <span class="start-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <small>{entry.iso}</small>
+                <b>{entry.title}</b>
+                <span>{entry.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
 
-    <div class="g">
-      {
-        entries.map((entry) => (
-          <a class="c" href={entry.href}>
-            <small>
-              <time datetime={iso(entry.publishedAt)}>{iso(entry.publishedAt)}</time>
-            </small>
-            <h3>{entry.title}</h3>
-            <p>{entry.description}</p>
-            <p style="margin-top:12px">
-              {entry.tags.map((tag) => (
-                <span class="tag">{tag}</span>
-              ))}
-            </p>
-          </a>
-        ))
-      }
+    <SectionHeader eyebrow="Archive" id="archive" label="Newest first" />
+
+    <div class="filter-root" data-filter-root data-filter-kind="articles">
+      <div class="filter-bar" role="group" aria-label="Filter articles">
+        <div class="filter-search">
+          <label for="article-search">Search articles</label>
+          <input
+            id="article-search"
+            type="search"
+            placeholder="Title, topic or tag"
+            autocomplete="off"
+            data-filter-search
+          />
+        </div>
+        <div class="filter-chips" role="group" aria-label="Article topic">
+          {
+            categories.map((category, index) => (
+              <button
+                type="button"
+                class="filter-chip"
+                data-filter={category.id}
+                aria-pressed={index === 0 ? "true" : "false"}
+              >
+                {category.label}
+              </button>
+            ))
+          }
+        </div>
+        <div class="filter-status">
+          <span data-filter-count aria-live="polite">{entries.length} articles</span>
+          <button type="button" class="filter-reset" data-filter-reset>Reset</button>
+        </div>
+      </div>
+
+      <noscript>
+        <p class="note">Filters need JavaScript. All {entries.length} articles are listed below and remain fully navigable.</p>
+      </noscript>
+
+      <div class="article-list" data-reveal>
+        {
+          entries.map((entry) => {
+            const buckets = bucketTags(entry.tags);
+            return (
+              <a
+                class="article-row"
+                href={entry.href}
+                data-item
+                data-tags={buckets.join(" ")}
+                data-search={`${entry.title} ${entry.description} ${entry.tags.join(" ")}`}
+              >
+                <div class="article-date">
+                  <time datetime={entry.iso}>{entry.iso}</time>
+                  {entry.featured && <span>Featured</span>}
+                </div>
+                <div class="article-copy">
+                  <h3>{entry.title}</h3>
+                  <p>{entry.description}</p>
+                  <div class="article-tags">
+                    {entry.tags.slice(0, 4).map((tag) => <span class="tag">{tag}</span>)}
+                  </div>
+                </div>
+                <span class="article-arrow" aria-hidden="true">&#8594;</span>
+              </a>
+            );
+          })
+        }
+      </div>
+      <p class="empty" data-filter-empty hidden>No articles match that search. Try a topic chip or reset.</p>
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  .articles-head {
+    padding: 54px 0 0;
+  }
+
+  .eyebrow {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  .head-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .start {
+    margin-top: 42px;
+  }
+
+  .start-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--bd);
+    padding-top: 14px;
+    margin-bottom: 12px;
+  }
+
+  .start-head h2 {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--tx);
+  }
+
+  .start-head span {
+    color: var(--mu-dim);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .start-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .start-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--p);
+    padding: 20px;
+    min-height: 210px;
+    transition: background 0.18s ease;
+  }
+
+  .start-card:hover {
+    background: var(--p2);
+  }
+
+  .start-num {
+    color: var(--ac);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .start-card small {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+
+  .start-card b {
+    font-size: 17px;
+    line-height: 1.25;
+  }
+
+  .start-card > span:last-child {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: auto;
+  }
+
+  .article-list {
+    border: 1px solid var(--bd);
+    background: var(--bd);
+    display: grid;
+    gap: 1px;
+  }
+
+  .article-row {
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr) 24px;
+    gap: 18px;
+    align-items: start;
+    background: var(--p);
+    padding: 18px 20px;
+    transition: background 0.18s ease;
+  }
+
+  .article-row:hover {
+    background: var(--p2);
+  }
+
+  .article-date {
+    display: grid;
+    gap: 6px;
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .article-date span {
+    color: var(--ac);
+    border: 1px solid var(--bd);
+    padding: 1px 6px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    justify-self: start;
+  }
+
+  .article-copy h3 {
+    font-size: 18px;
+    margin: 0 0 6px;
+    line-height: 1.3;
+  }
+
+  .article-copy p {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 72ch;
+  }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 9px;
+  }
+
+  .article-tags .tag {
+    font-size: 9px;
+    padding: 1px 7px;
+    margin: 0;
+  }
+
+  .article-arrow {
+    color: var(--ac);
+    font-size: 14px;
+    padding-top: 2px;
+  }
+
+  .empty {
+    border: 1px solid var(--bd);
+    color: var(--mu);
+    padding: 18px;
+    margin: 14px 0 0;
+  }
+
+  @media (max-width: 900px) {
+    .start-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .articles-head {
+      padding-top: 38px;
+    }
+
+    .article-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 16px;
+    }
+
+    .article-date {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .article-arrow {
+      display: none;
+    }
+  }
+</style>

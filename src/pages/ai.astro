@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/layout/SectionHeader.astro";
 import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
-import { routes, SITE_URL } from "../data/links";
+import { routes, SITE_URL, workPath } from "../data/links";
 import { projects } from "../data/projects";
 
 const canonicalPath = routes.ai;
@@ -26,8 +26,6 @@ if (!faus.disclaimer) throw new Error('projects.ts is missing the disclaimer for
 
 const fairplay = byId("fairplay");
 
-const host = (url: string): string => new URL(url).host;
-
 const jsonLd = [
   personNode(site),
   webPageNode(site, {
@@ -43,6 +41,7 @@ const jsonLd = [
   title="AI — LinsaFTW"
   description={description}
   canonicalPath={canonicalPath}
+  ogImage="/images/og/work-ark-ai.webp"
   jsonLd={jsonLd}
 >
   <div class="w">
@@ -54,7 +53,7 @@ const jsonLd = [
     <SectionHeader eyebrow="AI systems" id="ai" label="Providers · Legal research · Detection" />
 
     <div class="pl">
-      <a class="pc" href={arkAi.url} target="_blank" rel="noopener noreferrer">
+      <a class="pc" href={workPath(arkAi.id)}>
         <img
           src={arkAiImage}
           alt="ARK AI artwork"
@@ -67,16 +66,16 @@ const jsonLd = [
           <small>{arkAi.kind}</small>
           <h3>{arkAi.name}</h3>
           <p>{arkAi.description}</p>
-          <span class="l">{host(arkAi.url)} →</span>
+          <span class="l">Read the case study &#8594;</span>
         </div>
       </a>
 
-      <a class="pc" href={faus.url} target="_blank" rel="noopener noreferrer">
+      <a class="pc" href={workPath(faus.id)}>
         <div class="t">
           <small>{faus.kind}</small>
           <h3>{faus.name}</h3>
           <p>{faus.description}</p>
-          <span class="l">{host(faus.url)} →</span>
+          <span class="l">Read the case study &#8594;</span>
         </div>
       </a>
     </div>

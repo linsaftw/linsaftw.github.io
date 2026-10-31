@@ -1,0 +1,690 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { breadcrumbNode, personNode, webPageNode } from "../../components/seo/JsonLd.astro";
+import { links, routes, SITE_URL, workPath } from "../../data/links";
+import { caseStudyProjects, projectById } from "../../data/projects";
+
+export function getStaticPaths() {
+  return caseStudyProjects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const study = project.caseStudy;
+if (!study) throw new Error(`/work/${project.id} has no case study data`);
+
+const canonicalPath = workPath(project.id);
+const site = Astro.site ?? new URL(SITE_URL);
+const pageTitle = `${project.name} — ${project.kind} case study`;
+const description = study.tagline;
+
+const availabilityLabel: Record<string, string> = {
+  public: "Public build",
+  source: "Source release",
+  private: "Private source",
+  experiment: "Experiment",
+};
+
+const primaryLabel: Record<string, string> = {
+  exploitfixer: "Official ExploitFixer site",
+  flamecord: "Official FlameCord site",
+  veloflame: "Official VeloFlame site",
+  fairplay: "FairPlay on BuiltByBit",
+  flamewm: "Visit FlameWM",
+  "ffaa-zombies": "Play FFAA Zombies",
+  "ark-ai": "Open ARK AI",
+  "faus-legal": "Open FAUS Legal",
+};
+
+const related = study.related
+  ?.map((id) => projectById(id))
+  .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate?.caseStudy));
+
+const docLabel = (href: string): string => {
+  const topic = href.split("/").pop()?.replace(".html", "") ?? "overview";
+  const labels: Record<string, string> = {
+    overview: "Overview",
+    installation: "Installation",
+    configuration: "Configuration",
+    "commands-permissions": "Commands and permissions",
+  };
+  return labels[topic] ?? topic;
+};
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: pageTitle,
+    description,
+    path: canonicalPath,
+    type: "WebPage",
+  }),
+  breadcrumbNode(site, [
+    { name: "Home", path: routes.home },
+    { name: "Work", path: routes.work },
+    { name: project.name, path: canonicalPath },
+  ]),
+];
+---
+
+<BaseLayout
+  title={`${pageTitle} — LinsaFTW`}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage={`/images/og/work-${project.id}.webp`}
+  jsonLd={jsonLd}
+>
+  <article class="w case">
+    <nav class="crumbs meta" aria-label="Breadcrumb">
+      <a href={routes.home}>Home</a>
+      <span aria-hidden="true">/</span>
+      <a href={routes.work}>Work</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{project.name}</span>
+    </nav>
+
+    <header class="case-head">
+      <div class="case-title">
+        <p class="eyebrow">
+          <span>{project.kind}</span>
+          <span class="dot" aria-hidden="true">/</span>
+          <span>{availabilityLabel[study.availability]}</span>
+        </p>
+        <h1>{project.name}</h1>
+        <p class="case-tagline">{study.tagline}</p>
+        <p class="lead">{project.description}</p>
+
+        <div class="case-ctas">
+          <a class="chip hot" href={project.url} target="_blank" rel="noopener noreferrer">
+            {primaryLabel[project.id] ?? "Official product"} &#8599;
+          </a>
+          {
+            project.marketplaceUrl && project.marketplaceUrl !== project.url && (
+              <a class="chip" href={project.marketplaceUrl} target="_blank" rel="noopener noreferrer">
+                BuiltByBit &#8599;
+              </a>
+            )
+          }
+          {
+            study.sourceUrl && (
+              <a class="chip" href={study.sourceUrl} target="_blank" rel="noopener noreferrer">
+                Source &#8599;
+              </a>
+            )
+          }
+          {
+            project.id === "flamewm" && (
+              <a class="chip" href={links.flamewmRelease} target="_blank" rel="noopener noreferrer">
+                0.1.3 release &#8599;
+              </a>
+            )
+          }
+        </div>
+      </div>
+
+      <div class="case-status">
+        <small>Status</small>
+        <p>{study.status}</p>
+        {
+          study.version && (
+            <p class="case-version">
+              Checked version <b>{study.version}</b>
+            </p>
+          )
+        }
+        <p class="case-checked">Evidence checked {study.checked}</p>
+      </div>
+    </header>
+
+    {
+      project.image && (
+        <figure class:list={["case-banner", project.id === "ffaa-zombies" && "is-square"]}>
+          <img
+            src={project.image}
+            alt={`${project.name} product artwork`}
+            width={project.id === "ffaa-zombies" ? 1000 : 720}
+            height={project.id === "ffaa-zombies" ? 1000 : 405}
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      )
+    }
+
+    <div class="case-grid">
+      <div class="case-main">
+        <section aria-labelledby="problem">
+          <h2 id="problem">The problem</h2>
+          <p>{study.problem}</p>
+        </section>
+
+        <section aria-labelledby="contribution">
+          <h2 id="contribution">What I built</h2>
+          <ul class="case-list">
+            {study.contribution.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+
+        <section aria-labelledby="architecture">
+          <h2 id="architecture">Architecture and trade-offs</h2>
+          <div class="case-sections">
+            {
+              study.architecture.map((section, index) => (
+                <div class="case-section">
+                  <span class="case-num" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3>{section.title}</h3>
+                    <p>{section.body}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        {study.gallery && study.gallery.length > 0 && (
+          <section aria-labelledby="gallery">
+            <h2 id="gallery">Screens</h2>
+            <div class="case-gallery">
+              {study.gallery.map((shot) => (
+                <figure>
+                  <img
+                    src={shot.src}
+                    alt={shot.alt}
+                    width={shot.width}
+                    height={shot.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  {shot.caption && <figcaption>{shot.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {
+          study.caveat && (
+            <aside class="case-caveat" aria-label="Limits and caveats">
+              <small>Limits and caveats</small>
+              <p>{study.caveat}</p>
+            </aside>
+          )
+        }
+      </div>
+
+      <aside class="case-side" aria-label="Project facts">
+        <section>
+          <h2>Verified facts</h2>
+          <dl class="facts">
+            {study.facts.map((fact) => (
+              <div>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section>
+          <h2>Capabilities</h2>
+          <ul class="case-caps">
+            {study.capabilities.map((capability) => <li>{capability}</li>)}
+          </ul>
+        </section>
+
+        {
+          ((study.docs && study.docs.length > 0) || (study.articles && study.articles.length > 0)) && (
+            <section>
+              <h2>Go deeper</h2>
+              <ul class="case-links">
+                {study.docs?.map((doc) => (
+                  <li>
+                    <a href={doc}>{docLabel(doc)} &#8594;</a>
+                  </li>
+                ))}
+                {study.articles?.map((article) => (
+                  <li>
+                    <a href={article}>Technical article &#8594;</a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+      </aside>
+    </div>
+
+    {
+      related && related.length > 0 && (
+        <section class="case-related" aria-labelledby="related">
+          <div class="sh">
+            <h2 id="related">Related work</h2>
+            <span class="sh-right">Same engineering surface</span>
+          </div>
+          <div class="related-work">
+            {related.map((item) => (
+              <a href={workPath(item.id)}>
+                <small>{item.kind}</small>
+                <b>{item.name}</b>
+                <span>{item.caseStudy?.tagline}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <p class="case-back"><a href={routes.work}>&#8592; All work</a></p>
+  </article>
+</BaseLayout>
+
+<style>
+  .case {
+    padding-top: 34px;
+    padding-bottom: 40px;
+  }
+
+  .crumbs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 34px;
+  }
+
+  .crumbs a:hover {
+    color: var(--ac);
+  }
+
+  .case-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(220px, 0.8fr);
+    gap: 34px;
+    align-items: start;
+  }
+
+  .eyebrow {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+
+  .eyebrow .dot {
+    color: var(--mu-dim);
+  }
+
+  .case h1 {
+    margin: 0 0 12px;
+  }
+
+  .case-tagline {
+    color: var(--tx);
+    font-size: clamp(17px, 2vw, 22px);
+    line-height: 1.45;
+    max-width: 44ch;
+    margin: 0 0 14px;
+  }
+
+  .case .lead {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .case-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .case-status {
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 18px 20px;
+  }
+
+  .case-status small,
+  .case-caveat small {
+    display: block;
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .case-status p {
+    color: var(--mu);
+    font-size: 13px;
+    margin: 0 0 12px;
+  }
+
+  .case-status .case-version {
+    color: var(--tx);
+    border-top: 1px solid var(--bd);
+    padding-top: 12px;
+  }
+
+  .case-status .case-version b {
+    color: var(--gr);
+  }
+
+  .case-status .case-checked {
+    color: var(--mu-dim);
+    font-size: 11px;
+    margin: 0;
+  }
+
+  .case-banner {
+    display: flex;
+    justify-content: center;
+    max-width: 760px;
+    margin: 34px auto 0;
+    border: 1px solid var(--bd);
+    background: var(--shell2);
+  }
+
+  .case-banner img {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+  }
+
+  .case-banner.is-square {
+    display: flex;
+    justify-content: center;
+    background: var(--shell2);
+  }
+
+  .case-banner.is-square img {
+    width: min(100%, 560px);
+  }
+
+  .case-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.75fr);
+    gap: 46px;
+    margin-top: 48px;
+    align-items: start;
+  }
+
+  .case-main section {
+    margin-bottom: 42px;
+  }
+
+  .case-main h2,
+  .case-side h2,
+  .case-related h2 {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mu);
+    margin: 0 0 14px;
+  }
+
+  .case-main h2 {
+    color: var(--tx);
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    text-transform: none;
+  }
+
+  .case-main p {
+    color: var(--mu);
+    max-width: 68ch;
+    margin: 0 0 16px;
+    font-size: 14px;
+  }
+
+  .case-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+    max-width: 68ch;
+  }
+
+  .case-list li {
+    background: var(--p);
+    color: var(--mu);
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+
+  .case-sections {
+    display: grid;
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .case-section {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    background: var(--p);
+    padding: 18px 18px 16px;
+  }
+
+  .case-num {
+    color: var(--ac);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    padding-top: 3px;
+  }
+
+  .case-section h3 {
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+  }
+
+  .case-section p {
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .case-gallery {
+    display: grid;
+    gap: 14px;
+  }
+
+  .case-gallery figure {
+    margin: 0;
+    border: 1px solid var(--bd);
+    background: var(--p);
+  }
+
+  .case-gallery img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .case-gallery figcaption {
+    color: var(--mu);
+    font-size: 11px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--bd);
+  }
+
+  .case-caveat {
+    border: 1px solid var(--bd);
+    border-left: 2px solid var(--ac);
+    background: var(--p);
+    padding: 16px 18px;
+  }
+
+  .case-caveat p {
+    margin: 0;
+    font-size: 12px;
+  }
+
+  .case-side {
+    position: sticky;
+    top: 74px;
+    display: grid;
+    gap: 28px;
+  }
+
+  .case-side section {
+    border-top: 1px solid var(--bd);
+    padding-top: 16px;
+  }
+
+  .facts {
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .facts div {
+    display: grid;
+    gap: 2px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .facts dt {
+    color: var(--mu-dim);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .facts dd {
+    margin: 0;
+    color: var(--tx);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .case-caps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 7px;
+  }
+
+  .case-caps li,
+  .case-links li {
+    color: var(--mu);
+    font-size: 12px;
+    border-bottom: 1px solid var(--bd);
+    padding-bottom: 7px;
+  }
+
+  .case-caps li::before {
+    content: "+";
+    color: var(--gr);
+    margin-right: 8px;
+  }
+
+  .case-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .case-links a {
+    color: var(--ac);
+    font-size: 12px;
+  }
+
+  .case-related {
+    margin-top: 48px;
+  }
+
+  .related-work {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .related-work a {
+    display: grid;
+    gap: 5px;
+    background: var(--p);
+    padding: 16px;
+    min-height: 100px;
+    align-content: center;
+  }
+
+  .related-work a:hover {
+    background: var(--p2);
+  }
+
+  .related-work small {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .related-work b {
+    font-size: 16px;
+  }
+
+  .related-work span {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .case-back {
+    margin-top: 40px;
+  }
+
+  .case-back a {
+    color: var(--ac);
+    font-size: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .case-head,
+    .case-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .case-side {
+      position: static;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .related-work {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .case {
+      padding-top: 24px;
+    }
+
+    .case-side {
+      grid-template-columns: 1fr;
+    }
+
+    .case-section {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

@@ -7,6 +7,8 @@ tags: ["velocity", "bungeecord", "proxy-security"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/velocity-bungeecord-and-proxy-trust-boundaries.html"
 draft: false
+relatedProjects: ["veloflame", "flamecord"]
+relatedDocs: ["/docs/veloflame/overview.html", "/docs/flamecord/overview.html"]
 ---
 
 Velocity and BungeeCord networks depend on trust boundaries. A backend server should know whether a connection came through the trusted proxy path, whether forwarded identity data can be accepted, and whether direct backend access is blocked.

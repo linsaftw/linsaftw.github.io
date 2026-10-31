@@ -1,121 +1,357 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/layout/SectionHeader.astro";
-import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
-import { links, routes, SITE_URL } from "../data/links";
-import { projects } from "../data/projects";
+import { breadcrumbNode, personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { links, routes, SITE_URL, workPath } from "../data/links";
+import { projectById } from "../data/projects";
 
 const canonicalPath = routes.work;
 const site = Astro.site ?? new URL(SITE_URL);
 
 const description =
-  "Selected professional work: ExploitFixer, FlameCord, VeloFlame and FairPlay, built through ArkFlame Studios.";
+  "Engineering case studies for ExploitFixer, FlameCord, VeloFlame, FairPlay, FlameWM and other projects by Juan Cruz Linsalata.";
 
-const byId = (id: string) => {
-  const found = projects.find((p) => p.id === id);
-  if (!found) throw new Error(`projects.ts is missing "${id}"`);
-  return found;
+const catalog = [
+  "exploitfixer",
+  "flamecord",
+  "veloflame",
+  "fairplay",
+  "flamewm",
+  "ffaa-zombies",
+  "entitylimiter",
+  "redstonelimiter",
+  "flamespawners",
+  "authmepremium",
+  "ark-ai",
+  "faus-legal",
+]
+  .map((id) => projectById(id))
+  .filter((project) => project?.caseStudy);
+
+const org = projectById("arkflame-studios");
+if (!org) throw new Error("projects.ts is missing the ArkFlame Studios entry");
+
+const categories = [
+  { id: "all", label: "All work" },
+  { id: "minecraft", label: "Minecraft" },
+  { id: "desktop", label: "Desktop" },
+  { id: "game", label: "Games" },
+  { id: "ai", label: "AI" },
+  { id: "legal-ai", label: "Legal AI" },
+  { id: "source", label: "Open source" },
+  { id: "private", label: "Private source" },
+] as const;
+
+const availabilityLabel: Record<string, string> = {
+  public: "Public build",
+  source: "Source release",
+  private: "Private source",
+  experiment: "Experiment",
 };
 
-const org = byId("arkflame-studios");
-
-// C3 — BuiltByBit twin for each product that also has an own domain.
-// FairPlay is published on BuiltByBit only, so it has no twin entry.
-const builtByBit: Record<string, string> = {
-  exploitfixer: links.exploitfixBb,
-  flamecord: links.flamecordBb,
-  veloflame: links.veloflameBb,
-};
-
-const products = ["exploitfixer", "flamecord", "veloflame", "fairplay"].map((id) => {
-  const project = byId(id);
-  const marketplace = builtByBit[id];
-  const label = marketplace ? "own domain and BuiltByBit" : "BuiltByBit";
-  return { project, marketplace, label };
-});
-
-const technicalFocus: readonly string[] = [
-  "Java",
-  "Paper / Folia",
-  "BungeeCord / Velocity",
-  "Packets",
-  "Concurrency",
-  "Performance",
-  "Security",
-];
-
-const host = (url: string): string => new URL(url).host;
-
-// C9 — Person + WebPage only. No Product schema anywhere on this site.
 const jsonLd = [
   personNode(site),
   webPageNode(site, {
-    name: "Work",
+    name: "Work — LinsaFTW",
     description,
     path: canonicalPath,
     type: "CollectionPage",
   }),
+  breadcrumbNode(site, [
+    { name: "Home", path: routes.home },
+    { name: "Work", path: canonicalPath },
+  ]),
 ];
+
+const count = catalog.length;
 ---
 
 <BaseLayout
   title="Work — LinsaFTW"
   description={description}
   canonicalPath={canonicalPath}
+  ogImage="/images/og/work.webp"
   jsonLd={jsonLd}
 >
   <div class="w">
-    <h1>Selected <em>work.</em></h1>
-
-    {/* C13.5 — the ArkFlame Studios block below is an <h3>, so it needs a real
-        <h2> section heading above it: h1 -> h2 (section) -> h3 (item). */}
-    <SectionHeader eyebrow="Studio" id="studio" label="ArkFlame Studios" />
-
-    <a class="ceo" href={org.url} target="_blank" rel="noopener noreferrer">
-      <div>
-        <small style="color:var(--ac);letter-spacing:.22em;font-size:10px">FOUNDER</small>
-        <h3>{org.name}</h3>
-        <p>{org.description}</p>
+    <header class="page-head">
+      <p class="eyebrow">Selected work / {count} case studies</p>
+      <h1>Systems that ship.</h1>
+      <p class="lead">
+        Minecraft infrastructure, a Linux desktop, games and AI tools. Each entry explains the
+        problem, what I built, the trade-offs and where the official build lives.
+      </p>
+      <div class="head-links">
+        <a class="chip hot" href={routes.docs}>Documentation</a>
+        <a class="chip" href={routes.articles}>Technical articles</a>
+        <a class="chip" href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">
+          ArkFlame catalog &#8599;
+        </a>
       </div>
-      <b>{host(org.url)} →</b>
-    </a>
+    </header>
 
-    <SectionHeader eyebrow="Minecraft plugins" id="build" label="Top LinsaFTW plugins" />
+    <div class="studio-strip">
+      <div>
+        <small>Studio</small>
+        <b>{org.name}</b>
+        <span>{org.description}</span>
+      </div>
+      <a href={links.arkflame} target="_blank" rel="noopener noreferrer">arkflame.com &#8599;</a>
+    </div>
 
-    <div class="g g2">
-      {
-        products.map(({ project, marketplace, label }) => (
-          <div class="c">
-            <small>{project.kind}</small>
-            <h3>{project.name}</h3>
-            <p>{project.description}</p>
-            <div class="chips" style="margin-top:14px">
-              <a class="chip hot" href={project.url} target="_blank" rel="noopener noreferrer">
-                {host(project.url)} →
+    <SectionHeader eyebrow="All projects" id="projects" label="Newest evidence first" />
+
+    <div class="filter-root" data-filter-root>
+      <div class="filter-bar" role="group" aria-label="Filter projects">
+        <div class="filter-search">
+          <label for="work-search">Search projects</label>
+          <input
+            id="work-search"
+            type="search"
+            placeholder="Name, platform or topic"
+            autocomplete="off"
+            data-filter-search
+          />
+        </div>
+        <div class="filter-chips" role="group" aria-label="Project category">
+          {
+            categories.map((category, index) => (
+              <button
+                type="button"
+                class="filter-chip"
+                data-filter={category.id}
+                aria-pressed={index === 0 ? "true" : "false"}
+              >
+                {category.label}
+              </button>
+            ))
+          }
+        </div>
+        <div class="filter-status">
+          <span data-filter-count aria-live="polite">{count} projects</span>
+          <button type="button" class="filter-reset" data-filter-reset>Reset</button>
+        </div>
+      </div>
+
+      <noscript>
+        <p class="note">Filters need JavaScript. All {count} projects are listed below and remain fully navigable.</p>
+      </noscript>
+
+      <div class="work-grid" data-reveal>
+        {
+          catalog.map((project) => {
+            if (!project?.caseStudy) return null;
+            const tags = [
+              project.category,
+              project.caseStudy.availability,
+              project.name.toLowerCase(),
+              project.kind.toLowerCase(),
+              ...(project.platforms ?? []),
+            ]
+              .join(" ")
+              .toLowerCase();
+            return (
+              <a
+                class="work-card"
+                href={workPath(project.id)}
+                data-item
+                data-tags={tags}
+                data-search={`${project.name} ${project.kind} ${project.description} ${project.caseStudy.tagline}`}
+              >
+                {project.image ? (
+                  <img
+                    src={project.image}
+                    alt={`${project.name} project artwork`}
+                    width={720}
+                    height={405}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span class="work-noimg" aria-hidden="true">LinsaFTW</span>
+                )}
+                <div class="work-body">
+                  <div class="work-meta">
+                    <span>{project.kind}</span>
+                    <span>{availabilityLabel[project.caseStudy.availability]}</span>
+                  </div>
+                  <h3>{project.name}</h3>
+                  <p>{project.caseStudy.tagline}</p>
+                  <span class="work-cta">Read case study &#8594;</span>
+                </div>
               </a>
-              {marketplace && (
-                <a class="chip" href={marketplace} target="_blank" rel="noopener noreferrer">
-                  BuiltByBit
-                </a>
-              )}
-            </div>
-            <p class="meta" style="margin-top:10px">Published on {label}.</p>
-          </div>
-        ))
-      }
+            );
+          })
+        }
+      </div>
+      <p class="empty" data-filter-empty hidden>No projects match that search. Try a category chip or reset.</p>
     </div>
 
     <p class="note">
-      This is a short list, not the full catalog. The complete ArkFlame Studios catalog lives on
-      <a href={org.url} target="_blank" rel="noopener noreferrer" style="color:var(--ac)">
-        {host(org.url)}</a
-      >.
+      This is a curated engineering portfolio, not the full ArkFlame catalog. Commercial product
+      pages, downloads and support live on <a href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">arkflame.com/plugins</a>.
     </p>
-
-    <SectionHeader eyebrow="Technical focus" id="stack" label="Day to day" />
-
-    <div class="stack">
-      {technicalFocus.map((item) => <span>{item}</span>)}
-    </div>
   </div>
 </BaseLayout>
+
+<style>
+  .page-head {
+    padding: 54px 0 0;
+  }
+
+  .eyebrow {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  .head-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .studio-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    border: 1px solid var(--ac);
+    background: linear-gradient(90deg, var(--ceo-grad), var(--p) 58%);
+    padding: 20px 22px;
+    margin-top: 38px;
+  }
+
+  .studio-strip div {
+    display: grid;
+    gap: 4px;
+  }
+
+  .studio-strip small {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .studio-strip b {
+    font-size: 20px;
+  }
+
+  .studio-strip span {
+    color: var(--mu);
+    font-size: 13px;
+  }
+
+  .studio-strip > a {
+    color: var(--ac);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .work-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--p);
+    min-width: 0;
+    transition: background 0.18s ease;
+  }
+
+  .work-card:hover,
+  .work-card:focus-visible {
+    background: var(--p2);
+  }
+
+  .work-card img,
+  .work-noimg {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--bd);
+    background: var(--shell2);
+  }
+
+  .work-noimg {
+    display: grid;
+    place-items: center;
+    color: var(--bd);
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+  }
+
+  .work-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .work-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .work-meta span:last-child {
+    color: var(--gr);
+    text-align: right;
+  }
+
+  .work-body h3 {
+    font-size: 21px;
+    margin: 0;
+  }
+
+  .work-body p {
+    color: var(--mu);
+    font-size: 13px;
+    margin: 0;
+    flex: 1;
+  }
+
+  .work-cta {
+    color: var(--ac);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .empty {
+    border: 1px solid var(--bd);
+    color: var(--mu);
+    padding: 18px;
+    margin: 14px 0 0;
+  }
+
+  @media (max-width: 760px) {
+    .page-head {
+      padding-top: 38px;
+    }
+
+    .work-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .work-body h3 {
+      font-size: 19px;
+    }
+  }
+</style>

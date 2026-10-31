@@ -2,49 +2,54 @@
 import { links, routes } from "../../data/links";
 
 export interface Props {
-  /** Canonical path of the current page, e.g. "/work.html" or "/". */
+  /** Canonical path of the current page, e.g. "/work.html" or "/docs/exploitfixer/overview.html". */
   activePath?: string;
 }
 
 const { activePath = routes.home } = Astro.props;
 
-const onHome = activePath === routes.home;
+type NavItem = { label: string; href: string; match: readonly string[] };
 
-// C8 — Work · Games · AI · Experiments · About + GitHub ↗.
-// On `/` the four section links point at the matching homepage anchor (C8);
-// from any other page they point at the real page.
-const nav = [
-  { label: "Work", href: onHome ? "/#build" : routes.work, anchor: "build" },
-  { label: "Games", href: onHome ? "/#games" : routes.games, anchor: "games" },
-  { label: "AI", href: onHome ? "/#ai" : routes.ai, anchor: "ai" },
-  { label: "Experiments", href: onHome ? "/#lab" : routes.experiments, anchor: "lab" },
-  { label: "About", href: routes.about, anchor: "about" },
-] as const;
+const primary: readonly NavItem[] = [
+  { label: "Work", href: routes.work, match: ["/work.html", "/work/"] },
+  { label: "Articles", href: routes.articles, match: ["/articles.html", "/posts/"] },
+  { label: "Docs", href: routes.docs, match: ["/docs.html", "/docs/"] },
+  { label: "About", href: routes.about, match: ["/about.html"] },
+];
 
-const isCurrent = (href: string): boolean => {
-  if (href === activePath) return true;
-  // On the homepage, an anchor link to the current page is not "current" itself,
-  // but About is the only real page match.
-  return href === routes.about && activePath === routes.about;
-};
+const secondary: readonly NavItem[] = [
+  { label: "Games", href: routes.games, match: ["/games.html"] },
+  { label: "AI", href: routes.ai, match: ["/ai.html"] },
+  { label: "Experiments", href: routes.experiments, match: ["/experiments.html"] },
+];
+
+const isCurrent = (item: NavItem): boolean =>
+  item.match.some((prefix) =>
+    prefix.endsWith("/") ? activePath.startsWith(prefix) : activePath === prefix,
+  );
 ---
 
 <header>
   <div class="w">
     <a class="logo" href={routes.home} aria-label="LinsaFTW home">LinsaFTW</a>
 
-    {/*
-      C18 — compact nav with ZERO client JavaScript. A native <details>
-      disclosure owns the open/closed state, so it toggles and is keyboard
-      operable (Enter/Space) with no script at all. Every link stays in the DOM
-      either way, so the nav is fully reachable without JS.
-    */}
     <details class="nav-drawer" id="nav-drawer">
-      <summary class="nav-toggle">Menu</summary>
+      <summary class="nav-toggle">
+        <span class="menu-closed">Menu</span>
+        <span class="menu-open">Close</span>
+      </summary>
       <nav class="nav-drawer-links" aria-label="Primary (compact)">
         {
-          nav.map((item) => (
-            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+          primary.map((item) => (
+            <a href={item.href} aria-current={isCurrent(item) ? "page" : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+        <span class="drawer-label">More</span>
+        {
+          secondary.map((item) => (
+            <a href={item.href} aria-current={isCurrent(item) ? "page" : undefined}>
               {item.label}
             </a>
           ))
@@ -55,16 +60,25 @@ const isCurrent = (href: string): boolean => {
 
     <nav class="nav-links" aria-label="Primary">
       {
-        nav.map((item) => (
-          <a
-            href={item.href}
-            aria-current={isCurrent(item.href) ? "page" : undefined}
-          >
+        primary.map((item) => (
+          <a href={item.href} aria-current={isCurrent(item) ? "page" : undefined}>
             {item.label}
           </a>
         ))
       }
-      <a class="keep" href={links.github} target="_blank" rel="noopener noreferrer">
+      <details class="nav-more">
+        <summary>More</summary>
+        <div class="nav-more-panel">
+          {
+            secondary.map((item) => (
+              <a href={item.href} aria-current={isCurrent(item) ? "page" : undefined}>
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </details>
+      <a class="keep github" href={links.github} target="_blank" rel="noopener noreferrer">
         GitHub &#8599;
       </a>
     </nav>
@@ -72,42 +86,98 @@ const isCurrent = (href: string): boolean => {
 </header>
 
 <style>
-  /*
-   * C18 — compact nav with ZERO client JavaScript.
-   *
-   * app.css already hides `.nav-drawer` and shows `.nav-toggle` at the ≤760px
-   * breakpoint. These rules replace the script-driven `[data-open="true"]`
-   * state with the native `[open]` state of <details>, and strip the default
-   * disclosure marker so the <summary> reads exactly like the old <button>.
-   *
-   * <details> is a real HTML element: the browser owns the open/closed state,
-   * it toggles on click, it is focusable and activates on Enter/Space, and it
-   * is announced as a disclosure by screen readers. No script is involved, so
-   * every nav link stays in the DOM and reachable with JS disabled.
-   */
-  summary.nav-toggle {
+  summary.nav-toggle,
+  summary.nav-more > summary {
     list-style: none;
   }
 
-  summary.nav-toggle::-webkit-details-marker {
+  summary.nav-toggle::-webkit-details-marker,
+  summary.nav-more > summary::-webkit-details-marker {
     display: none;
   }
 
-  summary.nav-toggle::marker {
+  summary.nav-toggle::marker,
+  summary.nav-more > summary::marker {
     content: "";
   }
 
+  .menu-open {
+    display: none;
+  }
+
+  .nav-drawer[open] .menu-closed {
+    display: none;
+  }
+
+  .nav-drawer[open] .menu-open {
+    display: inline;
+  }
+
+  .nav-more {
+    position: relative;
+  }
+
+  .nav-more > summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--mu);
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .nav-more > summary:hover,
+  .nav-more[open] > summary {
+    color: var(--ac);
+  }
+
+  .nav-more-panel {
+    position: absolute;
+    top: calc(100% - 2px);
+    right: 0;
+    min-width: 176px;
+    display: grid;
+    background: var(--p);
+    border: 1px solid var(--bd);
+    padding: 4px;
+    box-shadow: 0 18px 40px #000a;
+  }
+
+  .nav-more-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .nav-more-panel a:last-child {
+    border-bottom: 0;
+  }
+
+  .nav-more-panel a[aria-current="page"] {
+    color: var(--ac);
+  }
+
+  .drawer-label {
+    color: var(--mu-dim);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 14px 0 4px;
+  }
+
   @media (max-width: 760px) {
-    /* Same split the old button had: `margin-left:auto` pushed Menu right,
-       `.nav-links { margin-left:auto }` pushed the kept GitHub link right. */
     .nav-drawer {
       display: block;
       margin-left: auto;
     }
 
-    /* `header` is `position: sticky`, so it is the containing block: the open
-       drawer sits full-bleed under the 52px bar exactly like the old
-       sibling `<nav class="nav-drawer">` did, without growing `.w`. */
+    .nav-more {
+      display: none;
+    }
+
     .nav-drawer[open] .nav-drawer-links {
       position: absolute;
       top: 100%;
@@ -116,16 +186,18 @@ const isCurrent = (href: string): boolean => {
       display: flex;
       flex-direction: column;
       gap: 2px;
-      padding: 0 20px 14px;
-      background: var(--header-bg);
-      backdrop-filter: blur(8px);
+      max-height: calc(100dvh - 56px);
+      overflow-y: auto;
+      padding: 0 20px 18px;
+      background: var(--bg);
+      box-shadow: 0 18px 40px #000c;
       border-bottom: 1px solid var(--bd);
     }
 
     .nav-drawer[open] .nav-drawer-links a {
       color: var(--mu);
-      font-size: 12px;
-      padding: 9px 0;
+      font-size: 13px;
+      padding: 12px 0;
       border-bottom: 1px solid var(--bd);
     }
 

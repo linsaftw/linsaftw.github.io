@@ -17,7 +17,7 @@ export const jobTitle = "Software Developer";
 /** C7 — exact homepage description. Do not paraphrase. */
 export const homeDescription =
   "LinsaFTW is Juan Cruz Linsalata, an Argentine software developer and founder of ArkFlame " +
-  "Studios building Minecraft infrastructure, security systems, games and AI projects.";
+  "Studios building Minecraft infrastructure, security systems, a Linux desktop, games and AI projects.";
 
 /** C16 — exact H1 and lead for the homepage. */
 export const homeH1 = "I make Minecraft infrastructure.";
@@ -32,10 +32,10 @@ export const bannerCaption = "> coding since 2010";
 /** C16 — terminal panel, verbatim. */
 export const terminalLines: ReadonlyArray<readonly [prompt: string, output: string]> = [
   ["$ whoami", "linsaftw — founder, developer, operator"],
-  ["$ ls ~/work", "arkflame  flamecord  exploitfixer  veloflame  fairplay  ffaa  ark-ai  faus"],
+  ["$ ls ~/work", "arkflame  flamecord  exploitfixer  veloflame  fairplay  flamewm  ffaa  ark-ai  faus"],
   [
     "$ cat ~/stack",
-    "java · paper · folia · bungeecord · velocity · packets · concurrency · typescript · linux",
+    "java · paper · folia · bungeecord · velocity · packets · concurrency · typescript · rust · linux",
   ],
   ["$ uptime", "coding since 2010 · building for production systems"],
 ];

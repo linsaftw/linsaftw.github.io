@@ -1,20 +1,21 @@
 ---
 import type { Project } from "../../data/projects";
+import { workPath } from "../../data/links";
 
 export interface Props {
   project: Project;
-  /** Explicit CTA text. Defaults to the real host of `project.url`. */
+  /** Explicit CTA text. Defaults to the internal case study. */
   cta?: string;
   /** Extra honest line rendered under the description (e.g. a disclaimer). */
   note?: string;
-  /** Set false for products the POC shipped without artwork. */
+  /** Set false for products shipped without artwork. */
   showImage?: boolean;
 }
 
 const { project, cta, note, showImage = true } = Astro.props;
 
 /**
- * C10 — exact pixel dimensions and alt text per `public/images/README.md`.
+ * Exact pixel dimensions and alt text per `public/images/README.md`.
  * Nothing here invents an aspect ratio.
  */
 const artwork: Record<string, { width: number; height: number; alt: string }> = {
@@ -24,15 +25,22 @@ const artwork: Record<string, { width: number; height: number; alt: string }> = 
   "fairplay": { width: 720, height: 360, alt: "FairPlay plugin artwork" },
   "ark-ai": { width: 720, height: 378, alt: "ARK AI artwork" },
   "ffaa-zombies": { width: 1000, height: 1000, alt: "FFAA Zombies gameplay screenshot" },
+  "flamewm": { width: 720, height: 405, alt: "FlameWM desktop screenshot" },
 };
 
-// C3 — the CTA is always a real, resolvable host, never a guessed domain.
-const host = new URL(project.url).host.replace(/^www\./, "");
-const ctaText = cta ?? `${host} →`;
+// Case studies stay on-site; official downloads are the secondary CTA inside.
+const internal = Boolean(project.caseStudy);
+const href = internal ? workPath(project.id) : project.url;
+const ctaText = cta ?? (internal ? "Read case study →" : "Visit →");
 const image = artwork[project.id];
 ---
 
-<a class="pc" href={project.url} target="_blank" rel="noopener noreferrer">
+<a
+  class="pc"
+  href={href}
+  target={internal ? undefined : "_blank"}
+  rel={internal ? undefined : "noopener noreferrer"}
+>
   {
     showImage && project.image && image && (
       <img

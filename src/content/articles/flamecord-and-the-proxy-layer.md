@@ -7,6 +7,8 @@ tags: ["flamecord", "security", "minecraft"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/flamecord-and-the-proxy-layer.html"
 draft: false
+relatedProjects: ["flamecord"]
+relatedDocs: ["/docs/flamecord/overview.html", "/docs/flamecord/configuration.html"]
 ---
 
 FlameCord started from a practical problem: Minecraft networks need a proxy layer that can survive real traffic, not only normal traffic.

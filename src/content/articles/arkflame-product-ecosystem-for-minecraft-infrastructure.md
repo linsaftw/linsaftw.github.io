@@ -7,6 +7,8 @@ tags: ["arkflame", "minecraft-infrastructure", "products"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/arkflame-product-ecosystem-for-minecraft-infrastructure.html"
 draft: false
+relatedProjects: ["exploitfixer", "flamecord", "veloflame", "fairplay"]
+relatedDocs: ["/docs/exploitfixer/overview.html", "/docs/flamecord/overview.html", "/docs/veloflame/overview.html"]
 ---
 
 ArkFlame is strongest when it is understood as a product ecosystem for Minecraft infrastructure. Each product may solve a different problem, but the direction is shared: stronger servers, safer networks, cleaner compatibility, and better operational control for server owners.

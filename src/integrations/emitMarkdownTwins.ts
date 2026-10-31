@@ -30,7 +30,29 @@ import { identity } from "../data/identity";
 import { links, SITE_URL } from "../data/links";
 
 const ARTICLES_DIR = new URL("../content/articles/", import.meta.url);
-const EXPECTED_ARTICLES = 16;
+
+/**
+ * The historical 16 twins must keep resolving byte-for-byte. New articles are
+ * allowed and get their own twins; this list is a floor, not a ceiling.
+ */
+const LEGACY_ARTICLE_SLUGS: readonly string[] = [
+  "ai-assisted-coding-needs-standards",
+  "ai-coding-agents-for-minecraft-plugin-development",
+  "arkflame-product-ecosystem-for-minecraft-infrastructure",
+  "arkflame-studios-main-hub",
+  "builtbybit-creators-need-support-operations",
+  "developer-health-and-output",
+  "exploitfixer-and-packet-security",
+  "flamecord-and-the-proxy-layer",
+  "folia-support-is-a-threading-discipline",
+  "linsaftw-minecraft-infrastructure-from-argentina",
+  "linsaftw-persona-builder-operator-infrastructure-founder",
+  "minecraft-performance-work-is-customer-support",
+  "minecraft-plugin-compatibility-is-product-quality",
+  "minecraft-server-security-starts-at-the-edge",
+  "packetevents-anticheat-proof-over-vibes",
+  "velocity-bungeecord-and-proxy-trust-boundaries",
+];
 
 /**
  * `identity.location` is "Argentina"; the twin prose needs the demonym. The data file
@@ -290,9 +312,9 @@ export default function emitMarkdownTwins(): AstroIntegration {
       // order. Registered last, after `sitemap()` and the sitemap flattener.
       "astro:build:done": async ({ dir, logger }) => {
         const files = (await readdir(ARTICLES_DIR)).filter((name) => name.endsWith(".md")).sort();
-        if (files.length !== EXPECTED_ARTICLES) {
+        if (files.length < LEGACY_ARTICLE_SLUGS.length) {
           throw new Error(
-            `emitMarkdownTwins: expected ${EXPECTED_ARTICLES} articles, found ${files.length} in ${ARTICLES_DIR.pathname}`,
+            `emitMarkdownTwins: expected at least ${LEGACY_ARTICLE_SLUGS.length} articles, found ${files.length} in ${ARTICLES_DIR.pathname}`,
           );
         }
 
@@ -301,6 +323,20 @@ export default function emitMarkdownTwins(): AstroIntegration {
             parseArticle(name, await readFile(new URL(name, ARTICLES_DIR), "utf8")),
           ),
         );
+
+        const slugs = articles.map((article) => article.slug);
+        const duplicates = slugs.filter((slug, index) => slugs.indexOf(slug) !== index);
+        if (duplicates.length > 0) {
+          throw new Error(
+            `emitMarkdownTwins: duplicate article slugs: ${[...new Set(duplicates)].join(", ")}`,
+          );
+        }
+        const missingLegacy = LEGACY_ARTICLE_SLUGS.filter((slug) => !slugs.includes(slug));
+        if (missingLegacy.length > 0) {
+          throw new Error(
+            `emitMarkdownTwins: legacy article twins missing for: ${missingLegacy.join(", ")}`,
+          );
+        }
 
         await mkdir(new URL("./posts/", dir), { recursive: true });
 
@@ -330,7 +366,7 @@ export default function emitMarkdownTwins(): AstroIntegration {
           );
         }
 
-        logger.info(`markdown twins complete: ${twins.size} files (${EXPECTED_ARTICLES} posts + 2 pages)`);
+        logger.info(`markdown twins complete: ${twins.size} files (${articles.length} posts + 2 pages)`);
       },
     },
   };

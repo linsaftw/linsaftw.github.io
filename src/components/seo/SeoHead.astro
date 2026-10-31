@@ -9,6 +9,9 @@ export interface Props {
   ogType?: "website" | "article";
   noindex?: boolean;
   ogImage?: string;
+  /** Only article routes emit a `.html.md` alternate; docs also use og:type=article. */
+  markdownTwin?: boolean;
+  preloadImage?: string;
   articleMeta?: {
     publishedAt?: Date;
     updatedAt?: Date;
@@ -23,6 +26,8 @@ const {
   ogType = "website",
   noindex = false,
   ogImage = "/images/hero/early-computer.webp",
+  markdownTwin = false,
+  preloadImage,
   articleMeta,
 } = Astro.props;
 
@@ -32,7 +37,7 @@ const canonical = new URL(canonicalPath, site).href;
 const ogImageUrl = new URL(ogImage, site).href;
 
 // C11 — the markdown twin is a preserved URL on article pages only.
-const isArticle = ogType === "article";
+const isArticle = ogType === "article" && markdownTwin;
 const markdownHref = isArticle ? `${canonicalPath}.md` : undefined;
 const fmt = (d?: Date): string | undefined =>
   d ? d.toISOString().slice(0, 10) : undefined;
@@ -52,6 +57,9 @@ const fmt = (d?: Date): string | undefined =>
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
 <meta property="og:site_name" content="LinsaFTW" />
 <meta property="og:type" content={ogType} />
 <meta property="og:locale" content="en_US" />
@@ -71,18 +79,16 @@ const fmt = (d?: Date): string | undefined =>
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImageUrl} />
+<meta name="twitter:image:alt" content={title} />
 
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/webp" href="/images/profile/linsaftw.webp" />
 <link rel="apple-touch-icon" href="/images/profile/linsaftw.webp" />
 <link rel="manifest" href="/manifest.webmanifest" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap"
-/>
+<link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+{preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
 {markdownHref && <link rel="alternate" type="text/markdown" href={markdownHref} />}
+<link rel="alternate" type="application/rss+xml" title="LinsaFTW articles" href="/rss.xml" />
 <link rel="alternate" type="text/plain" href="/llms.txt" />

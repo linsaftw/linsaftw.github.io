@@ -19,6 +19,14 @@ export const links = {
   flamecordBb: "https://builtbybit.com/resources/flamecord-ultimate-anti-bot-solution.13492/",
   exploitfixBb: "https://builtbybit.com/resources/exploitfixer-anti-crash-dupe-plugin.26463/",
   veloflameBb: "https://builtbybit.com/resources/veloflame-secure-minecraft-proxy.80990/",
+  flamewm: "https://wm.arkflame.com/",
+  flamewmGithub: "https://github.com/ArkFlame/FlameWM",
+  flamewmRelease: "https://github.com/ArkFlame/FlameWM/releases/tag/0.1.3",
+  arkflamePlugins: "https://arkflame.com/plugins/",
+  exploitfixPage: "https://arkflame.com/plugins/exploitfixer/",
+  flamecordPage: "https://arkflame.com/plugins/flamecord/",
+  veloflamePage: "https://arkflame.com/plugins/veloflame/",
+  fairplayPage: "https://arkflame.com/plugins/fairplay/",
 } as const;
 
 export type LinkName = keyof typeof links;
@@ -40,6 +48,7 @@ export const SITE_URL = "https://linsaftw.arkflame.com";
 export const routes = {
   home: "/",
   work: "/work.html",
+  docs: "/docs.html",
   games: "/games.html",
   ai: "/ai.html",
   experiments: "/experiments.html",
@@ -49,3 +58,6 @@ export const routes = {
 } as const;
 
 export const postPath = (slug: string): string => `/posts/${slug}.html`;
+export const workPath = (slug: string): string => `/work/${slug}.html`;
+export const docsPath = (plugin: string, topic: string): string =>
+  `/docs/${plugin}/${topic}.html`;

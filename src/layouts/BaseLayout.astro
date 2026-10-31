@@ -4,6 +4,7 @@ import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import SeoHead from "../components/seo/SeoHead.astro";
 import JsonLd from "../components/seo/JsonLd.astro";
+import Enhance from "../components/ui/FilterScript.astro";
 
 export interface Props {
   title: string;
@@ -13,6 +14,8 @@ export interface Props {
   noindex?: boolean;
   jsonLd?: Record<string, unknown>[];
   ogImage?: string;
+  markdownTwin?: boolean;
+  preloadImage?: string;
   articleMeta?: {
     publishedAt?: Date;
     updatedAt?: Date;
@@ -27,7 +30,9 @@ const {
   ogType = "website",
   noindex = false,
   jsonLd = [],
-  ogImage = "/images/hero/early-computer.webp",
+  ogImage = "/images/og/home.webp",
+  markdownTwin = false,
+  preloadImage,
   articleMeta,
 } = Astro.props;
 ---
@@ -42,16 +47,19 @@ const {
       ogType={ogType}
       noindex={noindex}
       ogImage={ogImage}
+      markdownTwin={markdownTwin}
+      preloadImage={preloadImage}
       articleMeta={articleMeta}
     />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <Header activePath={canonicalPath} />
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer />
+    <Enhance />
     {jsonLd.length > 0 && <JsonLd nodes={jsonLd} />}
   </body>
 </html>

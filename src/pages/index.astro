@@ -1,15 +1,10 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { homeGraph } from "../components/seo/JsonLd.astro";
 import IdentityHero from "../components/home/IdentityHero.astro";
 import TerminalBlock from "../components/home/TerminalBlock.astro";
 import ProjectFeature from "../components/home/ProjectFeature.astro";
-import FounderBridge from "../components/home/FounderBridge.astro";
-import WorkProcess from "../components/home/WorkProcess.astro";
-import GameFeature from "../components/home/GameFeature.astro";
-import AiFeature from "../components/home/AiFeature.astro";
-import ExperimentRow from "../components/home/ExperimentRow.astro";
-import Timeline from "../components/home/Timeline.astro";
 
 import {
   identity,
@@ -17,50 +12,75 @@ import {
   homeDescription,
   homeH1,
   homeH1Accent,
-  sections,
 } from "../data/identity";
-import { links, routes, SITE_URL } from "../data/links";
-import { minecraftProjects } from "../data/projects";
-import { experiments, experimentsNote } from "../data/experiments";
+import { postPath, links, routes, SITE_URL, workPath } from "../data/links";
+import { projectById } from "../data/projects";
+import { timeline } from "../data/timeline";
 
-// C7 — exact homepage title and description.
 const title = "LinsaFTW — Minecraft Infrastructure Developer";
 const site = Astro.site ?? new URL(SITE_URL);
 const jsonLd = homeGraph(site, { name: title, description: homeDescription });
 
-// C16 — H1 is one sentence split so `<em>` carries the accent word only.
 const h1Lead = homeH1.slice(0, homeH1.length - homeH1Accent.length);
-const homeLead = `I design, build and ship server software, security systems, games and experimental AI products. Founder of ${identity.founderOf}.`;
+const homeLead = `I design, build and ship server software, security systems, a Linux desktop, games and AI products. Founder of ${identity.founderOf}.`;
 
-// C3 — every chip href comes from links.ts and opens externally.
-const badge = {
-  src: "/images/badges/builtbybit-top-creator.webp",
-  width: 300,
-  height: 100,
-  alt: "BuiltByBit creator badge",
-};
-interface Chip {
-  readonly label: string;
-  readonly href: string;
-  readonly hot?: boolean;
-  readonly badge?: boolean;
-}
+const featuredIds = ["exploitfixer", "flamewm", "veloflame", "ffaa-zombies"] as const;
+const featured = featuredIds
+  .map((id) => projectById(id))
+  .filter((project): project is NonNullable<typeof project> => Boolean(project));
 
-const chipRow1: readonly Chip[] = [
-  { label: identity.founderOf, href: links.arkflame, hot: true },
-  { label: "GitHub", href: links.github },
-  { label: "BuiltByBit", href: links.bbbCreator, badge: true },
-  { label: "YouTube", href: links.youtube },
-];
-const chipRow2: readonly Chip[] = [
-  { label: "FlameCord", href: links.flamecord },
-  { label: "ExploitFixer", href: links.exploitfix },
-  { label: "VeloFlame", href: links.veloflame },
-  { label: "FairPlay", href: links.fairplay },
-];
+const alsoShipped = [
+  "flamecord",
+  "fairplay",
+  "entitylimiter",
+  "redstonelimiter",
+  "flamespawners",
+  "authmepremium",
+  "ark-ai",
+  "faus-legal",
+]
+  .map((id) => projectById(id))
+  .filter((project): project is NonNullable<typeof project> => Boolean(project));
 
-// C16 — the four Minecraft products, in spec order.
-const buildCards = minecraftProjects.filter((project) => project.featured);
+const recent = (await getCollection("articles"))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 4)
+  .map((entry) => {
+    const slug = /^\/posts\/(.+)\.html$/.exec(entry.data.canonicalPath)?.[1];
+    if (!slug) throw new Error(`bad canonicalPath: ${entry.data.canonicalPath}`);
+    return {
+      title: entry.data.title,
+      description: entry.data.description,
+      href: postPath(slug),
+      date: entry.data.publishedAt.toISOString().slice(0, 10),
+      tags: entry.data.tags.slice(0, 3),
+    };
+  });
+
+const beyond = [
+  {
+    eyebrow: "Game",
+    title: "FFAA Zombies",
+    text: "Browser-first co-op survival with large enemy counts, classes and custom maps.",
+    href: workPath("ffaa-zombies"),
+    link: "Play and read the brief",
+  },
+  {
+    eyebrow: "AI",
+    title: "ARK AI + FAUS Legal",
+    text: "A canonical AI platform and a focused Argentine legal-research workspace.",
+    href: workPath("ark-ai"),
+    link: "Open ARK AI case study",
+  },
+  {
+    eyebrow: "Experiments",
+    title: "FlameMC + Apex",
+    text: "Unpublished local experiments in asynchronous Paper work and anti-ESP detection.",
+    href: routes.experiments,
+    link: "See the experiments",
+  },
+] as const;
 ---
 
 <BaseLayout
@@ -69,7 +89,8 @@ const buildCards = minecraftProjects.filter((project) => project.featured);
   canonicalPath={routes.home}
   ogType="website"
   jsonLd={jsonLd}
-  ogImage="/images/hero/early-computer.webp"
+  ogImage="/images/og/home.webp"
+  preloadImage="/images/hero/early-computer.webp"
 >
   <IdentityHero />
 
@@ -83,110 +104,354 @@ const buildCards = minecraftProjects.filter((project) => project.featured);
 
     <p class="lead">{homeLead}</p>
 
-    <div class="chips">
-      {
-        chipRow1.map((chip) => (
-          <a
-            class:list={["chip", chip.hot && "hot"]}
-            href={chip.href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {chip.label}
-            {
-              chip.badge && (
-                <img
-                  src={badge.src}
-                  alt={badge.alt}
-                  width={badge.width}
-                  height={badge.height}
-                  decoding="async"
-                />
-              )
-            }
-          </a>
-        ))
-      }
-      {
-        chipRow2.map((chip) => (
-          <a class="chip" href={chip.href} target="_blank" rel="noopener noreferrer">
-            {chip.label}
-          </a>
-        ))
-      }
+    <div class="chips home-ctas">
+      <a class="chip hot" href={routes.work}>Explore selected work</a>
+      <a class="chip" href={routes.articles}>Read technical articles</a>
+      <a class="chip" href={routes.docs}>Documentation</a>
+      <a class="chip" href={links.arkflame} target="_blank" rel="noopener noreferrer">
+        ArkFlame Studios &#8599;
+      </a>
+      <a class="chip" href={links.github} target="_blank" rel="noopener noreferrer">
+        GitHub &#8599;
+      </a>
     </div>
 
     <TerminalBlock />
 
-    <div class="sh" id={sections.build.id}>
-      <h2>{sections.build.eyebrow}</h2>
+    <div class="sh" id="build">
+      <h2>Selected work</h2>
       <span class="sh-right">
-        <span>{sections.build.right}</span>
-        <a class="sh-all" href={sections.build.viewAll}>View all →</a>
+        <span>Evidence first</span>
+        <a class="sh-all" href={routes.work}>All case studies &#8594;</a>
       </span>
     </div>
-    <div class="pl">
-      {buildCards.map((project) => <ProjectFeature project={project} />)}
+    <div class="pl" data-reveal>
+      {featured.map((project) => <ProjectFeature project={project} />)}
     </div>
 
-    <FounderBridge />
+    <div class="also">
+      <small>Also shipped</small>
+      <div>
+        {
+          alsoShipped.map((project) => (
+            <a href={workPath(project.id)}>
+              {project.name} <span aria-hidden="true">&#8594;</span>
+            </a>
+          ))
+        }
+        <a href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">
+          Full ArkFlame catalog &#8599;
+        </a>
+      </div>
+    </div>
 
-    <div class="sh" id={sections.how.id}>
-      <h2>{sections.how.eyebrow}</h2>
+    <span id="how" class="legacy-anchor" aria-hidden="true"></span>
+    <div class="sh" id="proof">
+      <h2>Track record</h2>
       <span class="sh-right">
-        <span>{sections.how.right}</span>
+        <span>Selected milestones</span>
+        <a class="sh-all" href={routes.about}>About the work &#8594;</a>
       </span>
     </div>
-    <WorkProcess />
+    <ol class="proof" id="timeline" data-reveal>
+      {
+        timeline.map((item, index) => (
+          <li class={index === timeline.length - 1 ? "now" : undefined}>
+            <b>{item.year}</b>
+            <span>{item.text}</span>
+          </li>
+        ))
+      }
+    </ol>
 
-    <div class="sh" id={sections.games.id}>
-      <h2>{sections.games.eyebrow}</h2>
+    <div class="sh" id="writing">
+      <h2>Recent writing</h2>
       <span class="sh-right">
-        <span>{sections.games.right}</span>
-        <a class="sh-all" href={sections.games.viewAll}>View all →</a>
+        <span>Source-backed notes</span>
+        <a class="sh-all" href={routes.articles}>All articles &#8594;</a>
       </span>
     </div>
-    <GameFeature />
+    <div class="recent" data-reveal>
+      {
+        recent.map((article) => (
+          <a class="recent-row" href={article.href}>
+            <time datetime={article.date}>{article.date}</time>
+            <div>
+              <h3>{article.title}</h3>
+              <p>{article.description}</p>
+            </div>
+            <span aria-hidden="true">&#8594;</span>
+          </a>
+        ))
+      }
+    </div>
 
-    <div class="sh" id={sections.ai.id}>
-      <h2>{sections.ai.eyebrow}</h2>
+    <span id="games" class="legacy-anchor" aria-hidden="true"></span>
+    <span id="ai" class="legacy-anchor" aria-hidden="true"></span>
+    <span id="lab" class="legacy-anchor" aria-hidden="true"></span>
+    <div class="sh" id="beyond">
+      <h2>Beyond Minecraft</h2>
       <span class="sh-right">
-        <span>{sections.ai.right}</span>
-        <a class="sh-all" href={sections.ai.viewAll}>View all →</a>
+        <span>Games, AI and experiments</span>
       </span>
     </div>
-    <AiFeature />
-
-    <div class="sh" id={sections.lab.id}>
-      <h2>{sections.lab.eyebrow}</h2>
-      <span class="sh-right">
-        <span>{sections.lab.right}</span>
-        <a class="sh-all" href={sections.lab.viewAll}>View all →</a>
-      </span>
+    <div class="beyond" data-reveal>
+      {
+        beyond.map((item) => (
+          <a href={item.href}>
+            <small>{item.eyebrow}</small>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+            <span>{item.link} &#8594;</span>
+          </a>
+        ))
+      }
     </div>
-    <div class="g">
-      {experiments.map((experiment) => <ExperimentRow experiment={experiment} />)}
+    <div class="about-cta">
+      <div>
+        <h2>I build the parts users never see.</h2>
+        <p>
+          Proxies, packet checks, schedulers, storage and the support work that keeps them
+          running. The case studies explain the decisions, not just the feature list.
+        </p>
+      </div>
+      <a class="chip hot" href={routes.about}>Read the full story</a>
     </div>
-    <p class="note">{experimentsNote}</p>
-
-    <div class="sh" id={sections.timeline.id}>
-      <h2>{sections.timeline.eyebrow}</h2>
-      <span class="sh-right">
-        <span>{sections.timeline.right}</span>
-      </span>
-    </div>
-    <Timeline />
   </div>
 </BaseLayout>
 
 <style>
-  .sh h2 {
-    color: var(--tx);
-    font-weight: 700;
+  .home-ctas {
+    margin-bottom: 8px;
   }
 
-  /* C10 — /images/profile/linsaftw.webp is 512x512 and the circle is 104px. */
+  .also {
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 16px 18px;
+    margin-top: 14px;
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+
+  .also small {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .also div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+
+  .also a {
+    color: var(--mu);
+    font-size: 12px;
+  }
+
+  .also a:hover {
+    color: var(--ac);
+  }
+
+  .also a span {
+    color: var(--ac);
+  }
+
+  .proof {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border: 1px solid var(--bd);
+    background: var(--bd);
+    gap: 1px;
+  }
+
+  .proof li {
+    background: var(--p);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 126px;
+  }
+
+  .proof li b {
+    color: var(--tx);
+    font-size: 18px;
+  }
+
+  .proof li span {
+    color: var(--mu);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .proof li.now {
+    background: linear-gradient(180deg, var(--ceo-grad), var(--p) 75%);
+  }
+
+  .proof li.now b {
+    color: var(--ac);
+  }
+
+  .recent {
+    border: 1px solid var(--bd);
+    background: var(--bd);
+    display: grid;
+    gap: 1px;
+  }
+
+  .recent-row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 20px;
+    gap: 16px;
+    align-items: start;
+    background: var(--p);
+    padding: 16px 18px;
+  }
+
+  .recent-row:hover {
+    background: var(--p2);
+  }
+
+  .recent-row time {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding-top: 3px;
+  }
+
+  .recent-row h3 {
+    font-size: 17px;
+    line-height: 1.3;
+    margin: 0 0 4px;
+  }
+
+  .recent-row p {
+    color: var(--mu);
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.55;
+    max-width: 72ch;
+  }
+
+  .recent-row > span {
+    color: var(--ac);
+    font-size: 14px;
+  }
+
+  .beyond {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .beyond a {
+    background: var(--p);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 210px;
+  }
+
+  .beyond a:hover {
+    background: var(--p2);
+  }
+
+  .beyond small {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .beyond h3 {
+    font-size: 19px;
+    margin: 0;
+  }
+
+  .beyond p {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .beyond a > span {
+    color: var(--tx);
+    font-size: 12px;
+    margin-top: auto;
+  }
+
+  .legacy-anchor {
+    display: block;
+    scroll-margin-top: 70px;
+  }
+
+  .about-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--bd);
+    margin-top: 54px;
+    padding-top: 24px;
+  }
+
+  .about-cta h2 {
+    font-size: 24px;
+    margin: 0 0 8px;
+  }
+
+  .about-cta p {
+    color: var(--mu);
+    font-size: 13px;
+    max-width: 64ch;
+    margin: 0;
+  }
+
   .av {
     --av: url("/images/profile/linsaftw.webp");
+  }
+
+  @media (max-width: 900px) {
+    .proof {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .beyond {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .proof {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .recent-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .recent-row > span {
+      display: none;
+    }
+
+    .about-cta {
+      align-items: flex-start;
+    }
   }
 </style>

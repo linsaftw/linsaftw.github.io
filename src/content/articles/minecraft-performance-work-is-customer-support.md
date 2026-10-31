@@ -7,6 +7,8 @@ tags: ["performance", "server-owners", "minecraft"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/minecraft-performance-work-is-customer-support.html"
 draft: false
+relatedProjects: ["entitylimiter", "redstonelimiter"]
+relatedDocs: ["/docs/entitylimiter/overview.html", "/docs/redstonelimiter/overview.html"]
 ---
 
 Minecraft performance work is customer support because performance failures become support tickets. Lag, CPU spikes, memory pressure, slow joins, stuck tasks, blocked ticks, and bad packet handling all reach the server owner as pain.

@@ -1,0 +1,286 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { breadcrumbNode, personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { docsPath, links, routes, SITE_URL } from "../data/links";
+
+const canonicalPath = routes.docs;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "Source-checked documentation for ExploitFixer, FlameCord, VeloFlame, FairPlay, EntityLimiter, RedstoneLimiter, FlameSpawners and AuthMePremium.";
+
+const entries = (await getCollection("docs"))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => a.data.pluginName.localeCompare(b.data.pluginName) || a.data.order - b.data.order);
+
+const groups = new Map<string, typeof entries>();
+for (const entry of entries) {
+  const list = groups.get(entry.data.plugin) ?? [];
+  list.push(entry);
+  groups.set(entry.data.plugin, list);
+}
+
+const plugins = [...groups.entries()].map(([plugin, docs]) => {
+  const first = docs[0];
+  if (!first) throw new Error(`docs group ${plugin} is empty`);
+  return {
+    plugin,
+    name: first.data.pluginName,
+    version: first.data.version,
+    platforms: first.data.platforms,
+    officialUrl: first.data.officialUrl,
+    sourceStatus: first.data.sourceStatus,
+    topics: docs,
+  };
+});
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "Documentation — LinsaFTW",
+    description,
+    path: canonicalPath,
+    type: "CollectionPage",
+  }),
+  breadcrumbNode(site, [
+    { name: "Home", path: routes.home },
+    { name: "Docs", path: canonicalPath },
+  ]),
+];
+
+const sourceLabel: Record<string, string> = {
+  public: "Public source",
+  private: "Private source",
+  "shipped-config": "Shipped config",
+};
+---
+
+<BaseLayout
+  title="Documentation — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage="/images/og/docs.webp"
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <header class="docs-head">
+      <p class="eyebrow">Documentation / {plugins.length} plugins / {entries.length} pages</p>
+      <h1>Checked against the source.</h1>
+      <p class="lead">
+        Installation, configuration and administration notes for the plugins I build. Values are
+        checked against source or shipped configuration; declared support is labelled separately
+        from tested support.
+      </p>
+      <div class="head-links">
+        <a class="chip hot" href={routes.work}>Engineering case studies</a>
+        <a class="chip" href={routes.articles}>Technical articles</a>
+        <a class="chip" href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">
+          Full ArkFlame catalog &#8599;
+        </a>
+      </div>
+    </header>
+
+    <aside class="docs-scope">
+      <b>Coverage is explicit.</b>
+      <p>
+        These pages cover {plugins.length} products with inspectable code or shipped configuration.
+        ArkFlame's commercial catalog contains many more products; where source is private and no
+        maintained documentation exists, there is no page here rather than a generated placeholder.
+      </p>
+    </aside>
+
+    <SectionHeader eyebrow="Plugin library" id="library" label="Overview, install, configuration" />
+
+    <div class="plugin-grid">
+      {
+        plugins.map((plugin) => (
+          <article class="plugin-card">
+            <div class="plugin-top">
+              <div>
+                <small>{sourceLabel[plugin.sourceStatus]}</small>
+                <h3>{plugin.name}</h3>
+              </div>
+              {plugin.version && <span class="plugin-version">v{plugin.version}</span>}
+            </div>
+
+            {plugin.platforms.length > 0 && (
+              <p class="plugin-platforms">{plugin.platforms.join(" / ")}</p>
+            )}
+
+            <ol class="plugin-topics">
+              {plugin.topics.map((entry) => {
+                const topic = entry.id.split("/")[1];
+                if (!topic) throw new Error(`bad docs id: ${entry.id}`);
+                return (
+                  <li>
+                    <a href={docsPath(plugin.plugin, topic)}>
+                      <span>{entry.data.title}</span>
+                      <span aria-hidden="true">&#8594;</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
+
+            {plugin.officialUrl && (
+              <a class="plugin-official" href={plugin.officialUrl} target="_blank" rel="noopener noreferrer">
+                Official product page &#8599;
+              </a>
+            )}
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="note">
+      Looking for a product that is not listed? Use the
+      <a href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">ArkFlame plugin catalog</a>
+      for the current commercial catalog, download and support channels. This site does not mirror
+      the storefront or invent documentation for private code.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .docs-head {
+    padding: 54px 0 0;
+  }
+
+  .eyebrow {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  .head-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .docs-scope {
+    display: grid;
+    gap: 6px;
+    border: 1px solid var(--bd);
+    border-left: 2px solid var(--ac);
+    background: var(--p);
+    padding: 16px 18px;
+    margin-top: 34px;
+  }
+
+  .docs-scope b {
+    font-size: 13px;
+  }
+
+  .docs-scope p {
+    color: var(--mu);
+    font-size: 12px;
+    margin: 0;
+    max-width: 76ch;
+  }
+
+  .plugin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .plugin-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--p);
+    padding: 20px 22px 22px;
+    min-height: 260px;
+  }
+
+  .plugin-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .plugin-top small {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .plugin-card h3 {
+    font-size: 22px;
+    margin: 6px 0 0;
+  }
+
+  .plugin-version {
+    color: var(--gr);
+    font-size: 11px;
+    border: 1px solid var(--bd);
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .plugin-platforms {
+    color: var(--mu);
+    font-size: 11px;
+    margin: 8px 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  .plugin-topics {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    flex: 1;
+  }
+
+  .plugin-topics li {
+    border-top: 1px solid var(--bd);
+  }
+
+  .plugin-topics a {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 0;
+    color: var(--tx);
+    font-size: 12px;
+  }
+
+  .plugin-topics a:hover {
+    color: var(--ac);
+  }
+
+  .plugin-topics a span:last-child {
+    color: var(--ac);
+  }
+
+  .plugin-official {
+    color: var(--ac);
+    font-size: 11px;
+    margin-top: 12px;
+    align-self: flex-start;
+  }
+
+  @media (max-width: 760px) {
+    .docs-head {
+      padding-top: 38px;
+    }
+
+    .plugin-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

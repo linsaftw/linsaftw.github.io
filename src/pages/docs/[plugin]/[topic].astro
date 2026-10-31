@@ -1,0 +1,664 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { personNode, webPageNode, breadcrumbNode } from "../../../components/seo/JsonLd.astro";
+import { docsPath, links, routes, SITE_URL } from "../../../data/links";
+
+export async function getStaticPaths() {
+  const docs = (await getCollection("docs"))
+    .filter((entry) => !entry.data.draft)
+    .sort((a, b) => a.data.pluginName.localeCompare(b.data.pluginName) || a.data.order - b.data.order);
+
+  const byPlugin = new Map<string, typeof docs>();
+  for (const entry of docs) {
+    const [plugin, topic, ...rest] = entry.id.split("/");
+    if (!plugin || !topic || rest.length > 0) {
+      throw new Error(`[docs] invalid content id "${entry.id}", expected <plugin>/<topic>`);
+    }
+    const list = byPlugin.get(plugin) ?? [];
+    list.push(entry);
+    byPlugin.set(plugin, list);
+  }
+
+  const nav = [...byPlugin.entries()].map(([plugin, entries]) => {
+    const first = entries[0];
+    if (!first) throw new Error(`[docs] empty plugin group ${plugin}`);
+    return {
+      plugin,
+      name: first.data.pluginName,
+      topics: entries.map((entry) => {
+        const topic = entry.id.split("/")[1];
+        if (!topic) throw new Error(`[docs] bad topic for ${entry.id}`);
+        return { title: entry.data.title, href: docsPath(plugin, topic) };
+      }),
+    };
+  });
+
+  return docs.map((entry) => {
+    const [plugin, topic] = entry.id.split("/");
+    if (!plugin || !topic) throw new Error(`[docs] bad id ${entry.id}`);
+    const siblings = byPlugin.get(plugin) ?? [];
+    const index = siblings.findIndex((candidate) => candidate.id === entry.id);
+    const neighbour = (offset: number) => {
+      const other = siblings[index + offset];
+      if (!other) return undefined;
+      const otherTopic = other.id.split("/")[1];
+      if (!otherTopic) return undefined;
+      return { title: other.data.title, href: docsPath(plugin, otherTopic) };
+    };
+    return {
+      params: { plugin, topic },
+      props: {
+        entry,
+        nav,
+        current: docsPath(plugin, topic),
+        prev: neighbour(-1),
+        next: neighbour(1),
+      },
+    };
+  });
+}
+
+const { entry, nav, current, prev, next } = Astro.props;
+const [plugin, topic] = entry.id.split("/");
+if (!plugin || !topic) throw new Error(`[docs] bad id ${entry.id}`);
+const { Content, headings } = await render(entry);
+
+const canonicalPath = docsPath(plugin, topic);
+const site = Astro.site ?? new URL(SITE_URL);
+const title = `${entry.data.title} — ${entry.data.pluginName} documentation`;
+const description = entry.data.description;
+
+const toc = headings
+  .filter((heading) => heading.depth === 2 || heading.depth === 3)
+  .map(({ depth, slug, text }) => ({ depth, slug, text }));
+
+const parent = nav.find((group) => group.plugin === plugin);
+if (!parent) throw new Error(`[docs] navigation missing ${plugin}`);
+const navOrdered = [parent, ...nav.filter((group) => group.plugin !== plugin)];
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: entry.data.title,
+    description,
+    path: canonicalPath,
+    type: "WebPage",
+  }),
+  {
+    "@type": "TechArticle",
+    "@id": `${new URL(canonicalPath, site).href}#article`,
+    headline: entry.data.title,
+    description,
+    inLanguage: "en",
+    dateModified: entry.data.updatedAt.toISOString().slice(0, 10),
+    mainEntityOfPage: new URL(canonicalPath, site).href,
+    author: { "@id": `${new URL("/", site).href}#person` },
+    about: entry.data.pluginName,
+  },
+  breadcrumbNode(site, [
+    { name: "Home", path: routes.home },
+    { name: "Docs", path: routes.docs },
+    { name: entry.data.pluginName, path: docsPath(plugin, "overview") },
+    { name: entry.data.title, path: canonicalPath },
+  ]),
+];
+---
+
+<BaseLayout
+  title={`${title} — LinsaFTW`}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogType="article"
+  ogImage="/images/og/docs.webp"
+  articleMeta={{ updatedAt: entry.data.updatedAt, tags: [entry.data.pluginName, "documentation"] }}
+  jsonLd={jsonLd}
+>
+  <div class="w docs-page">
+    <nav class="crumbs meta" aria-label="Breadcrumb">
+      <a href={routes.home}>Home</a>
+      <span aria-hidden="true">/</span>
+      <a href={routes.docs}>Docs</a>
+      <span aria-hidden="true">/</span>
+      <a href={docsPath(plugin, "overview")}>{entry.data.pluginName}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{entry.data.title}</span>
+    </nav>
+
+    <header class="doc-head">
+      <p class="eyebrow">{entry.data.pluginName} documentation</p>
+      <h1>{entry.data.title}</h1>
+      <p class="dek">{description}</p>
+      <div class="doc-meta">
+        {entry.data.version && <span>Version {entry.data.version}</span>}
+        {entry.data.platforms.length > 0 && <span>{entry.data.platforms.join(" / ")}</span>}
+        <span>Updated {entry.data.updatedAt.toISOString().slice(0, 10)}</span>
+      </div>
+      {
+        entry.data.officialUrl && (
+          <a class="doc-official" href={entry.data.officialUrl} target="_blank" rel="noopener noreferrer">
+            Official product page &#8599;
+          </a>
+        )
+      }
+    </header>
+
+    <details class="docs-mobile-nav">
+      <summary>Documentation menu</summary>
+      <nav aria-label="Documentation (compact)">
+        {navOrdered.map((group) => (
+          <div>
+            <b>{group.name}</b>
+            {group.plugin === plugin ? (
+              group.topics.map((item) => (
+                <a
+                  href={item.href}
+                  aria-current={item.href === current ? "page" : undefined}
+                >
+                  {item.title}
+                </a>
+              ))
+            ) : (
+              <a href={docsPath(group.plugin, "overview")}>Overview</a>
+            )}
+          </div>
+        ))}
+      </nav>
+    </details>
+
+    <div class="docs-layout">
+      <aside class="docs-nav" aria-label="Documentation">
+        <a class="docs-nav-home" href={routes.docs}>&#8592; All documentation</a>
+        {
+          navOrdered.map((group) => (
+            <div class="docs-nav-group">
+              <b>{group.name}</b>
+              {group.plugin === plugin ? (
+                group.topics.map((item) => (
+                  <a href={item.href} aria-current={item.href === current ? "page" : undefined}>
+                    {item.title}
+                  </a>
+                ))
+              ) : (
+                <a href={docsPath(group.plugin, "overview")}>Overview</a>
+              )}
+            </div>
+          ))
+        }
+      </aside>
+
+      <article class="doc-body">
+        {
+          toc.length >= 4 && (
+            <details class="doc-toc" open>
+              <summary>On this page</summary>
+              <nav aria-label="Table of contents">
+                {toc.map((heading) => (
+                  <a class:list={["toc-link", heading.depth === 3 && "toc-sub"]} href={`#${heading.slug}`}>
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            </details>
+          )
+        }
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        <nav class="doc-nav" aria-label="Documentation navigation">
+          {prev ? (
+            <a href={prev.href} rel="prev">
+              <small>Previous</small>
+              {prev.title}
+            </a>
+          ) : (
+            <span />
+          )}
+          {next && (
+            <a class="nx" href={next.href} rel="next">
+              <small>Next</small>
+              {next.title}
+            </a>
+          )}
+        </nav>
+
+        <p class="doc-source-note">
+          Checked against the project source or shipped configuration. Declared platform support is
+          not the same as a tested matrix. For downloads and commercial support, use the
+          <a href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">ArkFlame catalog</a>.
+        </p>
+      </article>
+    </div>
+
+    <p class="doc-back"><a href={routes.docs}>&#8592; All documentation</a></p>
+  </div>
+</BaseLayout>
+
+<style>
+  .docs-page {
+    padding-top: 30px;
+  }
+
+  .crumbs {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+
+  .crumbs a:hover {
+    color: var(--ac);
+  }
+
+  .doc-head {
+    border-bottom: 1px solid var(--bd);
+    padding-bottom: 22px;
+  }
+
+  .eyebrow {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+
+  .doc-head h1 {
+    margin: 0 0 12px;
+    max-width: 20ch;
+  }
+
+  .doc-head .dek {
+    color: var(--mu);
+    font-size: 14px;
+    max-width: 68ch;
+    margin: 0 0 14px;
+  }
+
+  .doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    color: var(--mu-dim);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  .doc-official {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ac);
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 228px minmax(0, 1fr);
+    gap: 42px;
+    align-items: start;
+    margin-top: 30px;
+  }
+
+  .docs-nav {
+    position: sticky;
+    top: 74px;
+    display: grid;
+    gap: 18px;
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+
+  .docs-nav-home {
+    color: var(--ac);
+    font-size: 11px;
+  }
+
+  .docs-nav-group {
+    display: grid;
+    gap: 2px;
+    border-top: 1px solid var(--bd);
+    padding-top: 10px;
+  }
+
+  .docs-nav-group b {
+    color: var(--tx);
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+
+  .docs-nav-group a {
+    color: var(--mu);
+    font-size: 11px;
+    padding: 6px 0;
+    line-height: 1.4;
+  }
+
+  .docs-nav-group a:hover {
+    color: var(--ac);
+  }
+
+  .docs-nav-group a[aria-current="page"] {
+    color: var(--ac);
+  }
+
+  .docs-mobile-nav {
+    display: none;
+    border: 1px solid var(--bd);
+    background: var(--p);
+    margin-top: 18px;
+  }
+
+  .docs-mobile-nav > summary {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    color: var(--tx);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .docs-mobile-nav nav {
+    display: grid;
+    gap: 12px;
+    padding: 0 14px 14px;
+  }
+
+  .docs-mobile-nav nav div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .docs-mobile-nav b {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .docs-mobile-nav a {
+    color: var(--mu);
+    font-size: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .docs-mobile-nav a[aria-current="page"] {
+    color: var(--ac);
+  }
+
+  .doc-body {
+    min-width: 0;
+  }
+
+  .doc-toc {
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 14px 18px;
+    margin-bottom: 28px;
+  }
+
+  .doc-toc summary {
+    cursor: pointer;
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    min-height: 24px;
+  }
+
+  .doc-toc nav {
+    display: grid;
+    gap: 2px;
+    margin-top: 8px;
+  }
+
+  .toc-link {
+    color: var(--mu);
+    font-size: 12px;
+    border-bottom: 1px solid var(--bd);
+    padding: 5px 0;
+  }
+
+  .toc-link:hover {
+    color: var(--ac);
+  }
+
+  .toc-sub {
+    padding-left: 14px;
+    color: var(--mu-dim);
+  }
+
+  .doc-body .prose h2 {
+    border-top: 1px solid var(--bd);
+    padding-top: 22px;
+    margin-top: 42px;
+  }
+
+  .doc-body .prose h2:first-child {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .doc-body .prose h3 {
+    font-size: 15px;
+    margin: 30px 0 10px;
+    color: var(--tx);
+  }
+
+  .doc-body .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 24px;
+    font-size: 12px;
+    display: table;
+    table-layout: fixed;
+  }
+
+  .doc-body .prose th,
+  .doc-body .prose td {
+    border: 1px solid var(--bd);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+    color: var(--mu);
+  }
+
+  .doc-body .prose th {
+    color: var(--tx);
+    background: var(--p);
+    font-weight: 700;
+  }
+
+  .doc-body .prose code {
+    color: var(--gr);
+    background: var(--p);
+    border: 1px solid var(--bd);
+    padding: 1px 5px;
+    font-size: 0.92em;
+  }
+
+  .doc-body .prose pre {
+    border: 1px solid var(--bd);
+    background: var(--shell2);
+    padding: 16px;
+    overflow-x: auto;
+    margin: 18px 0 24px;
+  }
+
+  .doc-body .prose pre code {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: var(--tx);
+  }
+
+  .doc-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 42px;
+  }
+
+  .doc-nav a {
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 14px 16px;
+    min-height: 78px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    font-size: 13px;
+  }
+
+  .doc-nav a:hover {
+    border-color: var(--ac);
+  }
+
+  .doc-nav small {
+    color: var(--mu);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .doc-nav .nx {
+    text-align: right;
+  }
+
+  .doc-source-note {
+    border-top: 1px solid var(--bd);
+    color: var(--mu);
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 28px;
+    padding-top: 14px;
+  }
+
+  .doc-source-note a {
+    color: var(--ac);
+  }
+
+  .doc-back {
+    margin-top: 32px;
+  }
+
+  .doc-back a {
+    color: var(--ac);
+    font-size: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .docs-layout {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .docs-nav {
+      display: none;
+    }
+
+    .docs-mobile-nav {
+      display: block;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .docs-page {
+      padding-top: 20px;
+    }
+
+    .doc-nav {
+      grid-template-columns: 1fr;
+    }
+
+    .doc-nav .nx {
+      text-align: left;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Markdown body is rendered by <Content />, so scoped selectors cannot reach it. */
+  .doc-body .prose table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0 24px;
+    font-size: 12px;
+    display: table;
+    table-layout: fixed;
+  }
+
+  .doc-body .prose th,
+  .doc-body .prose td {
+    border: 1px solid var(--bd);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+    color: var(--mu);
+    overflow-wrap: anywhere;
+  }
+
+  .doc-body .prose th {
+    color: var(--tx);
+    background: var(--p);
+    font-weight: 700;
+  }
+
+  .doc-body .prose code {
+    color: var(--gr);
+    background: var(--p);
+    border: 1px solid var(--bd);
+    padding: 1px 5px;
+    font-size: 0.92em;
+    overflow-wrap: anywhere;
+  }
+
+  .doc-body .prose pre {
+    border: 1px solid var(--bd);
+    background: var(--shell2);
+    padding: 16px;
+    overflow-x: auto;
+    max-width: 100%;
+    margin: 18px 0 24px;
+  }
+
+  .doc-body .prose pre code {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: var(--tx);
+  }
+
+  .doc-body .prose h2 {
+    border-top: 1px solid var(--bd);
+    padding-top: 22px;
+    margin-top: 42px;
+    font-size: 24px;
+  }
+
+  .doc-body .prose h2:first-child {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .doc-body .prose h3 {
+    font-size: 15px;
+    margin: 30px 0 10px;
+    color: var(--tx);
+  }
+
+  .doc-body .prose p,
+  .doc-body .prose li {
+    overflow-wrap: anywhere;
+  }
+</style>
