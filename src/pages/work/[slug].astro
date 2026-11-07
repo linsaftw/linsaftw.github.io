@@ -1,6 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { breadcrumbNode, personNode, webPageNode } from "../../components/seo/JsonLd.astro";
+import {
+  breadcrumbNode,
+  personNode,
+  softwareApplicationNode,
+  webPageNode,
+} from "../../components/seo/JsonLd.astro";
 import { links, routes, SITE_URL, workPath } from "../../data/links";
 import { caseStudyProjects, projectById } from "../../data/projects";
 
@@ -66,6 +71,18 @@ const jsonLd = [
     { name: "Work", path: routes.work },
     { name: project.name, path: canonicalPath },
   ]),
+  ...(project.id === "flamewm" && study.version
+    ? [
+        softwareApplicationNode(site, {
+          name: project.name,
+          description: project.description,
+          homepage: project.url,
+          repository: links.flamewmGithub,
+          version: study.version,
+          operatingSystem: "Linux (x86_64)",
+        }),
+      ]
+    : []),
 ];
 ---
 
@@ -117,7 +134,7 @@ const jsonLd = [
           {
             project.id === "flamewm" && (
               <a class="chip" href={links.flamewmRelease} target="_blank" rel="noopener noreferrer">
-                0.1.3 release &#8599;
+                0.1.5 release &#8599;
               </a>
             )
           }
@@ -143,7 +160,7 @@ const jsonLd = [
         <figure class:list={["case-banner", project.id === "ffaa-zombies" && "is-square"]}>
           <img
             src={project.image}
-            alt={`${project.name} case study visual`}
+            alt={project.id === "flamewm" ? "FlameWM System Settings open on its About tab" : `${project.name} case study visual`}
             width={project.id === "ffaa-zombies" ? 1000 : 720}
             height={project.id === "ffaa-zombies" ? 1000 : 405}
             fetchpriority="high"
@@ -202,6 +219,25 @@ const jsonLd = [
                   />
                   {shot.caption && <figcaption>{shot.caption}</figcaption>}
                 </figure>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {study.lessons && study.lessons.length > 0 && (
+          <section aria-labelledby="lessons">
+            <h2 id="lessons">What it taught me</h2>
+            <div class="case-sections">
+              {study.lessons.map((lesson, index) => (
+                <div class="case-section">
+                  <span class="case-num" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3>{lesson.title}</h3>
+                    <p>{lesson.body}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </section>
@@ -612,7 +648,7 @@ const jsonLd = [
 
   .related-work {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1px;
     background: var(--bd);
     border: 1px solid var(--bd);

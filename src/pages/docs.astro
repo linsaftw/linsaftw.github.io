@@ -9,7 +9,7 @@ const canonicalPath = routes.docs;
 const site = Astro.site ?? new URL(SITE_URL);
 
 const description =
-  "Source-checked documentation for ExploitFixer, FlameCord, VeloFlame, FairPlay, EntityLimiter, RedstoneLimiter, FlameSpawners and AuthMePremium.";
+  "Install, configuration and admin docs for ExploitFixer, FlameCord, VeloFlame, FairPlay, EntityLimiter, RedstoneLimiter, FlameSpawners and AuthMePremium.";
 
 const entries = (await getCollection("docs"))
   .filter((entry) => !entry.data.draft)
@@ -67,11 +67,10 @@ const sourceLabel: Record<string, string> = {
   <div class="w">
     <header class="docs-head">
       <p class="eyebrow">Documentation / {plugins.length} plugins / {entries.length} pages</p>
-      <h1>Checked against the source.</h1>
+      <h1>Plugin documentation.</h1>
       <p class="lead">
-        Installation, configuration and administration notes for the plugins I build. Values are
-        checked against source or shipped configuration; declared support is labelled separately
-        from tested support.
+        Install, configure and administer the plugins I build. Values come from the source code or
+        the shipped config file. Declared platform support is listed apart from tested support.
       </p>
       <div class="head-links">
         <a class="chip hot" href={routes.work}>Engineering case studies</a>
@@ -83,11 +82,11 @@ const sourceLabel: Record<string, string> = {
     </header>
 
     <aside class="docs-scope">
-      <b>Coverage is explicit.</b>
+      <b>What is covered.</b>
       <p>
-        These pages cover {plugins.length} products with inspectable code or shipped configuration.
-        ArkFlame's commercial catalog contains many more products; where source is private and no
-        maintained documentation exists, there is no page here rather than a generated placeholder.
+        These pages cover {plugins.length} products whose code or shipped config I can inspect.
+        The ArkFlame catalog lists more products. Where the source is private and no maintained
+        docs exist, there is no page here.
       </p>
     </aside>
 
@@ -135,10 +134,10 @@ const sourceLabel: Record<string, string> = {
     </div>
 
     <p class="note">
-      Looking for a product that is not listed? Use the
+      Need a product that is not listed? The
       <a href={links.arkflamePlugins} target="_blank" rel="noopener noreferrer">ArkFlame plugin catalog</a>
-      for the current commercial catalog, download and support channels. This site does not mirror
-      the storefront or invent documentation for private code.
+      has current listings, downloads and support. This site does not mirror the store or write
+      docs for private code.
     </p>
   </div>
 </BaseLayout>

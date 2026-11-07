@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/layout/SectionHeader.astro";
-import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { personNode, profilePageNode, webPageNode } from "../components/seo/JsonLd.astro";
 import { links, routes, SITE_URL, workPath } from "../data/links";
 import { extendedTimeline } from "../data/timeline";
 import { projectById } from "../data/projects";
@@ -36,6 +36,11 @@ const jsonLd = [
     description,
     path: canonicalPath,
     type: "AboutPage",
+  }),
+  profilePageNode(site, {
+    name: "About LinsaFTW",
+    description,
+    path: canonicalPath,
   }),
 ];
 ---

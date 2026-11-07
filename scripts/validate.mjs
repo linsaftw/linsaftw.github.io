@@ -87,6 +87,7 @@ const STATIC_FILES = [
   "/games.html",
   "/ai.html",
   "/experiments.html",
+  "/press.html",
   "/articles.html",
   "/404.html",
   "/robots.txt",
@@ -691,6 +692,92 @@ check("6b. unique titles, descriptions and OG images", (rec) => {
 
 /* ------------------------------------------------------------------ 7. images */
 
+/** `<meta name="robots">` contains noindex. */
+const isNoindex = (html) =>
+  allTags(html, "meta").some(
+    (t) => (attr(t.raw, "name") ?? "").toLowerCase() === "robots" && /noindex/i.test(attr(t.raw, "content") ?? ""),
+  );
+
+/* ------------------------------------------------- 6c. canonical, h1, description */
+
+check("6c. unique canonical and h1, present description", (rec) => {
+  const canonicals = new Map();
+  const h1s = new Map();
+  for (const p of pagePaths) {
+    const { html } = PAGES.get(p);
+    if (html === null) continue;
+
+    const description = allTags(html, "meta")
+      .filter((tag) => (attr(tag.raw, "name") ?? "").toLowerCase() === "description")
+      .map((tag) => (attr(tag.raw, "content") ?? "").trim())[0];
+    if (!description) fail(rec, `${p}: missing or empty meta description`);
+
+    const canonicalTag = allTags(html, "link").find((t) =>
+      (attr(t.raw, "rel") ?? "").toLowerCase().split(/\s+/).includes("canonical"),
+    );
+    const href = canonicalTag ? attr(canonicalTag.raw, "href") : null;
+    if (href) {
+      if (canonicals.has(href)) fail(rec, `${p}: canonical ${href} also used by ${canonicals.get(href)}`);
+      else canonicals.set(href, p);
+    }
+
+    const h1Matches = [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)];
+    if (h1Matches.length !== 1) {
+      fail(rec, `${p}: expected exactly one <h1>, found ${h1Matches.length}`);
+      continue;
+    }
+    const h1 = h1Matches[0][1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (!h1) fail(rec, `${p}: empty <h1>`);
+    else if (!isNoindex(html)) {
+      if (h1s.has(h1)) fail(rec, `${p}: duplicate <h1> ${JSON.stringify(h1)} also used by ${h1s.get(h1)}`);
+      else h1s.set(h1, p);
+    }
+  }
+});
+
+/* ------------------------------------------------------- 6d. llms.txt coverage */
+
+const LLMS_INDEX_PAGE = (p) =>
+  p === "/index.html" || /^\/[^/]+\.html$/.test(p) || /^\/(posts|work)\/[^/]+\.html$/.test(p) || /^\/docs\/[^/]+\/overview\.html$/.test(p);
+
+check("6d. llms.txt and llms-full.txt coverage", (rec) => {
+  const toUrl = (p) => (p === "/index.html" ? `${SITE}/` : `${SITE}${p}`);
+  const urlSets = new Map();
+  for (const name of ["llms.txt", "llms-full.txt"]) {
+    const file = join(DIST, name);
+    if (!isFile(file)) {
+      fail(rec, `missing /${name}`);
+      continue;
+    }
+    const set = new Set();
+    for (const m of readText(file).matchAll(/https?:\/\/[^\s)<>\]"]+/g)) {
+      const raw = m[0].replace(/[.,;:]+$/, "");
+      let u;
+      try {
+        u = new URL(raw);
+      } catch {
+        fail(rec, `/${name}: unparseable URL ${raw}`);
+        continue;
+      }
+      if (u.origin !== SITE) continue;
+      set.add(`${SITE}${u.pathname}`);
+      if (!resolveInDist(u.pathname)) fail(rec, `/${name}: ${raw} does not resolve in dist/`);
+      const page = PAGES.get(u.pathname === "/" ? "/index.html" : u.pathname);
+      if (page && page.html !== null && isNoindex(page.html)) fail(rec, `/${name}: lists noindex page ${raw}`);
+    }
+    urlSets.set(name, set);
+  }
+
+  const index = urlSets.get("llms.txt");
+  const full = urlSets.get("llms-full.txt");
+  for (const p of pagePaths) {
+    const { html } = PAGES.get(p);
+    if (html === null || isNoindex(html)) continue;
+    if (index && LLMS_INDEX_PAGE(p) && !index.has(toUrl(p))) fail(rec, `/llms.txt does not list ${toUrl(p)}`);
+    if (full && /^\/posts\//.test(p) && !full.has(toUrl(p))) fail(rec, `/llms-full.txt does not list ${toUrl(p)}`);
+  }
+});
+
 const imageCount = { total: 0, noLoading: 0 };
 
 check("7. img alt/width/height", (rec) => {
@@ -771,10 +858,28 @@ check("8. sitemap.xml", (rec) => {
    * New pages are discovered from the build, not a second hardcoded list. Every
    * generated article, case study and documentation page needs a crawlable entry.
    */
+  /*
+   * Every indexable page must be listed; a noindex page must never be listed. The
+   * build decides what is indexable (`<meta name="robots">`), so new routes are covered
+   * without editing this file.
+   */
+  const listed = new Set(normalized);
   for (const page of pagePaths) {
-    if (page === "/404.html") continue;
-    if (!/^\/(posts|work|docs)\//.test(page)) continue;
-    if (!normalized.includes(page)) fail(rec, `sitemap.xml has no <loc> for ${page}`);
+    const { html } = PAGES.get(page);
+    if (html === null) continue;
+    const loc = page === "/index.html" ? "/" : page;
+    if (isNoindex(html)) {
+      if (listed.has(loc)) fail(rec, `sitemap.xml lists noindex page ${loc}`);
+    } else if (!listed.has(loc)) {
+      fail(rec, `sitemap.xml has no <loc> for indexable page ${loc}`);
+    }
+  }
+
+  for (const block of xml.match(/<url>[\s\S]*?<\/url>/g) ?? []) {
+    const loc = /<loc>\s*([^<]*?)\s*<\/loc>/.exec(block)?.[1] ?? "(no <loc>)";
+    const lastmod = /<lastmod>\s*([^<]*?)\s*<\/lastmod>/.exec(block)?.[1];
+    if (!lastmod) fail(rec, `sitemap.xml ${loc} has no <lastmod>`);
+    else if (!/^\d{4}-\d{2}-\d{2}(T\S+)?$/.test(lastmod)) fail(rec, `sitemap.xml ${loc} has invalid <lastmod> ${JSON.stringify(lastmod)}`);
   }
 
   for (const loc of locs) {

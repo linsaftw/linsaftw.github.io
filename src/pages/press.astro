@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { links, routes, SITE_URL } from "../data/links";
+
+const canonicalPath = routes.press;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "Public mentions, community posts and release notes for FlameWM, a Rust X11 window manager by ArkFlame Studios. Community entries are links only.";
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "Press & community",
+    description,
+    path: canonicalPath,
+    type: "CollectionPage",
+  }),
+];
+
+type Mention = {
+  title: string;
+  source: string;
+  date: string;
+  link: string;
+  takeaway: string;
+};
+
+const mentions: readonly Mention[] = [
+  {
+    title: "ArkFlame/FlameWM on Upstar",
+    source: "Upstar, star tracker",
+    date: "Snapshot undated; covers the 0.1.3 release of 30 October 2026",
+    link: links.flamewmUpstar,
+    takeaway:
+      "A third-party tracker recorded 75 new stars in one week, about 18 times the usual pace. Its summary is machine-written.",
+  },
+];
+
+const community: readonly Mention[] = [
+  {
+    title: "I use AI, so what? I made my free open source ...",
+    source: "Reddit · r/foss",
+    date: "stats not recorded",
+    link: links.redditFoss,
+    takeaway: "Link only. Reddit blocked automated fetches, so score and comment counts are not recorded here.",
+  },
+  {
+    title: "Guia completa agentes harness modelos prompt",
+    source: "Reddit · r/devsarg",
+    date: "stats not recorded",
+    link: links.redditGuide,
+    takeaway: "Original post for the AI agents guide (Spanish). Link only; score and comment counts are not recorded.",
+  },
+];
+
+const releases: readonly Mention[] = [
+  {
+    title: "FlameWM 0.1.5",
+    source: "GitHub releases",
+    date: "4 November 2026",
+    link: links.flamewmReleases,
+    takeaway: "Fixes glibc support for antiX 23 (Debian 12) and adds a backlight on-screen display.",
+  },
+  {
+    title: "FlameWM 0.1.4",
+    source: "GitHub releases",
+    date: "4 November 2026",
+    link: links.flamewmReleases,
+    takeaway: "Visual bug fixes and several small desktop behaviors carried over from KDE.",
+  },
+];
+---
+
+<BaseLayout
+  title="Press & community — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
+>
+  <div class="w">
+    <h1>Press &amp; community.</h1>
+    <p class="lead">
+      Mentions of FlameWM that I could open and check, plus Reddit posts. Each entry links to its source.
+    </p>
+
+    <SectionHeader eyebrow="Mentions" id="mentions" label="Outside the repository" />
+
+    <div class="g">
+      {
+        mentions.map((item) => (
+          <div class="ex">
+            <b>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
+                {item.title} &#8599;
+              </a>
+            </b>
+            <span>{item.source} · {item.date}</span>
+            <span>{item.takeaway}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <SectionHeader eyebrow="Community" id="community" label="Reddit posts" />
+
+    <div class="g">
+      {
+        community.map((item) => (
+          <div class="ex">
+            <b>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
+                {item.title} &#8599;
+              </a>
+            </b>
+            <span>{item.source} · {item.date}</span>
+            <span>{item.takeaway}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <SectionHeader eyebrow="Releases" id="releases" label="Recent source releases" />
+
+    <div class="g">
+      {
+        releases.map((item) => (
+          <div class="ex">
+            <b>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
+                {item.title} &#8599;
+              </a>
+            </b>
+            <span>{item.source} · {item.date}</span>
+            <span>{item.takeaway}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="meta" style="margin-top:14px">
+      Case study: <a href="/work/flamewm.html">FlameWM</a>. Source: <a href={links.flamewmGithub} target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>.
+    </p>
+  </div>
+</BaseLayout>

@@ -77,8 +77,13 @@
 }
 
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 60px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -467,8 +472,26 @@ h1 em {
   font-size: 14px;
 }
 
+a.c {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
 a.c:hover {
   background: var(--p2);
+}
+
+a.c:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: -2px;
+}
+
+.c .l {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--ac);
+  font-size: 12px;
 }
 
 /* --- founder bridge ---------------------------------------------------- */
@@ -508,6 +531,8 @@ a.c:hover {
   border: 1px solid var(--bd);
   background: var(--shell2);
   margin-top: 34px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .tb {

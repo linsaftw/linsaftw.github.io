@@ -9,7 +9,7 @@ const canonicalPath = routes.articles;
 const site = Astro.site ?? new URL(SITE_URL);
 
 const intro =
-  "Source-backed notes on Minecraft infrastructure, proxy security, packet systems, Linux desktop engineering, AI products and the operational work behind them.";
+  "Notes on Minecraft infrastructure, proxy security, packet systems, Linux desktop work, AI products and the operations behind them.";
 
 const entries = (await getCollection("articles"))
   .filter((entry) => !entry.data.draft)
@@ -93,7 +93,7 @@ const jsonLd = [
   <div class="w">
     <header class="articles-head">
       <p class="eyebrow">Writing / {entries.length} articles</p>
-      <h1>Notes from the source.</h1>
+      <h1>Engineering notes.</h1>
       <p class="lead">{intro}</p>
       <div class="head-links">
         <a class="chip hot" href={routes.work}>Work case studies</a>
@@ -106,14 +106,14 @@ const jsonLd = [
         <section class="start" aria-labelledby="start-heading">
           <div class="start-head">
             <h2 id="start-heading">Start here</h2>
-            <span>Three different engineering surfaces</span>
+            <span>Three places to start</span>
           </div>
           <div class="start-grid">
             {startHere.map((entry, index) => (
               <a class="start-card" href={entry.href}>
                 <span class="start-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                 <small>{entry.iso}</small>
-                <b>{entry.title}</b>
+                <h3>{entry.title}</h3>
                 <span>{entry.description}</span>
               </a>
             ))}
@@ -275,9 +275,10 @@ const jsonLd = [
     letter-spacing: 0.12em;
   }
 
-  .start-card b {
+  .start-card h3 {
     font-size: 17px;
     line-height: 1.25;
+    margin: 0;
   }
 
   .start-card > span:last-child {

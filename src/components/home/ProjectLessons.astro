@@ -1,0 +1,79 @@
+---
+export interface Lesson {
+  name: string;
+  href: string;
+  lesson: string;
+}
+
+export interface Props {
+  items: readonly Lesson[];
+}
+
+const { items } = Astro.props;
+---
+
+<ol class="lessons" data-reveal>
+  {
+    items.map((item) => (
+      <li>
+        <a class="lesson-name" href={item.href}>
+          {item.name} <span aria-hidden="true">&#8594;</span>
+        </a>
+        <p>{item.lesson}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .lessons {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--bd);
+    background: var(--bd);
+    display: grid;
+    gap: 1px;
+  }
+
+  .lessons li {
+    background: var(--p);
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: 8px 28px;
+    padding: 18px 22px;
+    align-items: baseline;
+  }
+
+  .lesson-name {
+    color: var(--tx);
+    font-weight: 700;
+    font-size: 15px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .lesson-name span {
+    color: var(--ac);
+  }
+
+  .lesson-name:hover {
+    color: var(--ac);
+  }
+
+  .lessons p {
+    margin: 0;
+    color: var(--copy);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 760px) {
+    .lessons li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 16px 18px;
+    }
+  }
+</style>

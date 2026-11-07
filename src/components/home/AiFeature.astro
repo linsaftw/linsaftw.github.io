@@ -1,4 +1,5 @@
 ---
+import { routes } from "../../data/links";
 import { aiProjects } from "../../data/projects";
 import ProjectFeature from "./ProjectFeature.astro";
 
@@ -13,4 +14,12 @@ const [arkAi, faus] = aiProjects;
 <div class="pl">
   {arkAi && <ProjectFeature project={arkAi} />}
   {faus && <ProjectFeature project={faus} note={faus.disclaimer} showImage={false} />}
+  <a class="pc" href={routes.guide}>
+    <div class="t">
+      <small>Guide</small>
+      <h3>How I set up AI coding agents</h3>
+      <p>Prompting, AGENTS.md, skills, harness and model choice, and MCP servers.</p>
+      <span class="l">Read the guide &#8594;</span>
+    </div>
+  </a>
 </div>

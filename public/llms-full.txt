@@ -34,6 +34,8 @@ Java, Bukkit, Spigot, Paper, Folia, BungeeCord, Waterfall, Velocity, proxy secur
 - [Articles](https://linsaftw.arkflame.com/articles.html) — `Articles — LinsaFTW`
 - [Documentation](https://linsaftw.arkflame.com/docs.html) — `Documentation — LinsaFTW`
 - [Work case studies](https://linsaftw.arkflame.com/work.html) — `Work — LinsaFTW`
+- [Press](https://linsaftw.arkflame.com/press.html) — `Press & community — LinsaFTW`
+- [AI agents guide](https://linsaftw.arkflame.com/guide.html) — `AI agents guide — LinsaFTW`
 
 ## Products
 
@@ -66,10 +68,11 @@ FAUS Legal is a research and organization aid. It does not replace a licensed la
 - 2018: Released early public Minecraft plugins and security tools.
 - 2020: Launched FlameCord.
 - 2025: Launched VeloFlame.
-- 2026: FairPlay, ARK AI, FAUS Legal, FFAA Zombies, and FlameWM 0.1.3.
+- 2026: FairPlay, ARK AI, FAUS Legal, FFAA Zombies, and FlameWM 0.1.5.
 
 ## Canonical article index
 
+- [Guía completa: agentes, harness, modelos, prompt engineering y MCPs](https://linsaftw.arkflame.com/posts/guia-completa-agentes-harness-modelos-prompt.html) — A summary of a Spanish-language AI coding guide: write prompts yourself, keep operating rules in AGENTS.md, delegate to subagents, pick the harness and model by task, and keep context small. Published 2026-11-06, updated 2026-11-06.
 - [Health issues can look like motivation problems](https://linsaftw.arkflame.com/posts/developer-health-and-output.html) — A personal note on breathing, sleep, energy, and treating performance like an engineering problem. Published 2026-05-26, updated 2026-05-26. Slug: `developer-health-and-output`.
 - [AI-assisted coding still needs standards](https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html) — Using AI does not remove engineering responsibility. It makes specifications, tests, and review more important. Published 2026-05-27, updated 2026-05-27. Slug: `ai-assisted-coding-needs-standards`.
 - [ArkFlame Studios as the main hub](https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html) — ArkFlame is moving toward one clearer public identity for security, performance, gameplay systems, and server infrastructure. Published 2026-05-28, updated 2026-05-28. Slug: `arkflame-studios-main-hub`.

@@ -1,10 +1,66 @@
 // @ts-check
 import { readFile, writeFile, rm } from "node:fs/promises";
+import { readdirSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 import emitMarkdownTwins from "./src/integrations/emitMarkdownTwins";
+
+const ROOT = fileURLToPath(new URL("./", import.meta.url));
+
+/** Route key without `.html` or trailing slash, so sitemap URLs and file paths compare equal. */
+const routeKey = (pathname) => pathname.replace(/\.html$/, "").replace(/(.)\/$/, "$1") || "/";
+
+/**
+ * Sitemap `lastmod` per route (W3C date).
+ *   - articles: front-matter `updatedAt` (keyed by `canonicalPath`)
+ *   - docs:     front-matter `updatedAt` (keyed by `src/content/docs/<plugin>/<topic>.md`)
+ *   - others:   date of the newest git commit touching `src` or `public`. This is a
+ *               site-wide date, not per page. Omitted when git is unavailable.
+ */
+function sitemapLastmod() {
+  const dates = new Map();
+  const field = (text, key) =>
+    text.match(new RegExp(`^${key}:\\s*"?([^"\\n]+?)"?\\s*$`, "m"))?.[1];
+  const frontMatter = (file) => readFileSync(file, "utf8").match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "";
+  const mdFiles = (dir) =>
+    readdirSync(new URL(dir, `file://${ROOT}`), { recursive: true })
+      .filter((f) => String(f).endsWith(".md"))
+      .map((f) => ({ rel: String(f), file: new URL(`${dir}/${f}`, `file://${ROOT}`) }));
+
+  for (const { file } of mdFiles("src/content/articles")) {
+    const fm = frontMatter(fileURLToPath(file));
+    const canonical = field(fm, "canonicalPath");
+    const updated = field(fm, "updatedAt");
+    if (canonical && updated) dates.set(routeKey(canonical), new Date(updated));
+  }
+  for (const { rel, file } of mdFiles("src/content/docs")) {
+    const fm = frontMatter(fileURLToPath(file));
+    const updated = field(fm, "updatedAt");
+    if (updated) dates.set(routeKey(`/docs/${rel.replace(/\.md$/, "")}`), new Date(updated));
+  }
+
+  let siteDate;
+  try {
+    const iso = execFileSync("git", ["log", "-1", "--format=%cs", "--", "src", "public"], {
+      cwd: ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    siteDate = iso ? new Date(iso) : undefined;
+  } catch {
+    siteDate = undefined;
+  }
+  if (siteDate && Number.isNaN(siteDate.getTime())) siteDate = undefined;
+
+  return (item) => {
+    const lastmod = dates.get(routeKey(new URL(item.url).pathname)) ?? siteDate;
+    return lastmod ? { ...item, lastmod } : item;
+  };
+}
 
 /**
  * @astrojs/sitemap@3.7.4 always writes `sitemap-index.xml` plus one or more
@@ -89,7 +145,9 @@ export default defineConfig({
     sitemap({
       entryLimit: 5000,
       // C11: the `.html.md` twins are deliberate SEO back-compat, never sitemap entries.
-      filter: (page) => !page.endsWith(".md"),
+      // The 404 page is noindex, so it must never be listed.
+      filter: (page) => !page.endsWith(".md") && !/\/404(\.html)?\/?$/.test(page),
+      serialize: sitemapLastmod(),
     }),
     singleSitemapFile(),
     emitMarkdownTwins(),

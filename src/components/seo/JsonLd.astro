@@ -129,6 +129,55 @@ export function breadcrumbNode(
   };
 }
 
+/** ProfilePage for the About page. `mainEntity` points at the Person node. */
+export function profilePageNode(
+  siteUrl: URL,
+  opts: { name: string; description: string; path: string },
+): Record<string, unknown> {
+  const url = new URL(opts.path, siteUrl).href;
+  return {
+    "@type": "ProfilePage",
+    "@id": `${url}#profilepage`,
+    url,
+    name: opts.name,
+    description: opts.description,
+    inLanguage: "en",
+    isPartOf: { "@id": `${new URL("/", siteUrl).href}#website` },
+    mainEntity: { "@id": `${new URL("/", siteUrl).href}#person` },
+  };
+}
+
+/**
+ * SoftwareApplication for a shipped product (FlameWM). Author points at the Person
+ * node. Values come from the caller, so release data stays in `links.ts`.
+ */
+export function softwareApplicationNode(
+  siteUrl: URL,
+  opts: {
+    name: string;
+    description: string;
+    homepage: string;
+    repository: string;
+    version: string;
+    operatingSystem: string;
+  },
+): Record<string, unknown> {
+  return {
+    "@type": "SoftwareApplication",
+    "@id": `${opts.homepage}#software`,
+    name: opts.name,
+    description: opts.description,
+    url: opts.homepage,
+    codeRepository: opts.repository,
+    softwareVersion: opts.version,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: opts.operatingSystem,
+    inLanguage: "en",
+    author: { "@id": `${new URL("/", siteUrl).href}#person` },
+    publisher: { "@id": `${new URL("/", siteUrl).href}#person` },
+  };
+}
+
 /** C16 — the homepage @graph: Person, WebSite, WebPage. */
 export function homeGraph(
   siteUrl: URL,

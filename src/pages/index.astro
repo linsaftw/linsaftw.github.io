@@ -2,9 +2,13 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { homeGraph } from "../components/seo/JsonLd.astro";
-import IdentityHero from "../components/home/IdentityHero.astro";
-import TerminalBlock from "../components/home/TerminalBlock.astro";
+import HomeHero from "../components/home/HomeHero.astro";
+import ProofStrip from "../components/home/ProofStrip.astro";
+import FlameWmShowcase from "../components/home/FlameWmShowcase.astro";
 import ProjectFeature from "../components/home/ProjectFeature.astro";
+import Highlights from "../components/home/Highlights.astro";
+import SkillsMatrix from "../components/home/SkillsMatrix.astro";
+import ProjectLessons from "../components/home/ProjectLessons.astro";
 
 import {
   identity,
@@ -13,8 +17,8 @@ import {
   homeH1,
   homeH1Accent,
 } from "../data/identity";
-import { postPath, links, routes, SITE_URL, workPath } from "../data/links";
-import { projectById } from "../data/projects";
+import { links, postPath, routes, SITE_URL, workPath } from "../data/links";
+import { caseStudyProjects, projectById, projects } from "../data/projects";
 import { timeline } from "../data/timeline";
 
 const title = "LinsaFTW — Minecraft Infrastructure Developer";
@@ -22,16 +26,18 @@ const site = Astro.site ?? new URL(SITE_URL);
 const jsonLd = homeGraph(site, { name: title, description: homeDescription });
 
 const h1Lead = homeH1.slice(0, homeH1.length - homeH1Accent.length);
-const homeLead = `I design, build and ship server software, security systems, a Linux desktop, games and AI products. Founder of ${identity.founderOf}.`;
+const homeLead =
+  "I build server software, anti-exploit and anti-bot security, a Linux window manager, games and AI tools. Founder of " +
+  `${identity.founderOf}, coding since ${identity.codingSince}.`;
 
-const featuredIds = ["exploitfixer", "flamewm", "veloflame", "ffaa-zombies"] as const;
-const featured = featuredIds
+const selectedIds = ["exploitfixer", "flamecord", "veloflame", "fairplay"] as const;
+const selected = selectedIds
   .map((id) => projectById(id))
   .filter((project): project is NonNullable<typeof project> => Boolean(project));
+const flamewm = projectById("flamewm");
 
 const alsoShipped = [
-  "flamecord",
-  "fairplay",
+  "ffaa-zombies",
   "entitylimiter",
   "redstonelimiter",
   "flamespawners",
@@ -42,21 +48,93 @@ const alsoShipped = [
   .map((id) => projectById(id))
   .filter((project): project is NonNullable<typeof project> => Boolean(project));
 
-const recent = (await getCollection("articles"))
+const articles = (await getCollection("articles"))
   .filter((entry) => !entry.data.draft)
-  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-  .slice(0, 4)
-  .map((entry) => {
-    const slug = /^\/posts\/(.+)\.html$/.exec(entry.data.canonicalPath)?.[1];
-    if (!slug) throw new Error(`bad canonicalPath: ${entry.data.canonicalPath}`);
-    return {
-      title: entry.data.title,
-      description: entry.data.description,
-      href: postPath(slug),
-      date: entry.data.publishedAt.toISOString().slice(0, 10),
-      tags: entry.data.tags.slice(0, 3),
-    };
-  });
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const recent = articles.slice(0, 4).map((entry) => {
+  const slug = /^\/posts\/(.+)\.html$/.exec(entry.data.canonicalPath)?.[1];
+  if (!slug) throw new Error(`bad canonicalPath: ${entry.data.canonicalPath}`);
+  return {
+    title: entry.data.title,
+    description: entry.data.description,
+    href: postPath(slug),
+    date: entry.data.publishedAt.toISOString().slice(0, 10),
+  };
+});
+
+// Every number below is derived from repo content at build time.
+const publicProducts = projects.filter((p) => p.caseStudy?.availability === "public").length;
+const stats = [
+  { value: String(new Date().getFullYear() - identity.codingSince), label: `years writing code, since ${identity.codingSince}` },
+  { value: String(caseStudyProjects.length), label: "case studies with architecture notes" },
+  { value: String(publicProducts), label: "public products you can run or download" },
+  { value: String(articles.length), label: "technical articles, written from source" },
+];
+
+const skillGroups = [
+  { title: "Languages", items: ["Java for Bukkit, Paper and Folia plugins", "TypeScript for Next.js and Node services", "Rust for the FlameWM desktop", "HTML and CSS compiled to native rendering", "JavaScript for Astro and browser games"] },
+  { title: "Minecraft infrastructure", items: ["Paper and Folia threading", "BungeeCord, Waterfall and Velocity proxies", "Packet protocols with PacketEvents and ProtocolLib", "Limbo verification before backend login", "Entity and redstone budgets"] },
+  { title: "Security", items: ["Packet validation before decode", "Anti-bot admission control", "Decompression and frame-size limits", "Fail-closed authentication bridges", "Proxy trust boundaries and firewalls"] },
+  { title: "AI and agents", items: ["OpenAI-compatible provider APIs", "Streaming responses without a fake stream", "Bounded agent work", "Model evaluation with a stated method", "ML workflows for combat anticheat"] },
+  { title: "X11 and native", items: ["X11 window management", "Experimental Wayland compositing", "Compiled shell with no web runtime", "Workspace state with one owner", "Profiling and tick-budget tuning"] },
+  { title: "Web and data", items: ["Next.js, React and Astro", "Node 24 services", "MongoDB collections", "Static content collections", "Source-backed technical writing"] },
+];
+
+const lessons = [
+  {
+    name: "ExploitFixer",
+    href: workPath("exploitfixer"),
+    lesson: "Reject bad input before you decode it. The cheapest check runs first, before the server builds objects from hostile bytes.",
+  },
+  {
+    name: "FlameCord",
+    href: workPath("flamecord"),
+    lesson: "Verify at the proxy so bot sessions never reach a game server. A backend should only see traffic that has already passed.",
+  },
+  {
+    name: "VeloFlame",
+    href: workPath("veloflame"),
+    lesson: "Budgets belong to protocol states. A handshake limit and a play-state limit are not the same number, so one default cannot fit both.",
+  },
+  {
+    name: "FairPlay",
+    href: workPath("fairplay"),
+    lesson: "Deduplicate events before you act on them. Two listeners applying the same compensation twice is an easy bug to ship.",
+  },
+  {
+    name: "FlameWM",
+    href: workPath("flamewm"),
+    lesson: "Give shared state one owner. When the panel and the window manager each track the active desktop, they drift apart.",
+  },
+];
+
+const highlights = [
+  {
+    title: "Architecture",
+    items: [
+      { title: "Modules, not a pile of listeners", project: "ExploitFixer", href: workPath("exploitfixer"), note: "Each check is a named module with its own YAML. Operators tune one without a rebuild." },
+      { title: "Two bridges, not a fallback chain", project: "AuthMePremium", href: workPath("authmepremium"), note: "A companion plugin path and a Velocity-native session path, each with its own trust setup." },
+      { title: "Rust crates with hard boundaries", project: "FlameWM", href: workPath("flamewm"), note: "Pure models stay independent of X11 and Wayland, so they can be tested without a display server." },
+    ],
+  },
+  {
+    title: "Performance",
+    items: [
+      { title: "Early limits at the frame layer", project: "VeloFlame", href: workPath("veloflame"), note: "Packets are validated before they become objects. Decompression checks the claimed and the inflated size." },
+      { title: "Batched production", project: "FlameSpawners", href: workPath("flamespawners"), note: "A 20-tick dispatcher handles a bounded number of spawners per pass, so a large farm cannot take over the tick." },
+      { title: "Record at every scope", project: "RedstoneLimiter", href: workPath("redstonelimiter"), note: "A blocked parent scope returns early, so the cheap check runs before any further work." },
+    ],
+  },
+  {
+    title: "Security",
+    items: [
+      { title: "Validate before decode", project: "ExploitFixer", href: workPath("exploitfixer"), note: "Oversized or malformed frames are cancelled before a semantic packet is built." },
+      { title: "Ordered admission checks", project: "FlameCord", href: workPath("flamecord"), note: "Login checks run in a fixed sequence, and any check can disconnect before a backend sees the connection." },
+      { title: "Fail closed on bad configuration", project: "AuthMePremium", href: workPath("authmepremium"), note: "A blank secret or invalid retry value disables the bridge with a warning. The secret is never logged." },
+    ],
+  },
+];
 
 const beyond = [
   {
@@ -64,14 +142,14 @@ const beyond = [
     title: "FFAA Zombies",
     text: "Browser-first co-op survival with large enemy counts, classes and custom maps.",
     href: workPath("ffaa-zombies"),
-    link: "Play and read the brief",
+    link: "Read the case study",
   },
   {
     eyebrow: "AI",
     title: "ARK AI + FAUS Legal",
     text: "A canonical AI platform and a focused Argentine legal-research workspace.",
     href: workPath("ark-ai"),
-    link: "Open ARK AI case study",
+    link: "Open the ARK AI case study",
   },
   {
     eyebrow: "Experiments",
@@ -90,33 +168,11 @@ const beyond = [
   ogType="website"
   jsonLd={jsonLd}
   ogImage="/images/og/home.webp"
-  preloadImage="/images/hero/early-computer.webp"
 >
-  <IdentityHero />
-
   <div class="w">
-    <div class="id">
-      <div class="av" role="img" aria-label="LinsaFTW portrait"></div>
-      <small>{identityRow}</small>
-    </div>
+    <HomeHero identityRow={identityRow} lead={homeLead} h1Lead={h1Lead} h1Accent={homeH1Accent} />
 
-    <h1>{h1Lead}<em>{homeH1Accent}</em></h1>
-
-    <p class="lead">{homeLead}</p>
-
-    <div class="chips home-ctas">
-      <a class="chip hot" href={routes.work}>Explore selected work</a>
-      <a class="chip" href={routes.articles}>Read technical articles</a>
-      <a class="chip" href={routes.docs}>Documentation</a>
-      <a class="chip" href={links.arkflame} target="_blank" rel="noopener noreferrer">
-        ArkFlame Studios &#8599;
-      </a>
-      <a class="chip" href={links.github} target="_blank" rel="noopener noreferrer">
-        GitHub &#8599;
-      </a>
-    </div>
-
-    <TerminalBlock />
+    <ProofStrip stats={stats} />
 
     <div class="sh" id="build">
       <h2>Selected work</h2>
@@ -125,8 +181,11 @@ const beyond = [
         <a class="sh-all" href={routes.work}>All case studies &#8594;</a>
       </span>
     </div>
-    <div class="pl" data-reveal>
-      {featured.map((project) => <ProjectFeature project={project} />)}
+
+    {flamewm && <FlameWmShowcase project={flamewm} />}
+
+    <div class="pl feat" data-reveal>
+      {selected.map((project) => <ProjectFeature project={project} />)}
     </div>
 
     <div class="also">
@@ -144,6 +203,32 @@ const beyond = [
         </a>
       </div>
     </div>
+
+    <div class="sh" id="highlights">
+      <h2>Interview-ready decisions</h2>
+      <span class="sh-right">
+        <span>Architecture · performance · security</span>
+      </span>
+    </div>
+    <Highlights groups={highlights} />
+
+    <div class="sh" id="skills">
+      <h2>Skills</h2>
+      <span class="sh-right">
+        <span>Grouped by where I use them</span>
+      </span>
+    </div>
+    <div data-reveal>
+      <SkillsMatrix groups={skillGroups} />
+    </div>
+
+    <div class="sh" id="lessons">
+      <h2>What each project taught me</h2>
+      <span class="sh-right">
+        <span>Lessons, not feature lists</span>
+      </span>
+    </div>
+    <ProjectLessons items={lessons} />
 
     <span id="how" class="legacy-anchor" aria-hidden="true"></span>
     <div class="sh" id="proof">
@@ -207,22 +292,28 @@ const beyond = [
         ))
       }
     </div>
+
     <div class="about-cta">
       <div>
-        <h2>I build the parts users never see.</h2>
+        <h2>Hiring for infrastructure, security or systems work?</h2>
         <p>
-          Proxies, packet checks, schedulers, storage and the support work that keeps them
-          running. The case studies explain the decisions, not just the feature list.
+          Start with the case studies, then read the full story. Each one explains the
+          decisions behind the product, not just the feature list.
         </p>
       </div>
-      <a class="chip hot" href={routes.about}>Read the full story</a>
+      <div class="cta-actions">
+        <a class="chip hot" href={links.linkedin} target="_blank" rel="noopener noreferrer">
+          Contact on LinkedIn &#8599;
+        </a>
+        <a class="chip" href={routes.about}>Read the full story</a>
+      </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .home-ctas {
-    margin-bottom: 8px;
+  .feat {
+    margin-top: 18px;
   }
 
   .also {
@@ -253,6 +344,9 @@ const beyond = [
   .also a {
     color: var(--mu);
     font-size: 12px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .also a:hover {
@@ -406,8 +500,8 @@ const beyond = [
     gap: 24px;
     flex-wrap: wrap;
     border-top: 1px solid var(--bd);
-    margin-top: 54px;
-    padding-top: 24px;
+    margin-top: 64px;
+    padding-top: 28px;
   }
 
   .about-cta h2 {
@@ -422,8 +516,10 @@ const beyond = [
     margin: 0;
   }
 
-  .av {
-    --av: url("/images/profile/linsaftw.webp");
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   @media (max-width: 900px) {

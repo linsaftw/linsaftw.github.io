@@ -15,7 +15,7 @@ export const timeline: readonly TimelineEntry[] = [
   { year: 2018, text: "Released early public Minecraft plugins and security tools." },
   { year: 2020, text: "Launched FlameCord." },
   { year: 2025, text: "Launched VeloFlame." },
-  { year: 2026, text: "FairPlay, ARK AI, FAUS Legal, FFAA Zombies, and FlameWM 0.1.3." },
+  { year: 2026, text: "FairPlay, ARK AI, FAUS Legal, FFAA Zombies, and FlameWM 0.1.5." },
 ];
 
 /** C4 — the about page may additionally include the self-reported 2014 entry. */

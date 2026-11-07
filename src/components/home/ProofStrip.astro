@@ -1,0 +1,67 @@
+---
+/**
+ * Proof strip. Callers pass values computed from repo content (project manifest,
+ * article collection, identity). Nothing is hardcoded here.
+ */
+export interface Stat {
+  value: string;
+  label: string;
+}
+
+export interface Props {
+  stats: readonly Stat[];
+}
+
+const { stats } = Astro.props;
+---
+
+<dl class="proof-strip" data-reveal>
+  {
+    stats.map((stat) => (
+      <div class="stat">
+        <dd>{stat.value}</dd>
+        <dt>{stat.label}</dt>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .proof-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin: 36px 0 0;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .stat {
+    background: var(--p);
+    padding: 18px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat dd {
+    margin: 0;
+    color: var(--tx);
+    font-size: clamp(1.5rem, 3.2vw, 2rem);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat dt {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 760px) {
+    .proof-strip {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,160 @@
+---
+import type { Project } from "../../data/projects";
+import { workPath } from "../../data/links";
+
+export interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const facts = project.caseStudy?.facts.slice(0, 3) ?? [];
+const href = workPath(project.id);
+---
+
+<article class="fw" data-reveal>
+  <figure class="fw-main">
+    <img
+      src="/images/projects/flamewm-desktop.webp"
+      alt="FlameWM desktop session with the shell panel and open windows"
+      width="1200"
+      height="568"
+      loading="lazy"
+      decoding="async"
+    />
+  </figure>
+  <div class="fw-body">
+    <figure class="fw-thumb">
+      <img
+        src="/images/projects/flamewm.webp"
+        alt="FlameWM window manager screenshot"
+        width="720"
+        height="405"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <div class="fw-text">
+      <small>Featured · {project.kind}</small>
+      <h3>{project.name}</h3>
+      <p class="fw-tag">{project.caseStudy?.tagline}</p>
+      <p>{project.description}</p>
+      <ul class="fw-facts">
+        {facts.map((fact) => <li><span>{fact.label}</span> {fact.value}</li>)}
+      </ul>
+      <a class="fw-cta" href={href}>Read the FlameWM case study <span aria-hidden="true">&#8594;</span></a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .fw {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border: 1px solid var(--bd);
+    background: var(--p);
+  }
+
+  .fw-main {
+    margin: 0;
+    border-bottom: 1px solid var(--bd);
+    background: var(--shell);
+  }
+
+  .fw-main img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .fw-body {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 0;
+  }
+
+  .fw-thumb {
+    margin: 0;
+    border-right: 1px solid var(--bd);
+  }
+
+  .fw-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .fw-text {
+    padding: 24px 26px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .fw-text small {
+    color: var(--ac);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .fw-text h3 {
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+  }
+
+  .fw-tag {
+    color: var(--tx);
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .fw-text p {
+    margin: 0;
+    color: var(--mu);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .fw-facts {
+    list-style: none;
+    margin: 4px 0 6px;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--mu);
+  }
+
+  .fw-facts span {
+    color: var(--tx);
+  }
+
+  .fw-cta {
+    margin-top: auto;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ac);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .fw-cta:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .fw-body {
+      grid-template-columns: 1fr;
+    }
+
+    .fw-thumb {
+      border-right: 0;
+      border-bottom: 1px solid var(--bd);
+    }
+  }
+</style>

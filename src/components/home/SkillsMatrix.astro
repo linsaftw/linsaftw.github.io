@@ -1,0 +1,91 @@
+---
+/**
+ * Skills matrix. Every item is evidenced by a project, article or stack entry in the repo.
+ */
+export interface SkillGroup {
+  title: string;
+  items: readonly string[];
+}
+
+export interface Props {
+  groups: readonly SkillGroup[];
+}
+
+const { groups } = Astro.props;
+---
+
+<div class="skills">
+  {
+    groups.map((group) => (
+      <section class="skill-group" aria-labelledby={`skill-${group.title.toLowerCase().replace(/[^a-z]+/g, "-")}`}>
+        <h3 id={`skill-${group.title.toLowerCase().replace(/[^a-z]+/g, "-")}`}>{group.title}</h3>
+        <ul>
+          {group.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .skills {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--bd);
+    border: 1px solid var(--bd);
+  }
+
+  .skill-group {
+    background: var(--p);
+    padding: 20px 20px 22px;
+  }
+
+  .skill-group h3 {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ac);
+    font-weight: 700;
+    margin: 0 0 14px;
+    line-height: 1.3;
+  }
+
+  .skill-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .skill-group li {
+    color: var(--copy);
+    font-size: 13px;
+    line-height: 1.5;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .skill-group li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 1px;
+    background: var(--mu);
+  }
+
+  @media (max-width: 900px) {
+    .skills {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .skills {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

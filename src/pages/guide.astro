@@ -1,0 +1,449 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/layout/SectionHeader.astro";
+import { personNode, webPageNode } from "../components/seo/JsonLd.astro";
+import { links, routes, SITE_URL } from "../data/links";
+
+const canonicalPath = routes.guide;
+const site = Astro.site ?? new URL(SITE_URL);
+
+const description =
+  "A visual guide to AI coding agents: prompt engineering, AGENTS.md, skills, harnesses, model selection and MCP servers. Summarized from a Spanish-language post by LinsaFTW.";
+
+const redditUrl = links.redditGuide;
+const articlePath = "/posts/guia-completa-agentes-harness-modelos-prompt.html";
+
+const toc = [
+  { id: "prompting", label: "Prompt engineering" },
+  { id: "loop", label: "How the loop works" },
+  { id: "agents-md", label: "AGENTS.md and skills" },
+  { id: "harness", label: "Harness" },
+  { id: "models", label: "Models" },
+  { id: "mcp", label: "MCP servers and RTK" },
+  { id: "takeaways", label: "Takeaways" },
+  { id: "expertise", label: "What this shows" },
+];
+
+const jsonLd = [
+  personNode(site),
+  webPageNode(site, {
+    name: "AI agents guide",
+    description,
+    path: canonicalPath,
+    type: "WebPage",
+  }),
+];
+---
+
+<BaseLayout
+  title="AI agents guide — LinsaFTW"
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage="/images/og/work-ark-ai.webp"
+  jsonLd={jsonLd}
+>
+  <div class="w gd">
+    <nav aria-label="Breadcrumb" class="meta gd-crumb">
+      <a href="/ai.html">AI</a> <span aria-hidden="true">/</span> <span>Guide</span>
+    </nav>
+
+    <h1>Agents, harness, models, and <em>prompting.</em></h1>
+    <p class="lead">
+      A practical map of how AI coding agents work and how to set them up: what to write yourself,
+      what to put in AGENTS.md, which harness and model to use, and which tools to add.
+    </p>
+    <p class="meta">
+      Original: <span lang="es">"Guía completa: agentes, harness, modelos, prompt engineering y MCPs"</span>,
+      posted on r/devsarg by u/LinsaFTW on 2026-11-06. Reddit score and comment counts are not
+      shown because they were not verified.
+    </p>
+
+    <div class="chips gd-actions">
+      <a class="chip hot" href={redditUrl} target="_blank" rel="noopener noreferrer">
+        Read the original on Reddit ↗
+      </a>
+      <a class="chip" href={articlePath}>Read as article &#8594;</a>
+    </div>
+
+    <nav class="gd-toc" aria-labelledby="gd-toc-title">
+      <h2 id="gd-toc-title">On this page</h2>
+      <ol>
+        {toc.map((item) => (
+          <li><a href={`#${item.id}`}>{item.label}</a></li>
+        ))}
+      </ol>
+    </nav>
+
+    <section class="gd-section" aria-labelledby="prompting">
+      <SectionHeader eyebrow="Prompt engineering" id="prompting" label="Write it yourself" />
+      <div class="g">
+        <div class="c">
+          <small>Rule 1</small>
+          <h3>Humans write the prompt</h3>
+          <p>
+            The author says models are trained on internet text and code, not on prompting. A
+            model-written prompt is usually weaker than one written from a clear view of the
+            problem.
+          </p>
+        </div>
+        <div class="c">
+          <small>Rule 2</small>
+          <h3>Detailed beats perfect</h3>
+          <p>
+            Give the symptom, the steps that trigger it, the suspected area, the goal, and how to
+            verify the result. Typos are fine.
+          </p>
+        </div>
+        <div class="c">
+          <small>Rule 3</small>
+          <h3>English first</h3>
+          <p>
+            Use Spanish only if English blocks you. Models are not fully trained on Spanish, which
+            the author says makes results less predictable and can cost more tokens.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gd-section" aria-labelledby="loop">
+      <SectionHeader eyebrow="How the loop works" id="loop" label="Simplified" />
+      <figure class="gd-figure">
+        <svg
+          viewBox="0 0 700 250"
+          role="img"
+          aria-label="Agent loop: prompt, model, harness, trimmed output, back to the model"
+          class="gd-svg"
+        >
+          <desc>
+            The prompt and AGENTS.md go to the model. The model plans a step. The harness runs a tool.
+            The output is trimmed and returned to the model's context. The model can also delegate
+            parallel work to subagents, whose results come back to the orchestrator.
+          </desc>
+          <defs>
+            <marker id="gd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" class="gd-arrowhead" />
+            </marker>
+          </defs>
+
+          <rect class="gd-node" x="10" y="90" width="140" height="64" rx="4" />
+          <text class="gd-label" x="80" y="116" text-anchor="middle">Prompt</text>
+          <text class="gd-sub" x="80" y="136" text-anchor="middle">+ AGENTS.md</text>
+
+          <rect class="gd-node" x="190" y="90" width="140" height="64" rx="4" />
+          <text class="gd-label" x="260" y="116" text-anchor="middle">Model</text>
+          <text class="gd-sub" x="260" y="136" text-anchor="middle">plans the step</text>
+
+          <rect class="gd-node gd-node-hot" x="370" y="90" width="140" height="64" rx="4" />
+          <text class="gd-label" x="440" y="116" text-anchor="middle">Harness</text>
+          <text class="gd-sub" x="440" y="136" text-anchor="middle">runs the tools</text>
+
+          <rect class="gd-node" x="550" y="90" width="140" height="64" rx="4" />
+          <text class="gd-label" x="620" y="116" text-anchor="middle">Output</text>
+          <text class="gd-sub" x="620" y="136" text-anchor="middle">trimmed (RTK)</text>
+
+          <line class="gd-edge" x1="150" y1="122" x2="190" y2="122" marker-end="url(#gd-arrow)" />
+          <line class="gd-edge" x1="330" y1="122" x2="370" y2="122" marker-end="url(#gd-arrow)" />
+          <line class="gd-edge" x1="510" y1="122" x2="550" y2="122" marker-end="url(#gd-arrow)" />
+
+          <path class="gd-edge" d="M620 154 L620 214 L260 214 L260 158" fill="none" marker-end="url(#gd-arrow)" />
+          <text class="gd-sub" x="440" y="236" text-anchor="middle">result returns to the model's context</text>
+
+          <rect class="gd-node gd-node-dashed" x="190" y="10" width="140" height="42" rx="4" />
+          <text class="gd-label" x="260" y="30" text-anchor="middle">Subagents</text>
+          <text class="gd-sub" x="260" y="46" text-anchor="middle">parallel work</text>
+          <line class="gd-edge gd-edge-dashed" x1="260" y1="90" x2="260" y2="54" marker-end="url(#gd-arrow)" />
+        </svg>
+        <figcaption class="meta">
+          Simplified from the workflow the post describes. Subagents keep the main thread small.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="gd-section" aria-labelledby="agents-md">
+      <SectionHeader eyebrow="AGENTS.md and skills" id="agents-md" label="Read first" />
+      <div class="g">
+        <div class="c">
+          <small>AGENTS.md / CLAUDE.md</small>
+          <h3>The file the agent reads first</h3>
+          <p>
+            The author calls it the most important piece. Their example sets a primary role, a
+            delegated role, a no-recursive-delegation rule, and a tool routing table.
+          </p>
+          <p class="meta">
+            Rules to keep: delegate to subagents, set a goal for long work, and keep output rules
+            short.
+          </p>
+        </div>
+        <div class="c">
+          <small>Skills</small>
+          <h3>Install few, specific ones</h3>
+          <p>
+            The author names ui-ux-pro-max for page structure and unslop for removing generic AI
+            phrasing. Large bundles such as Superpowers fill the context with material most tasks
+            do not need.
+          </p>
+          <p class="meta">Turn the prompts you repeat into your own skill.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gd-section" aria-labelledby="harness">
+      <SectionHeader eyebrow="Harness" id="harness" label="Pick by model family" />
+      <div class="g">
+        <div class="c">
+          <small>Use</small>
+          <h3>Claude Code and OpenCode</h3>
+          <p>
+            Claude Code for Claude models. OpenCode for the other subscriptions, mainly DeepSeek and
+            GPT, which the author describes as efficient in tokens.
+          </p>
+        </div>
+        <div class="c">
+          <small>Avoid</small>
+          <h3>Pi, CommandCode, Codex</h3>
+          <p>
+            The author says Pi needs heavy customization to be useful, CommandCode saturates
+            context and orchestrates subagents poorly, and Codex fills context faster than the
+            alternatives.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gd-section" aria-labelledby="models">
+      <SectionHeader eyebrow="Models" id="models" label="Match the task" />
+      <div class="g">
+        <div class="c">
+          <small>Backend and frontend</small>
+          <h3>Claude, GPT, or DeepSeek</h3>
+          <p>
+            Sonnet 5.5 low with Haiku 5.5 low for Claude. GPT 6 Luna MAX for GPT. DeepSeek v4.1
+            Flash for the rest.
+          </p>
+        </div>
+        <div class="c">
+          <small>Specialized work</small>
+          <h3>Opus for heavy design work</h3>
+          <p>
+            3D modeling, games, and complex animation or design, per the author. For ordinary
+            work the author calls Opus overkill.
+          </p>
+        </div>
+        <div class="c">
+          <small>Evaluation</small>
+          <h3>Trust your own runs</h3>
+          <p>
+            The author does not trust benchmark scores and says personal experience matters more.
+            Model names and rankings change quickly, so check this list against current results.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gd-section" aria-labelledby="mcp">
+      <SectionHeader eyebrow="MCP servers and RTK" id="mcp" label="Tools around the model" />
+      <div class="g">
+        <div class="c">
+          <small>Context and docs</small>
+          <h3>Serena, Context7, exa</h3>
+          <p>
+            Serena gives a project view so the agent navigates without repeated grep. Context7
+            supplies current library docs. exa handles web search when needed.
+          </p>
+        </div>
+        <div class="c">
+          <small>Runtime and data</small>
+          <h3>chrome-devtools, mongodb</h3>
+          <p>
+            chrome-devtools drives Chrome. mongodb gives direct access to real databases.
+          </p>
+        </div>
+        <div class="c">
+          <small>Output size</small>
+          <h3>context-mode and RTK</h3>
+          <p>
+            context-mode keeps large tool output in a sandbox and returns the relevant part. RTK
+            is a local proxy that removes unneeded command output. The author calls RTK
+            fundamental and says it must be installed and its proxy running.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gd-section" aria-labelledby="takeaways">
+      <SectionHeader eyebrow="Takeaways" id="takeaways" label="Ranked" />
+      <ol class="gd-takeaways">
+        <li>
+          <strong>Write the prompt yourself.</strong> Include the goal, the symptom, and how to verify.
+        </li>
+        <li>
+          <strong>Put operating rules in AGENTS.md.</strong> Delegate parallel work so the main
+          context stays clean.
+        </li>
+        <li>
+          <strong>Install few skills.</strong> Turn repeated prompts into your own skill.
+        </li>
+        <li>
+          <strong>Pick the harness by model family</strong> and by how many tokens it spends.
+        </li>
+        <li>
+          <strong>Pick the model by task,</strong> and check results on your own work.
+        </li>
+      </ol>
+    </section>
+
+    <section class="gd-section" aria-labelledby="expertise">
+      <SectionHeader eyebrow="What this shows" id="expertise" label="Author background" />
+      <p class="meta">
+        Background as the author states it: over 13 years of programming, about 3 years of intensive
+        AI-assisted coding, trained models, RAG and agentic flow work, and an AI provider and
+        datacenter. These are the author's claims, not independently checked here.
+      </p>
+      <div class="g">
+        <div class="c">
+          <small>Agent harness design</small>
+          <h3>Routing and delegation</h3>
+          <p>
+            The guide's example AGENTS.md defines roles, tool routing, and a no-recursion rule.
+            The author's example repository, lean-agents, is linked from the original post.
+          </p>
+        </div>
+        <div class="c">
+          <small>Model selection</small>
+          <h3>Task-based rules</h3>
+          <p>
+            Each model family gets a task rule, and the author separates cheap daily work from
+            specialized design work.
+          </p>
+        </div>
+        <div class="c">
+          <small>Prompt and context engineering</small>
+          <h3>Compression and goals</h3>
+          <p>
+            The author says a lean-agents prompt was reduced across more than 120 audited versions.
+            Long work uses a stated goal, and output rules are compressed into AGENTS.md.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <p class="note">
+      Summary of a community post. Model names and tool recommendations reflect the author's
+      views as of 2026-11-06.
+      <a href={redditUrl} target="_blank" rel="noopener noreferrer">Read the original ↗</a>
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .gd-crumb {
+    margin-bottom: 12px;
+  }
+  .gd-crumb a {
+    color: var(--mu);
+  }
+  .gd-actions {
+    margin-top: 18px;
+  }
+  .gd-toc {
+    margin: 32px 0 8px;
+    padding: 20px 22px;
+    border: 1px solid var(--bd);
+    background: var(--p);
+  }
+  .gd-toc h2 {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mu);
+  }
+  .gd-toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 2px 18px;
+  }
+  .gd-toc a {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+    color: var(--tx);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .gd-toc a:hover,
+  .gd-toc a:focus-visible {
+    color: var(--ac);
+    border-bottom-color: var(--ac);
+  }
+  .gd-section {
+    margin-top: 56px;
+  }
+  .gd-figure {
+    margin: 0;
+    border: 1px solid var(--bd);
+    background: var(--p);
+    padding: 16px;
+  }
+  .gd-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: var(--font-mono);
+  }
+  .gd-node {
+    fill: var(--bg);
+    stroke: var(--bd);
+    stroke-width: 1.5;
+  }
+  .gd-node-hot {
+    stroke: var(--ac);
+  }
+  .gd-node-dashed {
+    stroke-dasharray: 5 4;
+    stroke: var(--mu);
+  }
+  .gd-label {
+    fill: var(--tx);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .gd-sub {
+    fill: var(--mu);
+    font-size: 12px;
+  }
+  .gd-edge {
+    stroke: var(--mu);
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .gd-edge-dashed {
+    stroke-dasharray: 5 4;
+  }
+  .gd-arrowhead {
+    fill: var(--mu);
+  }
+  .gd-figure figcaption {
+    margin-top: 10px;
+  }
+  .gd-takeaways {
+    margin: 0;
+    padding: 0 0 0 1.5em;
+    display: grid;
+    gap: 10px;
+    color: var(--copy);
+  }
+  .gd a:focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: 3px;
+  }
+  @media (max-width: 760px) {
+    .gd-figure {
+      padding: 10px;
+    }
+  }
+</style>

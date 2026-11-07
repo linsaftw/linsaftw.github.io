@@ -51,6 +51,8 @@ export interface CaseStudy {
   readonly articles?: readonly string[];
   readonly related?: readonly string[];
   readonly gallery?: readonly ProjectShot[];
+  /** Lessons learned, each sourced from a linked article. Rendered as "What it taught me". */
+  readonly lessons?: readonly CaseStudySection[];
   readonly caveat?: string;
   readonly disclaimer?: string;
 }
@@ -400,7 +402,7 @@ export const projects: readonly Project[] = [
         },
         {
           title: "Verification is part of the product",
-          body: "The project runs doctor, architecture audit, promotion audit, cargo checks, tests, release build, render compilation and font checks before a source release. The 0.1.3 release is explicitly source-level; it does not claim that a full installed session has been accepted on every machine.",
+          body: "The project runs doctor, architecture audit, promotion audit, cargo checks, tests, release build, render compilation and font checks before a source release. The article audit covers the 0.1.3 revision, which was source-level: no installed session had been accepted on real hardware.",
         },
       ],
       capabilities: [
@@ -414,15 +416,15 @@ export const projects: readonly Project[] = [
       facts: [
         { label: "Platform", value: "x86_64 Linux" },
         { label: "Session", value: "X11 default; Wayland experimental" },
-        { label: "Version", value: "0.1.3, released 30 October 2026" },
+        { label: "Version", value: "0.1.5, released 4 November 2026" },
         { label: "Toolchain", value: "Rust 1.88, edition 2024" },
         { label: "License", value: "LGPL-2.0-only" },
         { label: "Packages", value: "Debian .deb and Arch flamewm-git" },
       ],
-      status: "Source-level 0.1.3 release. X11 is the supported default; Wayland is not yet a daily-driver claim.",
+      status: "Latest tagged release 0.1.5. X11 is the supported default; Wayland is not yet a daily-driver claim.",
       availability: "source",
-      version: "0.1.3",
-      checked: "2026-10-30",
+      version: "0.1.5",
+      checked: "2026-11-07",
       sourceUrl: links.flamewmGithub,
       docs: [],
       articles: [
@@ -430,13 +432,38 @@ export const projects: readonly Project[] = [
         "/posts/flamewm-render-compiler-html-css-native.html",
       ],
       related: ["ark-ai", "exploitfixer"],
+      lessons: [
+        {
+          title: "Claiming the root window creates duties",
+          body: "Selecting SubstructureRedirect on the root window makes the manager responsible for every new window: frames, close handling, cleanup when a client exits, and a manager that keeps running. The claim is the easy part; the obligations arrive right after it.",
+        },
+        {
+          title: "Every frame has a second lifetime",
+          body: "Reparenting puts a frame between the client and the root, so the frame has to be released when the client goes away. Minimize, maximize and fullscreen are recorded state transitions, not one-off resizes, and they have to survive work-area changes.",
+        },
+        {
+          title: "Shared state needs one owner",
+          body: "When the panel and the window manager each keep a copy of the workspace layout, the pager and the WM drift apart. Keeping the topology in one shared model, and letting the shell own only presentation, removed that class of bug.",
+        },
+        {
+          title: "Refuse unsupported CSS instead of guessing",
+          body: "The compiler rejects declarations it cannot honour, such as display: grid, rather than approximating them as block. A build error is easier to fix than a panel that looks slightly wrong at login. Measurement also cut against assumptions: GPU blur was far faster than CPU blur, but GPU strokes were not, so a blanket GPU claim would have been wrong.",
+        },
+      ],
       gallery: [
         {
           src: "/images/projects/flamewm-desktop.webp",
           alt: "FlameWM desktop with the panel, wallpaper and open windows",
           width: 1200,
           height: 568,
-          caption: "FlameWM 0.1.3 desktop, captured from the project's own screenshots.",
+          caption: "FlameWM desktop with the panel, wallpaper and open windows, from the project's own screenshots.",
+        },
+        {
+          src: "/images/projects/flamewm.webp",
+          alt: "FlameWM System Settings open on the About page, showing the FlameWM logo, Donate, Source Code and Website buttons over a dark desktop",
+          width: 720,
+          height: 405,
+          caption: "Settings application, About tab. The shell is HTML/CSS compiled at build time.",
         },
       ],
       caveat:
