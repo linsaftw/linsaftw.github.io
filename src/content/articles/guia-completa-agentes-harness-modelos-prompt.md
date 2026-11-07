@@ -1,83 +1,72 @@
 ---
-title: "Guía completa: agentes, harness, modelos, prompt engineering y MCPs"
-description: "A summary of a Spanish-language AI coding guide: write prompts yourself, keep operating rules in AGENTS.md, delegate to subagents, pick the harness and model by task, and keep context small."
+title: "Guia Completa: Agentes, Harness, Modelos, Prompt Engineering y MCPs"
+description: "A summary of a Spanish-language guide to AI coding agents: skills, AGENTS.md, harnesses, subscriptions, model choice, MCP servers, RTK and closing workflow advice."
 publishedAt: 2026-11-06
-updatedAt: 2026-11-06
+updatedAt: 2026-11-07
 tags: ["ai", "agents", "prompting", "tooling"]
 author: "LinsaFTW / Juan Cruz Linsalata"
 canonicalPath: "/posts/guia-completa-agentes-harness-modelos-prompt.html"
 draft: false
 ---
 
-This article summarizes a Spanish-language guide posted on r/devsarg on 2026-11-06 by u/LinsaFTW. The original is titled "[Guia Completa] Agentes, Harness, Modelos, Prompt Engineering y MCPs". The author writes from about 13 years of programming and about 3 years of intensive AI-assisted coding. Those are the author's own claims. The full interactive version is at [the guide](/guide.html).
-
-The guide makes one main argument: the quality of an AI coding session depends less on the model name and more on what you give the agent before it starts. That means a precise prompt, a short set of operating rules, delegated subagents that keep the main context clean, and a harness and model picked for the job.
-
-## Prompt engineering
-
-Write the prompt yourself. The author says models are trained on internet text and code, not on prompting, so a model-written prompt is usually weaker than one a person writes from a clear understanding of the problem.
-
-A good prompt is detailed rather than perfect. It states the symptom, the steps that lead to it, the suspected area, the goal, and how to verify the result. Spelling mistakes are acceptable. The author recommends English, and allows Spanish only when English is a real barrier, because models are not fully trained on Spanish and the cost in tokens can be higher.
+This article summarizes a Spanish-language guide posted on r/devsarg on 2026-11-06 by u/LinsaFTW. The original is titled "[Guia Completa] Agentes, Harness, Modelos, Prompt Engineering y MCPs". Prices, model names and recommendations are the author's views as of that date. The interactive version is at [the guide](/guide.html).
 
 ## Skills
 
-Install few skills, and only ones with a specific behavior. The author names two that fit this rule: ui-ux-pro-max for structuring web pages, and unslop for removing generic AI phrasing from text. The author warns against large bundles such as Superpowers, which fill the context with material most tasks never need.
+The author names two useful skills: ui-ux-pro-max and unslop. Three are named as useless: Caveman, Ponytail and Superpowers.
 
-The author's method is to notice which prompts you repeat and turn those into a skill.
+The author's method is to notice which prompts you repeat and turn them into a skill.
 
 ## AGENTS.md
 
-AGENTS.md (or CLAUDE.md in Claude Code) is the file the agent reads before starting. The author calls it the most important piece of the setup. Their example defines a primary role, a delegated role, a no-recursive-delegation rule, and a tool routing table.
-
-Three rules from the guide:
-
-- Do not run the harness raw. Tell the agent to use subagents, so the main thread stays small.
-- Run independent tasks in parallel with subagents, then have the orchestrator fix and merge the results.
-- Set a goal at the start of long work. For tasks longer than about three hours, a stated goal survives compaction better than the conversation does.
-
-The author also keeps output rules in AGENTS.md, such as short answers, one action per step, and no repeated recaps. Those rules are compressed into a few lines so they cost little context.
+The post refers to an earlier lean-agents example. The prompts from that example, and other instructions you can add to AGENTS.md, are shown as images in the original, so this summary does not reproduce them.
 
 ## Harness
 
-The author uses two harnesses:
+The author advises against two harnesses:
 
-- Claude Code for Claude models, because the author says Claude models cost extra through other harnesses.
-- OpenCode for the other subscriptions, mainly DeepSeek and GPT models, which the author describes as efficient in tokens.
+- CommandCode: saturates the context and does not orchestrate subagents well, even with the same model.
+- Codex: fills the context faster than other alternatives.
 
-The author advises against Pi, CommandCode, and Codex. The stated reasons are that Pi needs heavy customization to get the lightness it promises, that CommandCode saturates context and orchestrates subagents poorly, and that Codex fills context faster than the alternatives.
+## Subscriptions
+
+The post gives these prices and token amounts. The author writes "billones", which in Spanish means trillion, so check the figures on each provider's page before you rely on them.
+
+- OpenCode GO: $10 per month, with 8 billones of DeepSeek v4.1 tokens per month. The author calls it a beast.
+- OpenDesign GO: $10 per month, with 5 billones of DeepSeek v4.1 tokens per month. The author calls it good.
+- CommandCode GOAT: $10 per month, with 5 billones of DeepSeek v4.1 tokens per month. The author calls it good, although the post advises against the CommandCode harness.
+- Other subscriptions, such as Xiaomi, Alibaba, Minimax, GLM and Kimi: the author says they are all bad and should never be used.
 
 ## Models
 
-The author's rule of thumb is to match the model to the work:
+The post says the right model depends on the work. Its rule of thumb:
 
 - Claude for backend and frontend: Sonnet 5.5 low with Haiku 5.5 low.
 - GPT for backend and frontend: GPT 6 Luna MAX.
-- Everything else in backend and frontend: DeepSeek v4.1 Flash.
-- 3D modeling, games, and complex animation or design: Opus, per the author. For ordinary work the author calls Opus overkill.
-
-The author does not trust benchmark scores and prefers personal experience. Artificial Analysis is mentioned as a reference, with the same caveat. Model names and rankings change fast, so treat this list as dated to the post.
+- Everything else in backend and frontend: DeepSeek v4.1 Flash, which the author says lasts all day.
 
 ## MCP servers
 
-The guide lists the MCP servers the author uses most:
+The post names three MCP servers as the best:
 
-- Serena: gives the agent a project view, so it navigates code without repeated grep.
-- Context7: current library documentation, to reduce syntax mistakes.
-- chrome-devtools: drives Chrome.
-- exa: web search when needed.
-- mongodb: direct access to real databases.
-- context-mode: keeps large tool output in a sandbox and returns only the relevant part.
+- chrome-devtools: lets the agent interact with Chrome.
+- exa: online search when you need it.
+- mongodb: simpler interaction with real databases.
 
 ## RTK
 
-RTK is a local proxy that intercepts command output and removes the parts the agent does not need. The author calls it fundamental and notes that it needs to be installed, its proxy started, and its plugins added where required.
+The post has a section titled "RTK (no es lo mismo que RKT)", which means "RTK is not the same as RKT". Its body is not in the text this summary was written from, so this article does not describe RTK.
 
-## Takeaways
+## Closing advice
 
-1. Write the prompt yourself, with the goal, the symptom, and a way to verify the result.
-2. Put operating rules in AGENTS.md, and delegate parallel work to subagents to keep the main context clean.
-3. Install few skills. Turn the prompts you repeat into skills.
-4. Pick the harness by model family and token efficiency.
-5. Pick the model by task, and check results on your own work instead of trusting benchmarks.
+The author ends with a workflow recommendation:
 
-Source: [original Reddit post](https://www.reddit.com/r/devsarg/comments/1xpe4kk/guia_completa_agentes_harness_modelos_prompt/). The author's example repository, [lean-agents](https://github.com/Lean-LLM/lean-agents), is linked in the original post.
+1. Do not be lazy. While an agent works, start on the next task and prepare it.
+2. Run multiple subagents and use virtual desktops. The post's example is a two-row indicator in the KDE Plasma taskbar for switching between agents quickly.
+3. Keep agents organized with two lists, "running" and "pending". Read what they write.
+4. Do not accept "done" on its own. Read the pros and cons, or whether the work is partial, and check how it turned out.
+5. When an agent makes a mistake, document it and improve AGENTS.md so it does not repeat the mistake.
+
+The author calls it the first guide they have written and asks readers to add corrections, mini-guides and missed points in the comments.
+
+Source: [original Reddit post](https://www.reddit.com/r/devsarg/comments/1xpe4kk/guia_completa_agentes_harness_modelos_prompt/).

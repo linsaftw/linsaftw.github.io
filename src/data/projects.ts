@@ -384,7 +384,7 @@ export const projects: readonly Project[] = [
       contribution: [
         "Built the window-management core, workspace model and X11 authority instead of wrapping an existing WM.",
         "Built an in-repo renderer that compiles HTML/CSS shell descriptions into native drawing code, with no browser runtime.",
-        "Added a Wayland compositor path on Smithay while keeping X11 as the supported default.",
+        "Added a Wayland compositor path on Smithay with X11 and Wayland support.",
         "Wrote verification gates for architecture, render compilation, tests and packaging rather than relying on screenshots.",
       ],
       architecture: [
@@ -402,7 +402,7 @@ export const projects: readonly Project[] = [
         },
         {
           title: "Verification is part of the product",
-          body: "The project runs doctor, architecture audit, promotion audit, cargo checks, tests, release build, render compilation and font checks before a source release. The article audit covers the 0.1.3 revision, which was source-level: no installed session had been accepted on real hardware.",
+          body: "The project runs doctor, architecture audit, promotion audit, cargo checks, tests, release build, render compilation and font checks before a source release. The article audit covers the 0.1.3 revision, which had not yet been tested as an installed session on real hardware.",
         },
       ],
       capabilities: [
@@ -415,13 +415,13 @@ export const projects: readonly Project[] = [
       ],
       facts: [
         { label: "Platform", value: "x86_64 Linux" },
-        { label: "Session", value: "X11 default; Wayland experimental" },
+        { label: "Session", value: "X11 and Wayland support (Wayland experimental)" },
         { label: "Version", value: "0.1.5, released 4 November 2026" },
         { label: "Toolchain", value: "Rust 1.88, edition 2024" },
         { label: "License", value: "LGPL-2.0-only" },
         { label: "Packages", value: "Debian .deb and Arch flamewm-git" },
       ],
-      status: "Latest tagged release 0.1.5. X11 is the supported default; Wayland is not yet a daily-driver claim.",
+      status: "Latest tagged release 0.1.5. X11 and Wayland support.",
       availability: "source",
       version: "0.1.5",
       checked: "2026-11-07",
@@ -452,18 +452,18 @@ export const projects: readonly Project[] = [
       ],
       gallery: [
         {
-          src: "/images/projects/flamewm-desktop.webp",
-          alt: "FlameWM desktop with the panel, wallpaper and open windows",
-          width: 1200,
-          height: 568,
-          caption: "FlameWM desktop with the panel, wallpaper and open windows, from the project's own screenshots.",
+          src: "/images/projects/flamewm-desktop-full.webp",
+          alt: "FlameWM desktop with a terminal showing system information, a file explorer, clock, CPU and memory widgets, and a four-workspace taskbar",
+          width: 1344,
+          height: 637,
+          caption: "FlameWM desktop: terminal with fetch output, file explorer, clock, CPU and memory widgets, and the taskbar with four workspaces.",
         },
         {
-          src: "/images/projects/flamewm.webp",
-          alt: "FlameWM System Settings open on the About page, showing the FlameWM logo, Donate, Source Code and Website buttons over a dark desktop",
-          width: 720,
-          height: 405,
-          caption: "Settings application, About tab. The shell is HTML/CSS compiled at build time.",
+          src: "/images/projects/flamewm-netbook.webp",
+          alt: "Juan Cruz Linsalata holding an old Conectar Igualdad netbook with FlameWM on its screen",
+          width: 1080,
+          height: 1440,
+          caption: "FlameWM running on an old Conectar Igualdad netbook, as shown in this photo.",
         },
       ],
       caveat:

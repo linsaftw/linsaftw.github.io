@@ -29,11 +29,11 @@ LinsaFTW is Juan Cruz Linsalata, an Argentine software developer and founder of 
 - [Articles](https://linsaftw.arkflame.com/articles.html): Articles — LinsaFTW.
 - [Documentation](https://linsaftw.arkflame.com/docs.html): Plugin install, configuration and admin docs.
 - [Press](https://linsaftw.arkflame.com/press.html): Press & community. Public mentions and release notes for FlameWM, checked at the source.
-- [AI agents guide](https://linsaftw.arkflame.com/guide.html): Visual guide to AI coding agents: prompts, AGENTS.md, skills, harnesses, model selection and MCP servers.
+- [AI agents guide](https://linsaftw.arkflame.com/guide.html): Summary of a Spanish-language guide to AI coding agents: skills, AGENTS.md, harnesses, subscriptions, models, MCP servers, RTK and closing advice.
 
 ## Articles
 
-- [Guía completa: agentes, harness, modelos, prompt engineering y MCPs](https://linsaftw.arkflame.com/posts/guia-completa-agentes-harness-modelos-prompt.html): A summary of a Spanish-language AI coding guide on prompts, AGENTS.md, subagents, harnesses and model choice. Published 2026-11-06. Slug: `guia-completa-agentes-harness-modelos-prompt`.
+- [Guia Completa: Agentes, Harness, Modelos, Prompt Engineering y MCPs](https://linsaftw.arkflame.com/posts/guia-completa-agentes-harness-modelos-prompt.html): A summary of a Spanish-language AI coding guide covering skills, AGENTS.md, harnesses, subscriptions, models, MCP servers, RTK and closing advice. Published 2026-11-06. Slug: `guia-completa-agentes-harness-modelos-prompt`.
 - [Health issues can look like motivation problems](https://linsaftw.arkflame.com/posts/developer-health-and-output.html): A personal note on breathing, sleep, energy, and treating performance like an engineering problem. Published 2026-05-26. Slug: `developer-health-and-output`.
 - [AI-assisted coding still needs standards](https://linsaftw.arkflame.com/posts/ai-assisted-coding-needs-standards.html): Using AI does not remove engineering responsibility. It makes specifications, tests, and review more important. Published 2026-05-27. Slug: `ai-assisted-coding-needs-standards`.
 - [ArkFlame Studios as the main hub](https://linsaftw.arkflame.com/posts/arkflame-studios-main-hub.html): ArkFlame is moving toward one clearer public identity for security, performance, gameplay systems, and server infrastructure. Published 2026-05-28. Slug: `arkflame-studios-main-hub`.

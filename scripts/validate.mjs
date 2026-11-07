@@ -117,6 +117,8 @@ const STATIC_FILES = [
   "/images/projects/ark-ai.webp",
   "/images/projects/flamewm.webp",
   "/images/projects/flamewm-desktop.webp",
+  "/images/projects/flamewm-desktop-full.webp",
+  "/images/projects/flamewm-netbook.webp",
   "/images/projects/entitylimiter.webp",
   "/images/projects/redstonelimiter.webp",
   "/images/projects/flamespawners.webp",

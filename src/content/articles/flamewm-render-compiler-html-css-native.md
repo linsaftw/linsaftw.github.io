@@ -80,7 +80,7 @@ The compiler also does not guarantee browser-identical text layout, provide web 
 
 ## What this does not prove
 
-FlameWM 0.1.3 is a source-level release. No installed session has been accepted on real hardware in this revision, and the performance figures come from self-run samples on a shared machine, not an independent benchmark.
+FlameWM 0.1.3 had not yet been tested as an installed session on real hardware in this revision, and the performance figures come from self-run samples on a shared machine, not an independent benchmark.
 
 The render compiler crate declares MIT while the workspace is LGPL-2.0-only; the project notes that the maintainer has not confirmed that crate's license. That is a packaging question to resolve before redistributing the compiler, not a rendering claim.
 

@@ -74,6 +74,7 @@ const jsonLd = [
       />
     </header>
 
+    <div class="about-story-wrap">
     <div class="prose about-story">
       <p>
         I started coding in 2010. By 2013 I was publicly building around Minecraft, and the work grew
@@ -94,6 +95,18 @@ const jsonLd = [
         The common thread is still systems work: keep state coherent, make failure modes visible,
         and do not claim more than the code and the evidence support.
       </p>
+    </div>
+    <figure class="about-photo">
+      <img
+        src="/images/projects/flamewm-netbook.webp"
+        alt="Juan Cruz Linsalata holding an old Conectar Igualdad netbook with FlameWM on its screen"
+        width="1080"
+        height="1440"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>FlameWM running on an old Conectar Igualdad netbook, as shown in this photo.</figcaption>
+    </figure>
     </div>
 
     <SectionHeader eyebrow="What I work on" id="focus" label="Four surfaces" />
@@ -200,9 +213,37 @@ const jsonLd = [
     border: 3px solid var(--bg);
   }
 
+  .about-story-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 72ch) 240px;
+    gap: 40px;
+    align-items: start;
+    margin-top: 36px;
+  }
+
   .about-story {
     max-width: 72ch;
-    margin-top: 36px;
+    margin-top: 0;
+  }
+
+  .about-photo {
+    margin: 0;
+    border: 1px solid var(--bd);
+    background: var(--p);
+  }
+
+  .about-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .about-photo figcaption {
+    color: var(--mu);
+    font-size: 11px;
+    line-height: 1.4;
+    padding: 10px 12px;
+    border-top: 1px solid var(--bd);
   }
 
   .about-story p {
@@ -341,6 +382,16 @@ const jsonLd = [
   @media (max-width: 900px) {
     .about-work {
       grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .about-story-wrap {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .about-photo {
+      max-width: 280px;
     }
   }
 

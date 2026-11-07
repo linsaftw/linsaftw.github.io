@@ -60,7 +60,7 @@ The status is part of the design. No successful native DRM login is on record. A
 
 ## What this does not prove
 
-FlameWM 0.1.3 is a source-level release. No installed session has been accepted on real hardware in this revision, and the screenshots come from a headless test session on Xorg's dummy driver. The repository records a workspace test run of 3843 passing tests across 125 suites on 2026-10-29, but that is a project-recorded result, not something this article re-ran.
+FlameWM 0.1.3 had not yet been tested as an installed session on real hardware in this revision, and the screenshots come from a headless test session on Xorg's dummy driver. The repository records a workspace test run of 3843 passing tests across 125 suites on 2026-10-29, but that is a project-recorded result, not something this article re-ran.
 
 The measured idle memory is 23.8 MiB PSS for Flame-owned processes in session mode and 26.9 MiB PSS in direct mode, from a nested Xephyr run on a shared machine. Those are samples from a source release, not a guarantee, and they are not a like-for-like comparison with a full desktop environment. The project's own performance document says the figures are not a release claim.
 
