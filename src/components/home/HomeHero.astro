@@ -12,7 +12,7 @@ export interface Props {
 const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
 ---
 
-<section class="hero" aria-labelledby="hero-title">
+<section class="home-hero" aria-labelledby="hero-title">
   <div class="hero-copy">
     <p class="eyebrow">{identityRow}</p>
     <h1 id="hero-title">{h1Lead}<em>{h1Accent}</em></h1>
@@ -33,7 +33,7 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
 </section>
 
 <style>
-  .hero {
+  .home-hero {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     gap: 40px;
@@ -122,7 +122,7 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
   }
 
   @media (max-width: 900px) {
-    .hero {
+    .home-hero {
       grid-template-columns: minmax(0, 1fr);
       gap: 28px;
       padding-top: 32px;
