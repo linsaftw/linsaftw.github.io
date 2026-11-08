@@ -335,21 +335,36 @@ const beyond = [
     white-space: nowrap;
   }
 
+  /* Same chip treatment as the CTA chips: one border, one height, one hover.
+     Fixed columns (2 mobile, 4 desktop) so the last chip never wraps alone. */
   .also div {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 18px;
+    flex: 1 1 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  @media (min-width: 761px) {
+    .also div {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   .also a {
-    color: var(--mu);
+    color: var(--tx);
     font-size: 12px;
     min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    background: var(--p2);
     display: inline-flex;
     align-items: center;
+    gap: 6px;
+    transition: border-color 0.2s, color 0.2s;
   }
 
   .also a:hover {
+    border-color: var(--ac);
     color: var(--ac);
   }
 
@@ -522,6 +537,10 @@ const beyond = [
     gap: 8px;
   }
 
+  .cta-actions .chip {
+    justify-content: center;
+  }
+
   @media (max-width: 900px) {
     .proof {
       grid-template-columns: repeat(3, 1fr);
@@ -548,6 +567,12 @@ const beyond = [
 
     .about-cta {
       align-items: flex-start;
+    }
+
+    .cta-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
     }
   }
 </style>

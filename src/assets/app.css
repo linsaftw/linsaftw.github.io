@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: false;
-}
 
 /*
  * Self-hosted variable JetBrains Mono (latin subset). The previous Google
@@ -100,6 +97,17 @@ html {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -122,6 +130,11 @@ a:focus-visible {
 :focus-visible {
   outline: 2px solid var(--ac);
   outline-offset: 3px;
+}
+
+/* Shiki comment tokens (#6A737D on #24292E = 3.05:1), lifted to >= 4.5:1. */
+pre[class*="astro-code"] span[style*="6A737D" i] {
+  color: #9198a1 !important;
 }
 
 h1,
@@ -582,8 +595,10 @@ a.c:focus-visible {
 
 .term pre {
   margin: 0;
-  padding: 18px 20px;
-  overflow-x: auto;
+  padding: var(--space-5) var(--space-5);
+  /* Wrap rather than clip: long terminal output must stay readable at 390px. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font: inherit;
   color: var(--mu);
 }
@@ -645,14 +660,14 @@ a.c:focus-visible {
   display: block;
 }
 
-.stack {
+.skill-stack {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
   margin-top: 36px;
 }
 
-.stack span {
+.skill-stack span {
   border: 1px solid var(--bd);
   padding: 3px 10px;
   color: var(--gr);
@@ -824,6 +839,16 @@ footer .f-links a {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
+}
+
+/* Phone: two even columns instead of ragged wrapped rows. */
+@media (max-width: 600px) {
+  footer .f-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+    width: 100%;
+  }
 }
 
 /* --- game feature frame ------------------------------------------------ */

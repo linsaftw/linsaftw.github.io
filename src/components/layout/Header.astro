@@ -36,11 +36,11 @@ const isCurrent = (item: NavItem): boolean =>
     <a class="logo" href={routes.home} aria-label="LinsaFTW home">LinsaFTW</a>
 
     <details class="nav-drawer" id="nav-drawer">
-      <summary class="nav-toggle">
+      <summary class="nav-toggle" aria-controls="nav-drawer-panel">
         <span class="menu-closed">Menu</span>
         <span class="menu-open">Close</span>
       </summary>
-      <nav class="nav-drawer-links" aria-label="Primary (compact)">
+      <nav class="nav-drawer-links" id="nav-drawer-panel" aria-label="Primary (compact)">
         {
           primary.map((item) => (
             <a href={item.href} aria-current={isCurrent(item) ? "page" : undefined}>
@@ -86,6 +86,25 @@ const isCurrent = (item: NavItem): boolean =>
     </nav>
   </div>
 </header>
+
+<script is:inline data-enhance="site">
+  (function () {
+    var drawer = document.getElementById("nav-drawer");
+    var toggle = drawer && drawer.querySelector("summary.nav-toggle");
+    /* Keep aria-expanded in sync and close with Escape, returning focus to the toggle. */
+    if (!drawer || !toggle) return;
+    var sync = function () { toggle.setAttribute("aria-expanded", String(drawer.open)); };
+    sync();
+    drawer.addEventListener("toggle", sync);
+    drawer.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && drawer.open) {
+        event.preventDefault();
+        drawer.open = false;
+        toggle.focus();
+      }
+    });
+  })();
+</script>
 
 <style>
   summary.nav-toggle,
@@ -171,6 +190,33 @@ const isCurrent = (item: NavItem): boolean =>
   }
 
   @media (max-width: 760px) {
+    summary.nav-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 76px;
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--bd);
+      background: var(--p);
+      color: var(--tx);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1;
+      cursor: pointer;
+      transition:
+        border-color 0.2s ease,
+        color 0.2s ease;
+    }
+
+    summary.nav-toggle:hover,
+    .nav-drawer[open] summary.nav-toggle {
+      border-color: var(--ac);
+      color: var(--ac);
+    }
+
     .nav-drawer {
       display: block;
       margin-left: auto;

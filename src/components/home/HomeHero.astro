@@ -14,7 +14,17 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
 
 <section class="home-hero" aria-labelledby="hero-title">
   <div class="hero-copy">
-    <p class="eyebrow">{identityRow}</p>
+    <div class="hero-id">
+      <img
+        class="hero-avatar"
+        src="/images/profile/linsaftw.webp"
+        alt="Portrait of Juan Cruz Linsalata, known as LinsaFTW"
+        width="512"
+        height="512"
+        decoding="async"
+      />
+      <p class="eyebrow">{identityRow}</p>
+    </div>
     <h1 id="hero-title">{h1Lead}<em>{h1Accent}</em></h1>
     <p class="lead">{lead}</p>
     <div class="hero-actions">
@@ -41,8 +51,25 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
     padding: 48px 0 8px;
   }
 
-  .eyebrow {
+  .hero-id {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     margin: 0 0 18px;
+  }
+
+  .hero-avatar {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--ac);
+    object-fit: cover;
+    background: var(--p);
+  }
+
+  .eyebrow {
+    margin: 0;
     color: var(--mu);
     font-size: 12px;
     letter-spacing: 0.08em;
@@ -69,15 +96,18 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
     margin: 0 0 28px;
   }
 
+  /* Mobile: LinkedIn spans the full row, GitHub and View projects share the
+     second row, so no button sits alone. Desktop: one wrapping row. */
   .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
   .hero-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     min-height: 44px;
     padding: 10px 16px;
@@ -116,9 +146,20 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
     border-color: var(--tx);
   }
 
+  .hero-btn-primary:hover span {
+    color: var(--bg);
+  }
+
   .hero-term {
     min-width: 0;
     max-width: 100%;
+  }
+
+  @media (min-width: 521px) {
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+    }
   }
 
   @media (max-width: 900px) {
@@ -129,10 +170,9 @@ const { identityRow, lead, h1Lead, h1Accent } = Astro.props;
     }
   }
 
-  @media (max-width: 360px) {
-    .hero-btn {
-      width: 100%;
-      justify-content: center;
+  @media (max-width: 520px) {
+    .hero-btn-primary {
+      grid-column: 1 / -1;
     }
   }
 </style>

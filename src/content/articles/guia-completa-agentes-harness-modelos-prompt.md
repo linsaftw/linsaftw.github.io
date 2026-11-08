@@ -55,7 +55,13 @@ The post names three MCP servers as the best:
 
 ## RTK
 
-The post has a section titled "RTK (no es lo mismo que RKT)", which means "RTK is not the same as RKT". Its body is not in the text this summary was written from, so this article does not describe RTK.
+The post has a section titled "RTK (no es lo mismo que RKT)", which means "RTK is not the same as RKT". It describes RTK as the author's own tooling:
+
+- RTK condenses command output to save tokens. It keeps every signal and drops the costly noise.
+- Treat RTK output as the complete result.
+- Run commands normally. Batch related commands into one call to avoid extra turns.
+- A truncated result states its recovery path.
+- Re-run a command as `rtk bypass <cmd>` only when the result is unusable: empty when output was clearly expected, contradicting its exit code, or garbled.
 
 ## Closing advice
 

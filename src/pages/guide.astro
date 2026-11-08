@@ -47,11 +47,11 @@ const jsonLd = [
       <a href="/ai.html">AI</a> <span aria-hidden="true">/</span> <span>Guide</span>
     </nav>
 
-    <h1>AI coding agents: skills, AGENTS.md, harnesses and models</h1>
+    <p class="gd-kicker">Summary in English of a Spanish guide</p>
+    <h1 lang="es">[Guia Completa] Agentes, Harness, Modelos, Prompt Engineering y MCPs</h1>
     <p class="lead">
-      A summary of a Spanish-language guide to AI coding agents: which skills to use, what to put
-      in AGENTS.md, which harnesses and subscriptions to pick, how to choose a model, which MCP
-      servers help, and how to work with several agents at once.
+      Skills, AGENTS.md, harnesses and subscriptions, how to choose a model, which MCP servers
+      help, and how to work with several agents at once.
     </p>
     <p class="meta">
       Original: <span lang="es">"[Guia Completa] Agentes, Harness, Modelos, Prompt Engineering y
@@ -217,11 +217,20 @@ const jsonLd = [
     </section>
 
     <section class="gd-section" aria-labelledby="rtk">
-      <SectionHeader eyebrow="RTK" id="rtk" label="Not the same as RKT" />
+      <SectionHeader eyebrow="RTK" id="rtk" label="RTK (no es lo mismo que RKT)" />
       <p>
-        The post has a section on RTK. Its body is not in the text this page was written from, so
-        this page does not describe RTK.
+        RTK is a tool in the author's own setup. It condenses command output to save tokens. It
+        keeps every signal and drops the costly noise.
       </p>
+      <ul>
+        <li>Treat RTK output as the complete result.</li>
+        <li>Run commands normally. Batch related commands into one call to avoid extra turns.</li>
+        <li>A truncated result states its recovery path.</li>
+        <li>
+          Re-run a command as <code>rtk bypass &lt;cmd&gt;</code> only when the result is unusable:
+          empty when output was clearly expected, contradicting its exit code, or garbled.
+        </li>
+      </ul>
     </section>
 
     <section class="gd-section" aria-labelledby="closing">
@@ -320,5 +329,58 @@ const jsonLd = [
   .gd a:focus-visible {
     outline: 2px solid var(--ac);
     outline-offset: 3px;
+  }
+  .gd-kicker {
+    margin: 0 0 12px;
+    color: var(--ac);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .gd h1 {
+    font-size: clamp(26px, 4.2vw, 40px);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .gd-section ul {
+    margin: 0;
+    padding: 0 0 0 1.25em;
+    list-style: disc;
+    display: grid;
+    gap: 10px;
+    color: var(--copy);
+    line-height: 1.6;
+  }
+  .gd-section p {
+    max-width: 68ch;
+    line-height: 1.6;
+  }
+  .gd code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--ac);
+    background: var(--p2);
+    border: 1px solid var(--bd);
+    padding: 1px 6px;
+    overflow-wrap: anywhere;
+  }
+  .gd-section li > code,
+  .gd-section p > code {
+    white-space: nowrap;
+  }
+  @media (max-width: 760px) {
+    .gd-section li > code,
+    .gd-section p > code {
+      white-space: normal;
+    }
+    .gd-toc ol {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .gd-toc a {
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
   }
 </style>

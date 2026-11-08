@@ -8,7 +8,7 @@ const canonicalPath = routes.press;
 const site = Astro.site ?? new URL(SITE_URL);
 
 const description =
-  "Public mentions, community posts and release notes for FlameWM, a Rust X11 window manager by ArkFlame Studios. Community entries are links only.";
+  "Public mentions, community posts and release notes for FlameWM, a Rust window manager with X11 and Wayland support (Wayland experimental) by ArkFlame Studios. Community entries are links only.";
 
 const jsonLd = [
   personNode(site),
@@ -80,7 +80,7 @@ const releases: readonly Mention[] = [
   canonicalPath={canonicalPath}
   jsonLd={jsonLd}
 >
-  <div class="w">
+  <div class="w press">
     <h1>Press &amp; community.</h1>
     <p class="lead">
       Mentions of FlameWM that I could open and check, plus Reddit posts. Each entry links to its source.
@@ -140,8 +140,70 @@ const releases: readonly Mention[] = [
       }
     </div>
 
-    <p class="meta" style="margin-top:14px">
+    <p class="press-foot">
       Case study: <a href="/work/flamewm.html">FlameWM</a>. Source: <a href={links.flamewmGithub} target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>.
     </p>
   </div>
 </BaseLayout>
+
+<style>
+  .press-foot {
+    margin: 18px 0 0;
+    color: var(--mu);
+    font-size: 13px;
+  }
+
+  .press-foot a,
+  .press .ex b a {
+    color: var(--ac);
+  }
+
+  /* Each entry has three children (title, source and date, takeaway). The shared
+     .ex grid has four columns, which squeezed the takeaway; stack the entry instead. */
+  .press .g {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  }
+
+  .press .ex {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 20px 22px;
+    align-items: start;
+  }
+
+  .press .ex b {
+    font-size: 16px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .press .ex span {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--mu);
+  }
+
+  .press .ex span:first-of-type {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mu-dim);
+  }
+
+  .press .ex:hover {
+    background: var(--p2);
+  }
+
+  .press .ex a:focus-visible,
+  .press-foot a:focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .press .ex {
+      transition: background 0.18s ease;
+    }
+  }
+</style>

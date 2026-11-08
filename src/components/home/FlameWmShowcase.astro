@@ -70,7 +70,7 @@ const href = workPath(project.id);
 
   .fw-body {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
     gap: 0;
   }
 
@@ -86,13 +86,15 @@ const href = workPath(project.id);
     border-right: 1px solid var(--bd);
   }
 
+  /* 3:4 native frame, contain: the whole photo stays visible, never cropped. */
   .fw-thumb img {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 3 / 4;
-    object-fit: cover;
+    object-fit: contain;
     object-position: 50% 50%;
+    background: var(--shell);
   }
 
   .fw-thumb figcaption {
@@ -168,6 +170,11 @@ const href = workPath(project.id);
   @media (max-width: 900px) {
     .fw-body {
       grid-template-columns: 1fr;
+    }
+
+    .fw-thumb img {
+      width: min(100%, 420px);
+      margin: 0 auto;
     }
 
     .fw-thumb {

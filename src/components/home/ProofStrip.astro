@@ -18,7 +18,7 @@ const { stats } = Astro.props;
 <dl class="proof-strip" data-reveal>
   {
     stats.map((stat) => (
-      <div class="stat">
+      <div class="proof-stat">
         <dd>{stat.value}</dd>
         <dt>{stat.label}</dt>
       </div>
@@ -36,7 +36,7 @@ const { stats } = Astro.props;
     border: 1px solid var(--bd);
   }
 
-  .stat {
+  .proof-stat {
     background: var(--p);
     padding: 18px 18px 16px;
     display: flex;
@@ -44,7 +44,7 @@ const { stats } = Astro.props;
     gap: 6px;
   }
 
-  .stat dd {
+  .proof-stat dd {
     margin: 0;
     color: var(--tx);
     font-size: clamp(1.5rem, 3.2vw, 2rem);
@@ -53,7 +53,7 @@ const { stats } = Astro.props;
     font-variant-numeric: tabular-nums;
   }
 
-  .stat dt {
+  .proof-stat dt {
     color: var(--mu);
     font-size: 12px;
     line-height: 1.45;

@@ -43,6 +43,10 @@ const primaryLabel: Record<string, string> = {
   "faus-legal": "Open FAUS Legal",
 };
 
+// FlameWM leads with its desktop screenshot; the gallery then shows the remaining shots only.
+const heroShot = project.id === "flamewm" ? study.gallery?.[0] : undefined;
+const galleryShots = (study.gallery ?? []).filter((shot) => shot !== heroShot);
+
 const related = study.related
   ?.map((id) => projectById(id))
   .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate?.caseStudy));
@@ -156,17 +160,31 @@ const jsonLd = [
     </header>
 
     {
-      project.image && (
-        <figure class:list={["case-banner", project.id === "ffaa-zombies" && "is-square"]}>
+      heroShot ? (
+        <figure class="case-banner is-wide">
           <img
-            src={project.image}
-            alt={project.id === "flamewm" ? "FlameWM System Settings open on its About tab" : `${project.name} case study visual`}
-            width={project.id === "ffaa-zombies" ? 1000 : 720}
-            height={project.id === "ffaa-zombies" ? 1000 : 405}
+            src={heroShot.src}
+            alt={heroShot.alt}
+            width={heroShot.width}
+            height={heroShot.height}
             fetchpriority="high"
             decoding="async"
           />
+          <figcaption>{heroShot.caption}</figcaption>
         </figure>
+      ) : (
+        project.image && (
+          <figure class:list={["case-banner", project.id === "ffaa-zombies" && "is-square"]}>
+            <img
+              src={project.image}
+              alt={`${project.name} case study visual`}
+              width={project.id === "ffaa-zombies" ? 1000 : 720}
+              height={project.id === "ffaa-zombies" ? 1000 : 405}
+              fetchpriority="high"
+              decoding="async"
+            />
+          </figure>
+        )
       )
     }
 
@@ -203,12 +221,12 @@ const jsonLd = [
           </div>
         </section>
 
-        {study.gallery && study.gallery.length > 0 && (
+        {galleryShots.length > 0 && (
           <section aria-labelledby="gallery">
             <h2 id="gallery">Screens</h2>
             <div class="case-gallery">
-              {study.gallery.map((shot) => (
-                <figure>
+              {galleryShots.map((shot) => (
+                <figure class:list={["case-shot", shot.height > shot.width && "is-portrait"]}>
                   <img
                     src={shot.src}
                     alt={shot.alt}
@@ -435,6 +453,26 @@ const jsonLd = [
     height: auto;
   }
 
+  .case-banner.is-wide {
+    display: block;
+    max-width: none;
+    background: var(--shell2);
+  }
+
+  .case-banner.is-wide img {
+    max-width: none;
+    width: 100%;
+  }
+
+  .case-banner figcaption {
+    color: var(--mu);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    background: var(--p);
+  }
+
   .case-banner.is-square {
     display: flex;
     justify-content: center;
@@ -549,11 +587,54 @@ const jsonLd = [
     height: auto;
   }
 
+  /* Portrait photos are framed whole on a stage instead of stretched to the column. */
+  .case-gallery .case-shot.is-portrait {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    background: var(--shell2);
+  }
+
+  .case-gallery .case-shot.is-portrait img {
+    width: auto;
+    max-width: min(100%, 440px);
+    max-height: 640px;
+    height: auto;
+    object-fit: contain;
+    padding: 20px 0 0;
+  }
+
   .case-gallery figcaption {
     color: var(--mu);
-    font-size: 11px;
+    font-size: 12px;
+    line-height: 1.5;
     padding: 10px 12px;
     border-top: 1px solid var(--bd);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .case-links a:hover,
+  .case-back a:hover {
+    color: var(--tx);
+    text-decoration: underline;
+  }
+
+  .case-links a:focus-visible,
+  .case-back a:focus-visible,
+  .related-work a:focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: 3px;
+  }
+
+  .related-work a:focus-visible {
+    background: var(--p2);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .related-work a {
+      transition: background 0.18s ease;
+    }
   }
 
   .case-caveat {
@@ -658,9 +739,9 @@ const jsonLd = [
     display: grid;
     gap: 5px;
     background: var(--p);
-    padding: 16px;
-    min-height: 100px;
-    align-content: center;
+    padding: 18px 20px;
+    min-height: 120px;
+    align-content: start;
   }
 
   .related-work a:hover {

@@ -82,6 +82,36 @@ const jsonLd = [
 
     <p class="note">{faus.disclaimer}</p>
 
+    <style>
+      /* Keep both AI cards the same height; the text block takes the remaining space so the
+         imageless FAUS card does not leave an empty hole beside ARK AI's artwork. */
+      .pl .pc {
+        display: flex;
+        flex-direction: column;
+      }
+      .pl .pc .t {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+      }
+      .pl .pc .t .l {
+        margin-top: auto;
+      }
+      .pl .pc:focus-visible {
+        outline: 2px solid var(--ac);
+        outline-offset: 3px;
+      }
+      .pl .pc:hover {
+        background: var(--p2);
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .pl .pc {
+          transition: background 0.18s ease;
+        }
+      }
+    </style>
+
     <SectionHeader eyebrow="Guide" id="guide" label="Agents · Harness · Models · Prompts" />
 
     <div class="g">
