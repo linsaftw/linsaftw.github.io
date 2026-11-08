@@ -265,7 +265,7 @@ const jsonLd = [
 
     <p class="note">
       Summary of a community post. Prices, model names and recommendations are the author's views
-      as of 2026-11-06.
+      as of 2026-11-06.{" "}
       <a href={redditUrl} target="_blank" rel="noopener noreferrer">Read the original ↗</a>
     </p>
   </div>
@@ -278,12 +278,18 @@ const jsonLd = [
   .gd-crumb a {
     color: var(--mu);
   }
+  .gd-crumb a:hover,
+  .gd .note a:hover {
+    color: var(--tx);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
   .gd-actions {
     margin-top: 18px;
   }
   .gd-toc {
     margin: 32px 0 8px;
-    padding: 20px 22px;
+    padding: var(--card-pad);
     border: 1px solid var(--bd);
     background: var(--p);
   }
@@ -342,6 +348,18 @@ const jsonLd = [
     font-size: clamp(26px, 4.2vw, 40px);
     line-height: 1.15;
     overflow-wrap: anywhere;
+  }
+  .gd-section .meta + .g {
+    margin-top: var(--space-4);
+  }
+  .gd-takeaways + .meta {
+    margin-top: var(--space-4);
+  }
+  .gd-section p + ul {
+    margin-top: var(--space-3);
+  }
+  .gd .note a {
+    white-space: nowrap;
   }
   .gd-section ul {
     margin: 0;

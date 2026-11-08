@@ -51,6 +51,13 @@ const related = study.related
   ?.map((id) => projectById(id))
   .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate?.caseStudy));
 
+const articleLabel = (href: string, projectId: string): string => {
+  const slug = href.split("/").pop()?.replace(".html", "") ?? "";
+  const topic = slug.startsWith(projectId + "-") ? slug.slice(projectId.length + 1) : slug;
+  const text = topic.replace(/-/g, " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 const docLabel = (href: string): string => {
   const topic = href.split("/").pop()?.replace(".html", "") ?? "overview";
   const labels: Record<string, string> = {
@@ -303,7 +310,7 @@ const jsonLd = [
                 ))}
                 {study.articles?.map((article) => (
                   <li>
-                    <a href={article}>Technical article &#8594;</a>
+                    <a href={article}>Technical article: {articleLabel(article, project.id)} &#8594;</a>
                   </li>
                 ))}
               </ul>
@@ -486,13 +493,13 @@ const jsonLd = [
   .case-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.75fr);
-    gap: 46px;
+    gap: var(--space-7);
     margin-top: 48px;
     align-items: start;
   }
 
   .case-main section {
-    margin-bottom: 42px;
+    margin-bottom: var(--space-7);
   }
 
   .case-main h2,
@@ -527,7 +534,6 @@ const jsonLd = [
     gap: 1px;
     background: var(--bd);
     border: 1px solid var(--bd);
-    max-width: 68ch;
   }
 
   .case-list li {
@@ -670,7 +676,7 @@ const jsonLd = [
   .facts div {
     display: grid;
     gap: 2px;
-    padding: 9px 0;
+    padding: var(--space-2) 0;
     border-bottom: 1px solid var(--bd);
   }
 
@@ -693,7 +699,7 @@ const jsonLd = [
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 7px;
+    gap: var(--space-2);
   }
 
   .case-caps li,
@@ -701,7 +707,7 @@ const jsonLd = [
     color: var(--mu);
     font-size: 12px;
     border-bottom: 1px solid var(--bd);
-    padding-bottom: 7px;
+    padding-bottom: var(--space-2);
   }
 
   .case-caps li::before {
@@ -721,6 +727,8 @@ const jsonLd = [
   .case-links a {
     color: var(--ac);
     font-size: 12px;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
 
   .case-related {
@@ -737,7 +745,7 @@ const jsonLd = [
 
   .related-work a {
     display: grid;
-    gap: 5px;
+    gap: var(--space-1);
     background: var(--p);
     padding: 18px 20px;
     min-height: 120px;

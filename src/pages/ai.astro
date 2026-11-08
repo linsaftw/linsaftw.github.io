@@ -98,6 +98,25 @@ const jsonLd = [
       .pl .pc .t .l {
         margin-top: auto;
       }
+      /* Match the artwork's native 720x378 ratio so object-fit: contain does not letterbox it. */
+      .pl .pc img {
+        aspect-ratio: 720 / 378;
+      }
+      /* Cards without artwork get a wordmark panel at the same ratio so row heights match. */
+      .pl .pc:not(:has(img))::before {
+        content: "FAUS";
+        display: grid;
+        place-items: center;
+        aspect-ratio: 720 / 378;
+        border-bottom: 1px solid var(--bd);
+        background:
+          radial-gradient(ellipse at 30% 20%, rgba(255, 107, 53, 0.16), transparent 60%),
+          var(--shell2);
+        color: var(--tx);
+        font-size: clamp(2rem, 6vw, 3.4rem);
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
       .pl .pc:focus-visible {
         outline: 2px solid var(--ac);
         outline-offset: 3px;

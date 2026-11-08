@@ -272,14 +272,15 @@ const jsonLd = [
   .focus-grid a {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: var(--space-2);
     background: var(--p);
-    padding: 20px 22px;
+    padding: var(--card-pad);
     min-height: 190px;
   }
 
   .focus-grid a:hover {
     background: var(--p2);
+    box-shadow: inset 3px 0 0 var(--ac);
   }
 
   .focus-grid small {
@@ -363,7 +364,7 @@ const jsonLd = [
   .about-work a {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: var(--space-1);
     background: var(--p);
     padding: 16px;
     min-height: 126px;
@@ -382,6 +383,7 @@ const jsonLd = [
 
   .about-work a:hover {
     background: var(--p2);
+    box-shadow: inset 3px 0 0 var(--ac);
   }
 
   .about-work small {

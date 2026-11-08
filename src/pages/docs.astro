@@ -144,7 +144,7 @@ const sourceLabel: Record<string, string> = {
 
 <style>
   .docs-head {
-    padding: 54px 0 0;
+    padding: var(--space-7) 0 0;
   }
 
   .eyebrow {
@@ -159,17 +159,17 @@ const sourceLabel: Record<string, string> = {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 22px;
+    margin-top: var(--space-5);
   }
 
   .docs-scope {
     display: grid;
-    gap: 6px;
+    gap: var(--space-2);
     border: 1px solid var(--bd);
     border-left: 2px solid var(--ac);
     background: var(--p);
-    padding: 16px 18px;
-    margin-top: 34px;
+    padding: 16px var(--space-4);
+    margin-top: var(--space-6);
   }
 
   .docs-scope b {
@@ -196,14 +196,14 @@ const sourceLabel: Record<string, string> = {
     flex-direction: column;
     min-width: 0;
     background: var(--p);
-    padding: 20px 22px 22px;
+    padding: 20px var(--space-5) var(--space-5);
     min-height: 260px;
   }
 
   .plugin-top {
     display: flex;
     justify-content: space-between;
-    gap: 14px;
+    gap: var(--space-3);
     align-items: flex-start;
   }
 
@@ -216,7 +216,7 @@ const sourceLabel: Record<string, string> = {
 
   .plugin-card h3 {
     font-size: 22px;
-    margin: 6px 0 0;
+    margin: var(--space-2) 0 0;
   }
 
   .plugin-version {
@@ -236,7 +236,7 @@ const sourceLabel: Record<string, string> = {
 
   .plugin-topics {
     list-style: none;
-    margin: 18px 0 0;
+    margin: var(--space-4) 0 0;
     padding: 0;
     display: grid;
     gap: 0;
@@ -250,7 +250,7 @@ const sourceLabel: Record<string, string> = {
   .plugin-topics a {
     display: flex;
     justify-content: space-between;
-    gap: 14px;
+    gap: var(--space-3);
     align-items: center;
     min-height: 44px;
     padding: 8px 0;
@@ -275,7 +275,7 @@ const sourceLabel: Record<string, string> = {
 
   @media (max-width: 760px) {
     .docs-head {
-      padding-top: 38px;
+      padding-top: var(--space-6);
     }
 
     .plugin-grid {
