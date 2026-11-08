@@ -2,7 +2,9 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { homeGraph } from "../components/seo/JsonLd.astro";
+import HomeBanner from "../components/home/HomeBanner.astro";
 import HomeHero from "../components/home/HomeHero.astro";
+import FounderBridge from "../components/home/FounderBridge.astro";
 import ProofStrip from "../components/home/ProofStrip.astro";
 import FlameWmShowcase from "../components/home/FlameWmShowcase.astro";
 import ProjectFeature from "../components/home/ProjectFeature.astro";
@@ -170,6 +172,8 @@ const beyond = [
   ogImage="/images/og/home.webp"
 >
   <div class="w">
+    <HomeBanner />
+
     <HomeHero identityRow={identityRow} lead={homeLead} h1Lead={h1Lead} h1Accent={homeH1Accent} />
 
     <ProofStrip stats={stats} />
@@ -292,6 +296,8 @@ const beyond = [
         ))
       }
     </div>
+
+    <FounderBridge />
 
     <div class="about-cta">
       <div>

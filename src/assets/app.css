@@ -69,7 +69,10 @@
   --space-7: 48px;
   --gutter: 20px;
   --section-gap: clamp(48px, 8vw, 76px);
-  --card-pad: clamp(18px, 3vw, 24px);
+  --card-pad: clamp(16px, 3vw, 24px);
+  --border: 1px solid var(--bd);
+  --elev-1: 0 8px 20px #0007;
+  --elev-2: 0 18px 40px #000a;
   --focus-ring: 2px solid var(--ac);
   color-scheme: dark;
 }
@@ -89,6 +92,13 @@
 
 html {
   scroll-padding-top: 60px;
+  /* Reserve the scrollbar lane so opening the mobile drawer cannot shift the page. */
+  scrollbar-gutter: stable;
+}
+
+/* Set by the mobile nav drawer while it is open: no page scroll behind it. */
+html.nav-locked {
+  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -191,7 +201,7 @@ body > header .w {
   display: flex;
   align-items: center;
   height: 56px;
-  gap: 22px;
+  gap: var(--space-5);
   max-width: 1120px;
 }
 
@@ -202,6 +212,10 @@ body > header .w {
   font-weight: 800;
   font-size: 17px;
   margin-right: auto;
+}
+
+.logo:hover {
+  color: var(--ac);
 }
 
 body > header a:not(.logo) {
@@ -225,7 +239,7 @@ body > header a:not(.logo):hover {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: var(--space-5);
 }
 
 .nav-toggle {
@@ -267,23 +281,6 @@ body > header a:not(.logo):hover {
     display: none;
   }
 
-  .nav-drawer[data-open="true"] {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 0 20px 14px;
-  }
-
-  .nav-drawer[data-open="true"] a {
-    color: var(--mu);
-    font-size: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--bd);
-  }
-
-  .nav-drawer[data-open="true"] a[aria-current="page"] {
-    color: var(--ac);
-  }
 }
 
 /* --- banner ------------------------------------------------------------ */
@@ -311,7 +308,7 @@ body > header a:not(.logo):hover {
   position: absolute;
   z-index: 2;
   left: max(20px, calc(50% - 480px));
-  bottom: 46px;
+  bottom: var(--space-7);
   font-size: 12px;
   color: var(--gr);
   background: #000b;
@@ -338,7 +335,7 @@ body > header a:not(.logo):hover {
 /* --- identity row ------------------------------------------------------ */
 .id {
   display: flex;
-  gap: 22px;
+  gap: var(--space-5);
   align-items: flex-end;
   margin-top: -62px;
   position: relative;
@@ -364,7 +361,7 @@ body > header a:not(.logo):hover {
 h1 {
   font-size: clamp(36px, 6.1vw, 68px);
   letter-spacing: -0.03em;
-  margin: 30px 0 16px;
+  margin: var(--space-6) 0 var(--space-4);
   /* C17 — H1 must not single-letter-wrap. */
   overflow-wrap: break-word;
   text-wrap: balance;
@@ -390,7 +387,7 @@ h1 em {
 .chip {
   border: 1px solid var(--bd);
   background: var(--p);
-  padding: 9px 14px;
+  padding: var(--space-2) var(--space-4);
   min-height: 44px;
   font-size: 12px;
   display: inline-flex;
@@ -530,13 +527,13 @@ a.c:focus-visible {
 /* --- founder bridge ---------------------------------------------------- */
 .ceo {
   display: flex;
-  gap: 26px;
+  gap: var(--space-5);
   align-items: center;
   justify-content: space-between;
   border: 1px solid var(--ac);
   background: linear-gradient(90deg, var(--ceo-grad), var(--p) 60%);
-  padding: 26px 28px;
-  margin-top: 14px;
+  padding: var(--space-5) var(--space-6);
+  margin-top: var(--space-4);
   transition: transform 0.2s;
 }
 
@@ -546,7 +543,7 @@ a.c:focus-visible {
 
 .ceo h3 {
   font-size: 24px;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
 }
 
 .ceo p {
@@ -563,15 +560,15 @@ a.c:focus-visible {
 .term {
   border: 1px solid var(--bd);
   background: var(--shell2);
-  margin-top: 34px;
+  margin-top: var(--space-6);
   min-width: 0;
   max-width: 100%;
 }
 
 .tb {
   display: flex;
-  gap: 6px;
-  padding: 10px 14px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--bd);
   align-items: center;
   color: var(--mu);
@@ -912,7 +909,8 @@ footer .f-links a {
 .pc img {
   width: 100%;
   aspect-ratio: 2 / 1;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--shell2);
   display: block;
   border-bottom: 1px solid var(--bd);
 }
@@ -1032,16 +1030,16 @@ footer .f-links a {
 /* --- shared filter controls ------------------------------------------- */
 .filter-bar {
   display: grid;
-  gap: 12px;
-  border: 1px solid var(--bd);
+  gap: var(--space-3);
+  border: var(--border);
   background: var(--p);
-  padding: 14px;
-  margin-bottom: 14px;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .filter-search {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .filter-search label {
@@ -1066,6 +1064,10 @@ footer .f-links a {
   color: var(--mu-dim);
 }
 
+.filter-search input:hover {
+  border-color: var(--mu);
+}
+
 .filter-search input:focus-visible {
   outline: 2px solid var(--ac);
   outline-offset: 2px;
@@ -1074,18 +1076,18 @@ footer .f-links a {
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .filter-chip,
 .filter-reset {
   min-height: 44px;
-  border: 1px solid var(--bd);
+  border: var(--border);
   background: var(--p2);
   color: var(--mu);
   font: inherit;
   font-size: 11px;
-  padding: 7px 11px;
+  padding: var(--space-2) var(--space-3);
   cursor: pointer;
 }
 

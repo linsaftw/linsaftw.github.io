@@ -8,7 +8,7 @@ const canonicalPath = routes.press;
 const site = Astro.site ?? new URL(SITE_URL);
 
 const description =
-  "Public mentions, community posts and release notes for FlameWM, a Rust window manager with X11 and Wayland support (Wayland experimental) by ArkFlame Studios. Community entries are links only.";
+  "Public mentions, community posts and release notes for FlameWM, a Rust window manager for X11 with experimental Wayland support, by ArkFlame Studios. Community entries are links only.";
 
 const jsonLd = [
   personNode(site),
@@ -102,6 +102,11 @@ const releases: readonly Mention[] = [
           </div>
         ))
       }
+      <div class="ex ex-note">
+        <b>How entries are checked</b>
+        <span>Rule</span>
+        <span>A mention is listed only when I opened the source and confirmed it. Trackers and summaries are reported as they are, with their own caveats.</span>
+      </div>
     </div>
 
     <SectionHeader eyebrow="Community" id="community" label="Reddit posts" />
@@ -148,9 +153,20 @@ const releases: readonly Mention[] = [
 
 <style>
   .press-foot {
-    margin: 18px 0 0;
+    margin: 24px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--ln, rgba(255, 255, 255, 0.12));
     color: var(--mu);
     font-size: 13px;
+  }
+
+  .press .ex-note b {
+    color: var(--mu);
+  }
+
+  .press .ex-note {
+    border-style: dashed;
+    background: transparent;
   }
 
   .press-foot a,

@@ -8,8 +8,6 @@ export interface Props {
 
 const { nodes } = Astro.props;
 
-const site = Astro.site ?? new URL(SITE_URL);
-const abs = (path: string): string => new URL(path, site).href;
 
 type Crumb = { name: string; path: string };
 

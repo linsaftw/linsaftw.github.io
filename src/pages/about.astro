@@ -160,6 +160,17 @@ const jsonLd = [
       {
         selected.map((project) => (
           <a href={workPath(project.id)}>
+            {project.image && (
+              <img
+                class="about-work-img"
+                src={project.image}
+                alt={`${project.name} artwork`}
+                width="720"
+                height="405"
+                loading="lazy"
+                decoding="async"
+              />
+            )}
             <small>{project.kind}</small>
             <b>{project.name}</b>
             <span>{project.caseStudy?.tagline}</span>
@@ -356,6 +367,17 @@ const jsonLd = [
     background: var(--p);
     padding: 16px;
     min-height: 126px;
+  }
+
+  .about-work .about-work-img {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: var(--shell2);
+    display: block;
+    margin: 0 0 8px;
+    border: 1px solid var(--bd);
   }
 
   .about-work a:hover {

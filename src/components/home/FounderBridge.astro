@@ -4,8 +4,8 @@ import { links } from "../../data/links";
 import { projectById } from "../../data/projects";
 
 /**
- * C16 founder bridge. C4 bans the executive-title claim entirely, so the eyebrow
- * is FOUNDER only.
+ * Founder bridge restored from the pre-redesign home. The eyebrow is FOUNDER
+ * only: the executive-title claim is not used anywhere on the site.
  */
 const org = projectById("arkflame-studios");
 const host = new URL(links.arkflame).host.replace(/^www\./, "");
@@ -17,7 +17,7 @@ const host = new URL(links.arkflame).host.replace(/^www\./, "");
     <h3>{identity.founderOf}</h3>
     <p>{org?.description}</p>
   </div>
-  <b>{host} →</b>
+  <b>{host} &#8599;</b>
 </a>
 
 <style>

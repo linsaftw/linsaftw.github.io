@@ -91,17 +91,66 @@ const isCurrent = (item: NavItem): boolean =>
   (function () {
     var drawer = document.getElementById("nav-drawer");
     var toggle = drawer && drawer.querySelector("summary.nav-toggle");
-    /* Keep aria-expanded in sync and close with Escape, returning focus to the toggle. */
+    /* Desktop "More" disclosure: Escape and outside click close it, returning focus to its summary. */
+    var more = document.querySelector("details.nav-more");
+    if (more) {
+      more.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && more.open) {
+          event.preventDefault();
+          more.open = false;
+          more.querySelector("summary").focus();
+        }
+      });
+      document.addEventListener("pointerdown", function (event) {
+        if (more.open && !more.contains(event.target)) more.open = false;
+      });
+    }
     if (!drawer || !toggle) return;
-    var sync = function () { toggle.setAttribute("aria-expanded", String(drawer.open)); };
+    var mq = window.matchMedia("(max-width: 760px)");
+    var panel = document.getElementById("nav-drawer-panel");
+    /* Keep aria-expanded in sync; lock page scroll only while the mobile drawer is open. */
+    var sync = function () {
+      toggle.setAttribute("aria-expanded", String(drawer.open));
+      document.documentElement.classList.toggle("nav-locked", drawer.open && mq.matches);
+    };
+    var close = function (returnFocus) {
+      if (!drawer.open) return;
+      drawer.open = false;
+      if (returnFocus) toggle.focus();
+    };
     sync();
     drawer.addEventListener("toggle", sync);
     drawer.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && drawer.open) {
+      if (!drawer.open) return;
+      if (event.key === "Escape") {
         event.preventDefault();
-        drawer.open = false;
-        toggle.focus();
+        close(true);
+        return;
       }
+      /* Focus trap: Tab wraps between the toggle and the drawer links. */
+      if (event.key !== "Tab" || !mq.matches) return;
+      var links = panel.querySelectorAll("a[href]");
+      var last = links[links.length - 1];
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        toggle.focus();
+      } else if (event.shiftKey && document.activeElement === toggle) {
+        event.preventDefault();
+        last.focus();
+      }
+    });
+    /* Pointer outside the open drawer closes it without moving focus. */
+    document.addEventListener("pointerdown", function (event) {
+      if (drawer.open && !drawer.contains(event.target)) close(false);
+    });
+    /* Focus leaving the drawer (for example via a click target) closes it too. */
+    drawer.addEventListener("focusout", function (event) {
+      if (drawer.open && !drawer.contains(event.relatedTarget)) close(false);
+    });
+    /* Crossing the breakpoint with the drawer open resets it to the desktop nav. */
+    mq.addEventListener("change", function () {
+      if (!mq.matches) close(false);
+      sync();
     });
   })();
 </script>
@@ -161,8 +210,8 @@ const isCurrent = (item: NavItem): boolean =>
     display: grid;
     background: var(--p);
     border: 1px solid var(--bd);
-    padding: 4px;
-    box-shadow: 0 18px 40px #000a;
+    padding: var(--space-1);
+    box-shadow: var(--elev-2);
   }
 
   .nav-more-panel a {
@@ -236,9 +285,10 @@ const isCurrent = (item: NavItem): boolean =>
       gap: 2px;
       max-height: calc(100dvh - 56px);
       overflow-y: auto;
-      padding: 0 20px 18px;
+      padding: 0 var(--gutter) var(--space-4);
+      overscroll-behavior: contain;
       background: var(--bg);
-      box-shadow: 0 18px 40px #000c;
+      box-shadow: var(--elev-2);
       border-bottom: 1px solid var(--bd);
     }
 

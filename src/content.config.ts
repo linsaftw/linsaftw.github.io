@@ -1,5 +1,6 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 // Content Layer API (Astro 5+). `loader` is required — a collection without one
 // throws ContentCollectionMissingLoader (errors-data.js:638).
@@ -52,7 +53,7 @@ const docs = defineCollection({
     updatedAt: z.coerce.date(),
     version: z.string().optional(),
     platforms: z.array(z.string()).default([]),
-    officialUrl: z.string().url().optional(),
+    officialUrl: z.url().optional(),
     sourceStatus: z.enum(["public", "private", "shipped-config"]),
     draft: z.boolean().default(false),
   }),

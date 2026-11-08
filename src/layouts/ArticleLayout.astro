@@ -244,7 +244,7 @@ const jsonLd = [
 <style is:global>
   /* Article page only. Tokens come from app.css — nothing is redefined here. */
   .article {
-    padding-top: 46px;
+    padding-top: var(--space-7);
     padding-bottom: 64px;
   }
 
@@ -264,7 +264,7 @@ const jsonLd = [
     color: var(--mu);
     font-size: 15px;
     max-width: 60ch;
-    margin: 0 0 22px;
+    margin: 0 0 var(--space-5);
   }
 
   .article .byline,
@@ -324,10 +324,10 @@ const jsonLd = [
   }
 
   .toc {
-    margin: 26px 0 0;
-    border: 1px solid var(--bd);
+    margin: var(--space-5) 0 0;
+    border: var(--border);
     background: var(--p);
-    padding: 14px 18px;
+    padding: var(--space-4) var(--space-5);
   }
 
   .toc summary {
@@ -348,8 +348,8 @@ const jsonLd = [
   .toc-link {
     color: var(--mu);
     font-size: 12px;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--bd);
+    padding: var(--space-1) 0;
+    border-bottom: var(--border);
   }
 
   .toc-link:hover {
@@ -414,7 +414,7 @@ const jsonLd = [
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 46px;
+    margin-top: var(--space-7);
   }
 
   .art-nav a {
